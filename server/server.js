@@ -1,11 +1,21 @@
-const express = require ("express");
-const app = express ();
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import cookieParser from 'cookie-parser';
+import connectDB from './config/mongodb.js';
+import authRouter from './routes/authRoutes.js';
 
-app.get ("/api" , (req,res)=> {
-    res.json({ PEGASIO : ["site","web", "ecommerce"]});
+const app = express();
+const PORT = process.env.PORT || 8080;
+connectDB();
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({credentials : true, origin: process.env.CLIENT_URL}));
 
-});
+//api endpoints
+app.get('/', (req, res) => {res.send('Server is running');    });
+app.use('/api/auth', authRouter);
 
-app.listen(8080 , ()=> {
-    console.log(" Server started on port 8080");
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
