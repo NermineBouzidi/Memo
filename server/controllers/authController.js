@@ -2,9 +2,12 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables
 
 //-----------register -------------
-export const register = async (req, res) => {
+/*export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
@@ -59,6 +62,107 @@ export const register = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
+};*/
+export const register = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res
+      .status(400)
+      .json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
+    }
+    
+    // password encryption
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new userModel({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+     // Generate OTP and set expiration time
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    user.verifyOtp = otp;
+    user.verifyOtpExpiresAt = expiresAt;
+    await user.save();
+    
+    // In register controller
+    const preAuthToken = jwt.sign(
+      { id: user._id, type: "pre-verification" },
+      process.env.JWT_SECRET,
+      { expiresIn: "30m" } // Short expiration
+    );
+
+    res.cookie("preAuthToken", preAuthToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 30 * 60 * 1000, // 30 minutes
+    });
+
+   
+    // Send OTP via email
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "🔐 Verify your PEGASIO Account",
+      html: `
+    <div style="font-family: Arial, sans-serif; background-color: #f8f8f8; padding: 40px;">
+      <div style="max-width: 600px; margin: auto; background-color: white; padding: 30px 40px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-left: 6px solid #e11d48;">
+        
+        <h2 style="color: #000; text-align: center; font-size: 24px; margin-bottom: 30px;">
+          🔐 PEGASIO Email Verification
+        </h2>
+
+        <p style="font-size: 16px; color: #333;">Hello <strong>${user.name}</strong>,</p>
+
+        <p style="font-size: 16px; color: #333;">Thank you for signing up. Please use the following OTP code to verify your email address:</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="display: inline-block; background-color: #e11d48; color: white; font-size: 28px; padding: 12px 24px; border-radius: 8px; letter-spacing: 5px;">
+            ${otp}
+          </span>
+        </div>
+
+        <p style="font-size: 14px; color: #666;">⏰ This code is valid for <strong>10 minutes</strong>. If you did not request this, you can safely ignore this email.</p>
+
+        <p style="font-size: 14px; color: #999; margin-top: 40px;">— The PEGASIO Team</p>
+      </div>
+    </div>
+  `,
+    };
+
+    await transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to send verification email",
+        });
+      } else {
+        console.log("Email sent successfully:", info.response);
+        return res.status(200).json({
+          success: true,
+          message: "Verification OTP sent successfully",
+        });
+      }
+    });
+
+    return res
+      .status(201)
+      .json({ success: true, message: "User registered successfully", user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 //-----------login -------------
 export const login = async (req, res) => {
@@ -74,6 +178,13 @@ export const login = async (req, res) => {
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(400).json({ success: false, message: "Invalid email" });
+    }
+    if (!user.isAccountVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Account not verified",
+        userId: user._id, // Return ID for verification flow
+      });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -136,11 +247,11 @@ export const sendVerifyOtp = async (req, res) => {
     await user.save();
 
     // Send OTP via email
- const mailOptions = {
-  from: process.env.MAIL_USER,
-  to: user.email,
-  subject: "🔐 Verify your PEGASIO Account",
-  html: `
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: user.email,
+      subject: "🔐 Verify your PEGASIO Account",
+      html: `
     <div style="font-family: Arial, sans-serif; background-color: #f8f8f8; padding: 40px;">
       <div style="max-width: 600px; margin: auto; background-color: white; padding: 30px 40px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-left: 6px solid #e11d48;">
         
@@ -163,28 +274,22 @@ export const sendVerifyOtp = async (req, res) => {
         <p style="font-size: 14px; color: #999; margin-top: 40px;">— The PEGASIO Team</p>
       </div>
     </div>
-  `
-};
-
-
+  `,
+    };
 
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Failed to send verification email",
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Failed to send verification email",
+        });
       } else {
         console.log("Email sent successfully:", info.response);
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "Verification OTP sent successfully",
-          });
+        return res.status(200).json({
+          success: true,
+          message: "Verification OTP sent successfully",
+        });
       }
     });
   } catch (error) {
@@ -192,7 +297,7 @@ export const sendVerifyOtp = async (req, res) => {
   }
 };
 //-----------verifyEmail using OTP -------------
-export const verifyEmail = async (req, res) => {
+/*export const verifyEmail = async (req, res) => {
   const { userId, otp } = req.body;
   if (!userId || !otp) {
     return res
@@ -232,14 +337,108 @@ export const verifyEmail = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
+};*/
+/*export const verifyEmail = async (req, res) => {
+  const { otp } = req.body;
+  if ( !otp) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID and OTP are required" });
+  }
+  try {
+    const user = await userModel.findOne({ verifyOtp: otp });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (user.isAccountVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already verified" });
+    }
+
+    if (user.verifyOtp !== otp || user.verifyOtp === "") {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    if (Date.now() > user.verifyOtpExpiresAt) {
+      return res.status(400).json({ success: false, message: "Expired OTP" });
+    }
+
+    user.isAccountVerified = true;
+    user.verifyOtp = "";
+    user.verifyOtpExpiresAt = 0;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Account verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};*/
+
+export const verifyEmail = async (req, res) => {
+  const { otp } = req.body;
+   const userId = req.userId;
+  if (!otp) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID and OTP are required" });
+  }
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (user.isAccountVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Account already verified" });
+    }
+
+    if (user.verifyOtp !== otp || user.verifyOtp === "") {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    if (Date.now() > user.verifyOtpExpiresAt) {
+      return res.status(400).json({ success: false, message: "Expired OTP" });
+    }
+
+    user.isAccountVerified = true;
+    user.verifyOtp = "";
+    user.verifyOtpExpiresAt = 0;
+    await user.save();
+    // In verifyEmail controller after successful verification:
+res.clearCookie('preAuthToken');
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Account verified successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };
+
 
 // ------------ check if user is authenticated -------------
 export const isAuthenticated = async (req, res) => {
+     const userId = req.userId;
   try {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
     return res.status(200).json({ success: true, user });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'hello' });
+    return res.status(500).json({ success: false, message: "hello" });
   }
 };
 
@@ -268,10 +467,10 @@ export const sendResetOtp = async (req, res) => {
 
     // Send OTP via email
     const mailOptions = {
-  from: process.env.MAIL_USER,
-  to: user.email,
-  subject: "🔑 PEGASIO Password Reset OTP",
-  html: `
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "🔑 PEGASIO Password Reset OTP",
+      html: `
     <div style="font-family: Arial, sans-serif; background-color: #f8f8f8; padding: 40px;">
       <div style="max-width: 600px; margin: auto; background-color: white; padding: 30px 40px; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-left: 6px solid #e11d48;">
         
@@ -294,27 +493,22 @@ export const sendResetOtp = async (req, res) => {
         <p style="font-size: 14px; color: #999; margin-top: 40px;">— The PEGASIO Security Team</p>
       </div>
     </div>
-  `
-};
-
+  `,
+    };
 
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Failed to send verification email",
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Failed to send verification email",
+        });
       } else {
         console.log("Email sent successfully:", info.response);
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "Verification OTP sent successfully",
-          });
+        return res.status(200).json({
+          success: true,
+          message: "Verification OTP sent successfully",
+        });
       }
     });
     return res
@@ -326,7 +520,7 @@ export const sendResetOtp = async (req, res) => {
 };
 
 //-------------- Reset Password -------------
-export const resetPassword = async (req, res) => {  
+export const resetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
 
   if (!email || !otp || !newPassword) {
@@ -363,4 +557,4 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
-}
+};
