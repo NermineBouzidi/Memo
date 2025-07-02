@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -15,7 +16,14 @@ import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 
+
+import ResetPasswordFlow from "./pages/ResetPasswordFlow";
+
 import { Users } from "lucide-react";
+
+import Blog from "./pages/Blog";
+import SavoirPlus from "./pages/SavoirPlus";
+
 
 
 function App() {

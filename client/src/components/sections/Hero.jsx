@@ -1,6 +1,63 @@
-import { ArrowRight, Target, Users, Lightbulb, Rocket, Settings, Brain, DollarSign, Receipt } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ArrowDown, ChevronDown, ChevronUp, Target, Users, Lightbulb, Rocket, Settings, Brain, DollarSign, Receipt } from "lucide-react";
+
+const services = [
+  {
+    icon: <Settings className="text-orange-600 dark:text-orange-400" size={32} />,
+    emoji: "🔧",
+    title: "Gestion de Projets / Job Manager",
+    preview: "Pilotage de projets, chantiers, missions, jobs (TPE/PME, BTP, agences, etc.). Suivi en temps réel de la performance de l'entreprise et des collaborateurs.",
+    details: [
+      "Gestion multi-entités avec transversalité des fonctionnalités",
+      "Génération d'écritures comptables liées aux projets",
+      "Centralisation des informations projet : délais, coûts, livrables, marges",
+      "Module de planification, affectation des ressources et contrôle qualité",
+      "Suivi budgétaire et analytique par job/projet"
+    ]
+  },
+  {
+    icon: <Brain className="text-blue-600 dark:text-blue-400" size={32} />,
+    emoji: "🧠",
+    title: "CRM (Gestion de la relation client)",
+    preview: "Gestion des prospects et des clients. Suivi des devis, commandes, contrats. Pipeline commercial visuel et interactif.",
+    details: [
+      "Relances automatiques et historiques des interactions",
+      "Intégration directe avec la facturation et la comptabilité",
+      "Uniformisation des process commerciaux"
+    ]
+  },
+  {
+    icon: <DollarSign className="text-green-600 dark:text-green-400" size={32} />,
+    emoji: "💰",
+    title: "Comptabilité & Finance",
+    preview: "Génération d'écritures comptables automatiques (ventes, achats, provisions). Synchronisation des données avec les outils comptables.",
+    details: [
+      "Analyse financière par projet, client, équipe ou entité",
+      "Préparation à la facturation électronique (obligatoire en 2027)",
+      "GED intégrée (gestion documentaire numérique)",
+      "Réduction des délais de facturation et de paiement"
+    ]
+  },
+  {
+    icon: <Receipt className="text-purple-600 dark:text-purple-400" size={32} />,
+    emoji: "🧾",
+    title: "Facturation & Paiements",
+    preview: "Facturation automatisée à partir des bons de commande ou livrables. Historique des paiements, alertes sur les impayés.",
+    details: [
+      "Modèles de factures paramétrables",
+      "Export des données vers plateformes fiscales",
+      "Réduction du cycle facturation → encaissement"
+    ]
+  }
+];
 
 export default function Hero() {
+  const [expanded, setExpanded] = useState(Array(services.length).fill(false));
+
+  const toggleExpand = idx => {
+    setExpanded(expanded => expanded.map((v, i) => (i === idx ? !v : v)));
+  };
+
   return (
     <section
       id="accueil"

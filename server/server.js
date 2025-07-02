@@ -1,11 +1,20 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
 import productRouter from './routes/ProductRoutes.js'; 
+
+import statistiquesRouter from './routes/AdminRouter.js';
+
+import reviewRouter from './routes/reviewRoutes.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+
+
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -20,8 +29,11 @@ app.use('/api/auth', authRouter);
 
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
-
-
+//for review
+app.use('/api/review', reviewRouter);
+//for statistiques 
+app.use('/api/prod', statistiquesRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+

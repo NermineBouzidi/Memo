@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import image from "../assets/logo.png"
+import { useNavigate, useLocation } from "react-router-dom";
+import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown } from "lucide-react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const navItems = [
   { id: "accueil", label: "Accueil" },
-  { 
-    id: "produits", 
+  {
+    id: "produits",
     label: "Produits",
     submenu: [
       { id: "categories", label: "Catégories" }
@@ -84,16 +84,15 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black shadow-md px-6 md:px-12 py-2 flex items-center justify-between transition-colors duration-300">
-      {/* Logo */}
-      <a href="/" className="flex items-center space-x-2">
+      <Link to="/" className="flex items-center space-x-2">
         <img
           src={image}
           alt="Logo"
           className="h-12 w-auto md:h-14 drop-shadow-lg transition-all duration-300"
         />
-      </a>
+      </Link>
 
-      {/* Desktop Nav */}
+      {/* Desktop Navigation */}
       <ul className="hidden md:flex gap-8 items-center bg-gray-100 dark:bg-[#161616] rounded-full px-10 py-2 border border-gray-300 dark:border-gray-600 shadow-sm">
         {navItems.map((item) => (
           <li key={item.id} className="relative">
@@ -127,7 +126,7 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* Account Section (Desktop) */}
+      {/* Desktop Account Link */}
       <Link
         to="/signup"
         className="hidden md:flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-red-600 text-gray-600 dark:text-gray-300"
@@ -193,4 +192,7 @@ export default function Navbar() {
     </nav>
   );
 
+
 }
+
+
