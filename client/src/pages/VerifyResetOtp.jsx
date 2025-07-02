@@ -1,34 +1,24 @@
 import React, { useState, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const VerifyResetOtp = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [error, setError] = useState("");
+  const location = useLocation();
+
 
   const inputRefs = useRef([]);
 
   const handleChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return;
-
-    // If user pasted full 6-digit code
-    if (value.length === 6) {
-      const valueArray = value.split("").slice(0, 6);
-      setOtp(valueArray);
-      valueArray.forEach((v, i) => {
-        if (inputRefs.current[i]) {
-          inputRefs.current[i].value = v;
-        }
-      });
-      inputRefs.current[5]?.focus();
-      return;
-    }
-
+    if (!/^\d*$/.test(value)) return; // Only digits allowed
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
+    // Move to next input
     if (value && index < 5) {
       inputRefs.current[index + 1].focus();
     }
@@ -40,36 +30,22 @@ const VerifyResetOtp = () => {
     }
   };
 
-  const handlePaste = (e) => {
-    e.preventDefault();
-    const paste = e.clipboardData.getData("text").trim();
-    if (/^\d{6}$/.test(paste)) {
-      const pasteArray = paste.split("");
-      setOtp(pasteArray);
-      pasteArray.forEach((v, i) => {
-        if (inputRefs.current[i]) {
-          inputRefs.current[i].value = v;
-        }
-      });
-      inputRefs.current[5]?.focus();
-    }
-  };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const code = otp.join("");
+  e.preventDefault();
+  const code = otp.join("");
 
-    try {
-      navigate("/reset-password", {
-        state: { email: location.state.email, otp: code },
-      });
-    } catch (err) {
-      setError("Code invalide ou expiré.");
-    }
-  };
+  try {
+    navigate('/reset-password', 
+      { state: { email: location.state.email, otp: code } });
+  } catch (err) {
+    setError("Code invalide ou expiré.");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 relative overflow-hidden px-4">
+      {/* 🔴 Background pulse */}
       <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-700 opacity-30 dark:opacity-20 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
 
       <form
@@ -83,7 +59,8 @@ const VerifyResetOtp = () => {
           Entrez le code à 6 chiffres envoyé à votre adresse e-mail
         </p>
 
-        <div className="flex justify-center gap-3" onPaste={handlePaste}>
+        {/* 🔢 OTP Boxes */}
+        <div className="flex justify-center gap-3">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -99,7 +76,10 @@ const VerifyResetOtp = () => {
           ))}
         </div>
 
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {/* ⚠️ Error */}
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
 
         <button
           type="submit"

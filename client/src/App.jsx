@@ -14,62 +14,61 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
+
 import { Users } from "lucide-react";
+
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
+  <Routes>
+    <Route path="/" element={
+      <ProtectedRoute requireAuth={false}>
+        <Home />
+      </ProtectedRoute>
+    } />
 
-          <Route path="/" element={
-                 <ProtectedRoute requireAuth={false}>
-            <Home />
-            </ProtectedRoute>
-            } />
-          <Route path="/signup" element={
-                        <ProtectedRoute requireAuth={false}>
-            <Signup />
-            </ProtectedRoute>
-            } />
-          
-          <Route path="/login" element={
-            <ProtectedRoute requireAuth={false}>
-            <Login />
-            </ProtectedRoute>
-            } />
-          <Route path="/verify-account" element={<VerifyAccount />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
-          
+    <Route path="/signup" element={
+      <ProtectedRoute requireAuth={false}>
+        <Signup />
+      </ProtectedRoute>
+    } />
 
-          {/* Catch-all route for 404 Not Found */}
-          <Route path="*" element={<NotFound />} />
+    <Route path="/login" element={
+      <ProtectedRoute requireAuth={false}>
+        <Login />
+      </ProtectedRoute>
+    } />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={
-            <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
-                <AdminLayout />
-              </ProtectedRoute> 
-            }>
-            <Route index element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<Users />} />
+    <Route path="/verify-account" element={<VerifyAccount />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
 
-            {/* Add other admin routes here */}
-          </Route>
+    <Route path="*" element={<NotFound />} />
 
-          {/* User Routes */}
-          <Route path="/home" element={
-            <ProtectedRoute requireAuth={true} allowedRoles={['user']}>
-                <UserLayout />
-              </ProtectedRoute>
-          }>
-            <Route index element={<UserHome />} />
-            {/* Add more user routes here */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    {/* Admin Routes */}
+    <Route path="/admin" element={
+      <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    }>
+      <Route index element={<AdminDashboard />} />
+      <Route path="users" element={<Users />} />
+    </Route>
+
+    {/* User Routes */}
+    <Route path="/home" element={
+      <ProtectedRoute requireAuth={true} allowedRoles={['user']}>
+        <UserLayout />
+      </ProtectedRoute>
+    }>
+      <Route index element={<UserHome />} />
+    </Route>
+  </Routes>
+</BrowserRouter>
+
     </>
   );
 }

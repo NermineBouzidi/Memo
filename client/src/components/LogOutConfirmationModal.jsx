@@ -36,4 +36,5 @@ export default function LogOutConfirmationModal({ onConfirm, onCancel }) {
       </div>
     </div>
   );
+
 }
