@@ -20,11 +20,7 @@ const ResetPassword = () => {
   };
 
   const handleReset = async (e) => {
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
-      return;
-    }
-
+ 
     e.preventDefault();
     try {
       //await resetPassword(formData.email, formData.otp, formData.newPassword);

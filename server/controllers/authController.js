@@ -382,7 +382,7 @@ export const sendVerifyOtp = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   const { otp } = req.body;
-   const userId = req.userId;
+  const userId = req.userId;
   if (!otp) {
     return res
       .status(400)
@@ -415,7 +415,7 @@ export const verifyEmail = async (req, res) => {
     user.verifyOtpExpiresAt = 0;
     await user.save();
     // In verifyEmail controller after successful verification:
-res.clearCookie('preAuthToken');
+    res.clearCookie("preAuthToken");
 
     return res
       .status(200)
@@ -425,10 +425,9 @@ res.clearCookie('preAuthToken');
   }
 };
 
-
 // ------------ check if user is authenticated -------------
 export const isAuthenticated = async (req, res) => {
-     const userId = req.userId;
+  const userId = req.userId;
   try {
     const user = await userModel.findById(userId);
     if (!user) {
