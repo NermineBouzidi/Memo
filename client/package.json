@@ -16,10 +16,14 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
 
     "axios": "^1.10.0",
+    "framer-motion": "^12.19.1",
+    "i18next": "^25.3.0",
+
     "framer-motion": "^12.20.5",
     "lucide-react": "^0.523.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-i18next": "^15.5.3",
     "react-router-dom": "^7.6.2",
 
     "react-toastify": "^11.0.5",
