@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -18,6 +19,15 @@ import ResetPasswordFlow from "./pages/ResetPasswordFlow";
 import EmailStep from "./pages/test/EmailStep";
 import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
+
+
+
+import { Users } from "lucide-react";
+
+import Blog from "./pages/Blog";
+import SavoirPlus from "./pages/SavoirPlus";
+
+
 
 function App() {
   return (
@@ -45,7 +55,18 @@ function App() {
 
 
 
-          ResetPasswordFlow
+          
+
+
+          <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+
+
+          
+
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/savoir-plus" element={<SavoirPlus />} />
+
+
 
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound />} />

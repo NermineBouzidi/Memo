@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { sendResetOtpUser , 
-  resetPasswordUser  } from "../api/auth";
+import { sendResetOtpUser, resetPasswordUser } from "../api/auth";
+
+import logo from "../assets/logo.png";
 
 const ResetPasswordFlow = () => {
   const [step, setStep] = useState(1);
@@ -89,6 +90,34 @@ const ResetPasswordFlow = () => {
     }
   };
 
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData('text/plain').trim();
+    
+    // Only allow numeric values
+    if (!/^\d+$/.test(pasteData)) return;
+    
+    // Take first 6 digits
+    const pasteDigits = pasteData.slice(0, 6).split('');
+    
+    // Update OTP state
+    const newOtp = [...otp];
+    pasteDigits.forEach((digit, index) => {
+      if (index < 6) {
+        newOtp[index] = digit;
+      }
+    });
+    setOtp(newOtp);
+    
+    // Focus the next empty input or the last one
+    const nextEmptyIndex = newOtp.findIndex(digit => digit === '');
+    if (nextEmptyIndex !== -1 && nextEmptyIndex < 5) {
+      inputRefs.current[nextEmptyIndex]?.focus();
+    } else {
+      inputRefs.current[5]?.focus();
+    }
+  };
+
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     const code = otp.join("");
@@ -159,6 +188,18 @@ const ResetPasswordFlow = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="absolute top-6 left-6 z-20"
+      >
+        <img 
+          src={logo} 
+          alt="Logo" 
+          className="h-24 object-contain" 
+        />
+      </motion.div>
       {/* Background elements */}
       <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-700 opacity-30 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
       <div className="absolute w-[300px] h-[300px] bg-gradient-to-br from-blue-500 to-cyan-700 opacity-20 rounded-full blur-3xl animate-pulse top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 z-0" />
@@ -171,6 +212,7 @@ const ResetPasswordFlow = () => {
         transition={{ duration: 0.3 }}
         className="relative z-10 bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 shadow-xl w-full max-w-md overflow-hidden"
       >
+        
         {/* Card background image */}
         <div className="absolute inset-0 z-0 opacity-10">
           <svg 
@@ -352,11 +394,16 @@ const ResetPasswordFlow = () => {
                       value={digit}
                       onChange={(e) => handleChangeOtp(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
+                      onPaste={handlePaste}
                       ref={(el) => (inputRefs.current[index] = el)}
                       className="w-12 h-14 border-2 border-white/20 bg-white/10 text-center rounded-lg text-2xl font-bold text-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition"
                     />
                   ))}
                 </motion.div>
+
+                <p className="text-xs text-center text-white/50 mt-2">
+                  Tip: You can paste the 6-digit code directly into any field
+                </p>
 
                 <motion.button
                   initial={{ opacity: 0, y: 20 }}
