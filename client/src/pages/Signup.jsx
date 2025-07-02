@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-
 import Swal from "sweetalert2";
 import Bar from "../components/Bar";
-
-
+import { signupUser } from "../api/auth"; // Import the signup API function
 
 const Signup = () => {
-  const { signup } = useAuth();
+  const { login } = useAuth(); // Assuming your AuthContext has a login function
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -17,17 +15,17 @@ const Signup = () => {
     password: "",
   });
 
-
   const [fieldErrors, setFieldErrors] = useState({});
-
-  const [error, setError] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    // Clear error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors({ ...fieldErrors, [name]: "" });
+    }
   };
-
 
   const validateFields = () => {
     const errors = {};
@@ -52,65 +50,79 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const errors = validateFields();
-  setFieldErrors(errors);
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const errors = validateFields();
+    setFieldErrors(errors);
 
-  if (Object.keys(errors).length > 0) {
-    Swal.fire({
-      icon: "error",
-      title: "Erreur de saisie",
-      text: "Veuillez corriger les champs indiqués en rouge.",
-      position: "top-end",
-      toast: true,
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-    return;
-  }
-
-  try {
-    const response = await signup(formData);
-
-    if (response.success && !response.user.isAccountVerified) {
+    if (Object.keys(errors).length > 0) {
       Swal.fire({
-        icon: "success",
-        title: "Inscription réussie",
-        text: "Un email de vérification vous a été envoyé.",
+        icon: "error",
+        title: "Erreur de saisie",
+        text: "Veuillez corriger les champs indiqués en rouge.",
         position: "top-end",
         toast: true,
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
       });
-      navigate("/verify-account");
-    } else {
-      Swal.fire({
-        icon: "success",
-        title: "Inscription réussie",
-        text: "Bienvenue !",
-        position: "top-end",
-        toast: true,
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-      navigate("/home");
+      setIsLoading(false);
+      return;
     }
-  } catch (err) {
-    Swal.fire({
-      icon: "error",
-      title: "Erreur d'inscription",
-      text: err.message || "Une erreur est survenue lors de l'inscription",
-      position: "top-end",
-      toast: true,
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  }
-};
+
+    try {
+      const response = await signupUser(formData);
+      
+      if (response.data.success) {
+        if (!response.data.user.isAccountVerified) {
+          Swal.fire({
+            icon: "success",
+            title: "Inscription réussie",
+            text: "Un email de vérification vous a été envoyé.",
+            position: "top-end",
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
+          navigate("/verify-account");
+        } else {
+          // If account is already verified (unlikely but possible)
+          login(response.data.user, response.data.token);
+          Swal.fire({
+            icon: "success",
+            title: "Inscription réussie",
+            text: "Bienvenue !",
+            position: "top-end",
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
+          navigate("/home");
+        }
+      }
+    } catch (err) {
+      let errorMessage = "Une erreur est survenue lors de l'inscription";
+      if (err.response && err.response.data && err.response.data.message) {
+        errorMessage = err.response.data.message;
+      }
+      
+      Swal.fire({
+        icon: "error",
+        title: "Erreur d'inscription",
+        text: errorMessage,
+        position: "top-end",
+        toast: true,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -207,15 +219,25 @@ const Signup = () => {
             {/* Bouton d'inscription */}
             <button
               type="submit"
-              className="w-full py-3 px-6 rounded-lg font-semibold text-white 
+              disabled={isLoading}
+              className={`w-full py-3 px-6 rounded-lg font-semibold text-white 
                 bg-gradient-to-r from-red-500 to-pink-600 
                 shadow-lg shadow-pink-300/40
                 hover:from-pink-600 hover:to-red-500 
                 hover:scale-105 hover:shadow-xl 
                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-400
-                transition-all duration-300 ease-in-out"
+                transition-all duration-300 ease-in-out
+                ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-              S'inscrire
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Traitement...
+                </span>
+              ) : "S'inscrire"}
             </button>
 
             <div className="text-center text-sm text-gray-700 dark:text-gray-300">
@@ -255,5 +277,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-  
