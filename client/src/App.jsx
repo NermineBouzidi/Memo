@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import VerifyAccount from "./pages/VerifyAccount";
@@ -23,6 +22,7 @@ import { Users } from "lucide-react";
 
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
+import Home from "./pages/Home";
 
 
 
@@ -30,12 +30,8 @@ function App() {
   return (
     <>
       <BrowserRouter>
-  <Routes>
-    <Route path="/" element={
-      <ProtectedRoute requireAuth={false}>
-        <Home />
-      </ProtectedRoute>
-    } />
+      <Routes>
+ 
 
     <Route path="/signup" element={
       <ProtectedRoute requireAuth={false}>
@@ -48,11 +44,16 @@ function App() {
         <Login />
       </ProtectedRoute>
     } />
+      <Route path="/" element={<Home />} />
 
     <Route path="/verify-account" element={<VerifyAccount />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
+
     <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+     <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+    <Route path="/blog" element={<Blog />} />
+          <Route path="/savoir-plus" element={<SavoirPlus />} />
 
     <Route path="*" element={<NotFound />} />
 
@@ -74,7 +75,9 @@ function App() {
     }>
       <Route index element={<UserHome />} />
     </Route>
-  </Routes>
+          </Routes>
+
+  
 </BrowserRouter>
 
     </>

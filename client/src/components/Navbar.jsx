@@ -1,7 +1,8 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
 import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import {useState,useEffect} from "react";
 
 const navItems = [
   { id: "accueil", label: "Accueil" },
