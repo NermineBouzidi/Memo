@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import VerifyAccount from "./pages/VerifyAccount";
@@ -23,6 +22,7 @@ import { Users } from "lucide-react";
 
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
+import Home from "./pages/Home";
 
 
 
@@ -30,56 +30,56 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<Signup />} />
-          
-          <Route path="/login" element={
-            <ProtectedRoute requireAuth={false}>
+      <Routes>
+ 
 
-            <Login />
-            </ProtectedRoute>
-            } />
-          <Route path="/verify-account" element={<VerifyAccount />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+    <Route path="/signup" element={
+      <ProtectedRoute requireAuth={false}>
+        <Signup />
+      </ProtectedRoute>
+    } />
 
+    <Route path="/login" element={
+      <ProtectedRoute requireAuth={false}>
+        <Login />
+      </ProtectedRoute>
+    } />
+      <Route path="/" element={<Home />} />
 
-          <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+    <Route path="/verify-account" element={<VerifyAccount />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
 
-
-          
-
-          <Route path="/blog" element={<Blog />} />
+    <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+     <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+    <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
 
+    <Route path="*" element={<NotFound />} />
 
+    {/* Admin Routes */}
+    <Route path="/admin" element={
+      <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    }>
+      <Route index element={<AdminDashboard />} />
+      <Route path="users" element={<Users />} />
+    </Route>
 
-          {/* Catch-all route for 404 Not Found */}
-          <Route path="*" element={<NotFound />} />
+    {/* User Routes */}
+    <Route path="/home" element={
+      <ProtectedRoute requireAuth={true} allowedRoles={['user']}>
+        <UserLayout />
+      </ProtectedRoute>
+    }>
+      <Route index element={<UserHome />} />
+    </Route>
+          </Routes>
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={
-            <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
-                <AdminLayout />
-              </ProtectedRoute> 
-            }>
-            <Route index element={<AdminDashboard />} />
-            {/* Add other admin routes here */}
-          </Route>
+  
+</BrowserRouter>
 
-          {/* User Routes */}
-          <Route path="/home" element={
-            <ProtectedRoute requireAuth={true} allowedRoles={['user']}>
-                <UserLayout />
-              </ProtectedRoute>
-          }>
-            <Route index element={<UserHome />} />
-            {/* Add more user routes here */}
-          </Route>
-        </Routes>
-      </BrowserRouter>
     </>
   );
 }
