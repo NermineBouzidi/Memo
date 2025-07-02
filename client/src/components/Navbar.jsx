@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import image from "../assets/logo.png"
 import { User, Menu, X, ChevronDown } from "lucide-react";
-import { User, Menu, X } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 const navItems = [

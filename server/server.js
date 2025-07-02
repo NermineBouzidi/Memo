@@ -4,6 +4,8 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js'; 
+import productRouter from './routes/ProductRoutes.js'; 
 
 const app = express();
 const PORT = process.env.PORT || 8080;
