@@ -5,8 +5,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  useEffect(() => {
+   useEffect(() => {
     const init = async () => {
+      // Skip auth check on public routes
+      const publicRoutes = ['/', '/login', '/signup', '/forgot-password'];
+      if (publicRoutes.includes(window.location.pathname)) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await checkAuthUser();
         if (res.data.success) {
@@ -15,6 +22,7 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (err) {
         setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
