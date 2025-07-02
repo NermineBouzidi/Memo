@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.blob {
+  position: absolute;
+  width: 600px;        /* increased from 400px */
+  height: 600px;       /* increased from 400px */
+  background: radial-gradient(circle, #ff000066 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(120px); /* slightly more blur for smoother edges */
+  animation: float 8s ease-in-out infinite;
+}
+
+
+.blob1 {
+  top: 20%;
+  left: -10%;
+  animation-delay: 0s;
+}
+
+.blob2 {
+  bottom: 20%;
+  right: -10%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(50vw);
+  }
+}
+
+
