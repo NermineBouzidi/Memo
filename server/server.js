@@ -16,6 +16,10 @@ app.use(cors({credentials : true, origin: process.env.CLIENT_URL}));
 app.get('/', (req, res) => {res.send('Server is running');    });
 app.use('/api/auth', authRouter);
 
+app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

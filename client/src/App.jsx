@@ -15,13 +15,35 @@ import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 
+import { Users } from "lucide-react";
+
+
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
+
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
+          
+          <Route path="/login" element={
+            <ProtectedRoute requireAuth={false}></ProtectedRoute>
+            } />
+          
+
+
+
+          <Route path="/" element={
+                 <ProtectedRoute requireAuth={false}>
+            <Home />
+            </ProtectedRoute>
+            } />
+          <Route path="/signup" element={
+                        <ProtectedRoute requireAuth={false}>
+            <Signup />
+            </ProtectedRoute>
+            } />
           
           <Route path="/login" element={
             <ProtectedRoute requireAuth={false}>
@@ -33,6 +55,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+          
+
 
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound />} />
@@ -44,6 +68,10 @@ function App() {
               </ProtectedRoute> 
             }>
             <Route index element={<AdminDashboard />} />
+
+            <Route path="/admin/users" element={<Users />} />
+
+
             {/* Add other admin routes here */}
           </Route>
 

@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+
 import Swal from "sweetalert2";
 import Bar from "../components/Bar";
+
+
 
 const Signup = () => {
   const { signup } = useAuth();
@@ -14,12 +17,17 @@ const Signup = () => {
     password: "",
   });
 
+
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const [error, setError] = useState("");
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
 
   const validateFields = () => {
     const errors = {};
@@ -247,3 +255,5 @@ const Signup = () => {
 };
 
 export default Signup;
+
+  
