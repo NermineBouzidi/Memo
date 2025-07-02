@@ -15,8 +15,16 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
+
+
+import ResetPasswordFlow from "./pages/ResetPasswordFlow";
+
+import { Users } from "lucide-react";
+
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
+
+
 
 function App() {
   return (
@@ -36,8 +44,16 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+
+
+          <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+
+
+          
+
           <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
+
 
 
           {/* Catch-all route for 404 Not Found */}
