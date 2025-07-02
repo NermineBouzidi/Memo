@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -15,9 +16,14 @@ import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 
+
 import ResetPasswordFlow from "./pages/ResetPasswordFlow";
 
 import { Users } from "lucide-react";
+
+import Blog from "./pages/Blog";
+import SavoirPlus from "./pages/SavoirPlus";
+
 
 
 function App() {
@@ -25,20 +31,12 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-
-          <Route path="/" element={
-                 <ProtectedRoute requireAuth={false}>
-            <Home />
-            </ProtectedRoute>
-            } />
-          <Route path="/signup" element={
-                        <ProtectedRoute requireAuth={false}>
-            <Signup />
-            </ProtectedRoute>
-            } />
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
           
           <Route path="/login" element={
             <ProtectedRoute requireAuth={false}>
+
             <Login />
             </ProtectedRoute>
             } />
@@ -47,10 +45,15 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
 
+
           <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
 
 
           
+
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/savoir-plus" element={<SavoirPlus />} />
+
 
 
           {/* Catch-all route for 404 Not Found */}
@@ -63,8 +66,6 @@ function App() {
               </ProtectedRoute> 
             }>
             <Route index element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<Users />} />
-
             {/* Add other admin routes here */}
           </Route>
 
