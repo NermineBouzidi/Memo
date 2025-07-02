@@ -14,6 +14,10 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
+import ResetPasswordFlow from "./pages/ResetPasswordFlow";
+import EmailStep from "./pages/test/EmailStep";
+import OtpStep from "./pages/test/OtpStep";
+import NewPasswordStep from "./pages/test/NewPasswordStep";
 
 function App() {
   return (
@@ -33,6 +37,15 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+          <Route path="/resetpasswordflow" element={<ResetPasswordFlow />} />
+                    <Route path="/emailstep" element={<EmailStep />} />
+           <Route path="/otpstep" element={<OtpStep />} />
+                      <Route path="/nouveaupass" element={<NewPasswordStep />} />
+
+
+
+
+          ResetPasswordFlow
 
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound />} />
