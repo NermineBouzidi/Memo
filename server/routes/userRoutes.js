@@ -7,8 +7,8 @@ const userRouter = express.Router();
 
 userRouter.post('/update-user/:id', updateUser);
 userRouter.get('/get-all-users',userAuth,requireAdmin, getAllUsers);
-userRouter.get('/get-user-by-id/:id', getUserById);
-userRouter.delete('/delete-user/:id', deleteUser);  
+userRouter.get('/get-user-by-id/:id',userAuth,requireAdmin, getUserById);
+userRouter.delete('/delete-user/:id',userAuth,requireAdmin, deleteUser);  
 
 
 

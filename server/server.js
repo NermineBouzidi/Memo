@@ -6,6 +6,7 @@ import connectDB from './config/mongodb.js';
 import userRouter from './routes/userRoutes.js';
 import authRouter from './routes/authRoutes.js';
 import productRouter from './routes/productRoutes.js';
+import contactRouter from './routes/contactRoute.js';
 const app = express();
 const PORT = process.env.PORT || 8080;
 connectDB();
@@ -18,6 +19,8 @@ app.get('/', (req, res) => {res.send('Server is running');    });
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
+app.use('/api/contact', contactRouter);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

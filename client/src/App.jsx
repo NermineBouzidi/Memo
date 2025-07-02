@@ -14,8 +14,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
-import { Users } from "lucide-react";
-
+import Users from "./pages/admin/Users";
 function App() {
   return (
     <>

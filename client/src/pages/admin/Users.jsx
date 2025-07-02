@@ -1,121 +1,264 @@
-// File: src/pages/admin/Users.jsx
-import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+// src/pages/Users.jsx
+import { useState, useEffect } from "react";
+import { User, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { getAllUsers, deleteUser } from "../../api/users";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null);
-  const [form, setForm] = useState({ name: "", email: "" });
+  const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
+  // Fetch users
   useEffect(() => {
-    // Fake fetch: replace with real API
-    setUsers([
-      { id: 1, name: "Alice", email: "alice@email.com" },
-      { id: 2, name: "Bob", email: "bob@email.com" },
-    ]);
+    const loadUsers = async () => {
+      try {
+        const res = await getAllUsers();
+        setUsers(res.data.users);
+      } catch (err) {
+        console.error("Error loading users:", err.response?.data || err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUsers();
   }, []);
 
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Delete user
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
   };
 
-  const handleAddUser = () => {
-    if (!form.name || !form.email) return;
-    setUsers([
-      ...users,
-      { id: Date.now(), name: form.name, email: form.email },
-    ]);
-    setForm({ name: "", email: "" });
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setForm({ name: user.name, email: user.email });
-  };
-
-  const handleUpdateUser = () => {
-    setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...form } : u));
-    setEditingUser(null);
-    setForm({ name: "", email: "" });
-  };
-
-  const handleDelete = (id) => {
-    setUsers(users.filter(u => u.id !== id));
+  const handleDelete = async () => {
+    try {
+      await deleteUser(deleteId);
+      const res = await getAllUsers();
+      setUsers(res.data.users);
+      // Reset to first page if current page becomes invalid
+      if (currentPage > Math.ceil(res.data.users.length / itemsPerPage)) {
+        setCurrentPage(1);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+    } finally {
+      setShowDeleteModal(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Gestion des utilisateurs</h1>
-
-      {/* Form */}
-      <div className="bg-white dark:bg-white/10 p-6 rounded-lg shadow-md space-y-4">
-        <h2 className="text-lg font-semibold text-gray-700 dark:text-white">
-          {editingUser ? "Modifier l'utilisateur" : "Ajouter un utilisateur"}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleInputChange}
-            placeholder="Nom"
-            className="p-3 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          />
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleInputChange}
-            placeholder="Email"
-            className="p-3 rounded-lg border dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header with action button */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <div className="mb-4 sm:mb-0">
+          <div className="flex items-center space-x-3 mb-2">
+            <User className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">User Management</h1>
+          </div>
+          <p className="text-gray-600">Manage your users, roles, and permissions</p>
         </div>
-        <button
-          onClick={editingUser ? handleUpdateUser : handleAddUser}
-          className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-lg shadow hover:opacity-90"
-        >
-          <Plus size={16} />
-          {editingUser ? "Mettre à jour" : "Ajouter"}
+        
+        <button className="btn-primary flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg">
+          <Plus className="w-4 h-4" />
+          Add User
         </button>
       </div>
 
-      {/* User List */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left mt-4 border-collapse">
-          <thead>
-            <tr className="bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white">
-              <th className="p-3">Nom</th>
-              <th className="p-3">Email</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr
-                key={user.id}
-                className="bg-white dark:bg-white/5 border-b dark:border-gray-800"
-              >
-                <td className="p-3 text-gray-700 dark:text-white">{user.name}</td>
-                <td className="p-3 text-gray-600 dark:text-gray-300">{user.email}</td>
-                <td className="p-3 flex items-center gap-3">
-                  <button
-                    onClick={() => handleEdit(user)}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* User Table Card */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-xl">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            </div>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-indigo-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center p-8 text-gray-500">
+                      <div className="flex flex-col items-center justify-center">
+                        <User className="w-12 h-12 text-gray-400 mb-2" />
+                        <p className="text-lg">No users found</p>
+                        <p className="text-sm mt-1">Try adding a new user</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  currentUsers.map((user) => (
+                    <tr
+                      key={user._id || user.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="flex items-center gap-3 px-6 py-4 whitespace-nowrap">
+                        <div className="bg-indigo-100 p-2 rounded-full">
+                          <User className="w-5 h-5 text-indigo-600" />
+                        </div>
+                        <span className="text-gray-800 font-medium">{user.name}</span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {user.email}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          user.isAccountVerified 
+                            ? "bg-green-100 text-green-800" 
+                            : "bg-red-100 text-red-800"
+                        }`}>
+                          <span className={`w-2 h-2 rounded-full mr-2 ${
+                            user.isAccountVerified ? "bg-green-500" : "bg-red-500"
+                          }`}></span>
+                          {user.isAccountVerified ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 flex justify-center gap-3">
+                        <button
+                          type="button"
+                          className="text-indigo-600 hover:text-indigo-900 transition-colors"
+                          title="Edit user"
+                        >
+                          <div className="bg-indigo-50 p-2 rounded-lg hover:bg-indigo-100">
+                            <Pencil className="w-4 h-4" />
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteClick(user._id)}
+                          className="text-red-600 hover:text-red-900 transition-colors"
+                          title="Delete user"
+                        >
+                          <div className="bg-red-50 p-2 rounded-lg hover:bg-red-100">
+                            <Trash2 className="w-4 h-4" />
+                          </div>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {users.length > itemsPerPage && (
+          <div className="border-t border-gray-200 px-4 py-3 flex items-center justify-between sm:px-6">
+            <div className="flex-1 flex items-center justify-between">
+              <div className="flex items-center">
+                <span className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
+                  <span className="font-medium">
+                    {Math.min(indexOfLastItem, users.length)}
+                  </span>{" "}
+                  of <span className="font-medium">{users.length}</span> users
+                </span>
+                
+                <select
+                  className="ml-4 border-gray-300 rounded-md text-sm py-1 px-2"
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  {[5, 10, 20].map((size) => (
+                    <option key={size} value={size}>
+                      Show {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium ${
+                    currentPage === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (number) => (
+                      <button
+                        key={number}
+                        onClick={() => paginate(number)}
+                        className={`relative inline-flex items-center px-3 py-1.5 text-sm font-medium ${
+                          currentPage === number
+                            ? "bg-indigo-600 text-white"
+                            : "bg-white text-gray-700 hover:bg-gray-50"
+                        } rounded-md border border-gray-300`}
+                      >
+                        {number}
+                      </button>
+                    )
+                  )}
+                </div>
+                
+                <button
+                  onClick={() =>
+                    currentPage < totalPages && paginate(currentPage + 1)
+                  }
+                  disabled={currentPage === totalPages}
+                  className={`relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium ${
+                    currentPage === totalPages
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <ConfirmationModal
+          message="utilisateur"
+          itemId={deleteId}
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
     </div>
   );
 };
