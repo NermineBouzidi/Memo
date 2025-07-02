@@ -128,58 +128,108 @@ export default function Hero() {
         </div>
 
         {/* Nos Services Section */}
-        <div id="nos-services" className="mb-20 animate-fade-in-up">
+        <div className="mb-20">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Nos Services
-              <ArrowDown size={28} className="text-blue-600 animate-bounce" />
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
               Une suite complète d'outils pour optimiser la gestion de votre entreprise
             </p>
           </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {services.map((service, idx) => (
-              <div
-                key={service.title}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 group relative overflow-hidden"
-              >
-                <div className="flex items-center mb-6">
-                  <div className="bg-gradient-to-br from-blue-100 via-orange-100 to-purple-100 dark:from-blue-900/20 dark:via-orange-900/20 dark:to-purple-900/20 p-4 rounded-full mr-4">
-                    {service.icon}
-                  </div>
-                  <div>
-                    <span className="text-2xl mb-2 block">{service.emoji}</span>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {service.title}
-                    </h3>
-                  </div>
+            {/* Gestion de Projets */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center mb-6">
+                <div className="bg-orange-100 dark:bg-orange-900/20 p-4 rounded-full mr-4">
+                  <Settings className="text-orange-600 dark:text-orange-400" size={32} />
                 </div>
-                <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mb-4">
-                  {service.preview}
-                  {expanded[idx] && (
-                    <ul className="mt-3 list-disc list-inside text-base text-gray-600 dark:text-gray-400 space-y-1 animate-fade-in">
-                      {service.details.map((d, i) => (
-                        <li key={i}>{d}</li>
-                      ))}
-                    </ul>
-                  )}
+                <div>
+                  <span className="text-2xl mb-2 block">🔧</span>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Gestion de Projets / Job Manager
+                  </h3>
                 </div>
-                <button
-                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:hover:text-blue-400 font-medium transition-colors group w-full justify-center bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 mt-2"
-                  onClick={() => toggleExpand(idx)}
-                  aria-expanded={expanded[idx]}
-                  aria-controls={`service-details-${idx}`}
-                >
-                  {expanded[idx] ? "Réduire" : "Lire plus"}
-                  {expanded[idx] ? (
-                    <ChevronUp size={18} className="transition-transform" />
-                  ) : (
-                    <ChevronDown size={18} className="transition-transform" />
-                  )}
-                </button>
               </div>
-            ))}
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <p>• Pilotage de projets, chantiers, missions, jobs (TPE/PME, BTP, agences, etc.)</p>
+                <p>• Suivi en temps réel de la performance de l'entreprise et des collaborateurs</p>
+                <p>• Gestion multi-entités avec transversalité des fonctionnalités</p>
+                <p>• Génération d'écritures comptables liées aux projets</p>
+                <p>• Centralisation des informations projet : délais, coûts, livrables, marges</p>
+                <p>• Module de planification, affectation des ressources et contrôle qualité</p>
+                <p>• Suivi budgétaire et analytique par job/projet</p>
+              </div>
+            </div>
+
+            {/* CRM */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center mb-6">
+                <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-full mr-4">
+                  <Brain className="text-blue-600 dark:text-blue-400" size={32} />
+                </div>
+                <div>
+                  <span className="text-2xl mb-2 block">🧠</span>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    CRM (Gestion de la relation client)
+                  </h3>
+                </div>
+              </div>
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <p>• Gestion des prospects et des clients</p>
+                <p>• Suivi des devis, commandes, contrats</p>
+                <p>• Pipeline commercial visuel et interactif</p>
+                <p>• Relances automatiques et historiques des interactions</p>
+                <p>• Intégration directe avec la facturation et la comptabilité</p>
+                <p>• Uniformisation des process commerciaux</p>
+              </div>
+            </div>
+
+            {/* Comptabilité & Finance */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center mb-6">
+                <div className="bg-green-100 dark:bg-green-900/20 p-4 rounded-full mr-4">
+                  <DollarSign className="text-green-600 dark:text-green-400" size={32} />
+                </div>
+                <div>
+                  <span className="text-2xl mb-2 block">💰</span>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Comptabilité & Finance
+                  </h3>
+                </div>
+              </div>
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <p>• Génération d'écritures comptables automatiques (ventes, achats, provisions)</p>
+                <p>• Synchronisation des données avec les outils comptables</p>
+                <p>• Analyse financière par projet, client, équipe ou entité</p>
+                <p>• Préparation à la facturation électronique (obligatoire en 2027)</p>
+                <p>• GED intégrée (gestion documentaire numérique)</p>
+                <p>• Réduction des délais de facturation et de paiement</p>
+              </div>
+            </div>
+
+            {/* Facturation & Paiements */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center mb-6">
+                <div className="bg-purple-100 dark:bg-purple-900/20 p-4 rounded-full mr-4">
+                  <Receipt className="text-purple-600 dark:text-purple-400" size={32} />
+                </div>
+                <div>
+                  <span className="text-2xl mb-2 block">🧾</span>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Facturation & Paiements
+                  </h3>
+                </div>
+              </div>
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <p>• Facturation automatisée à partir des bons de commande ou livrables</p>
+                <p>• Historique des paiements, alertes sur les impayés</p>
+                <p>• Modèles de factures paramétrables</p>
+                <p>• Export des données vers plateformes fiscales</p>
+                <p>• Réduction du cycle facturation → encaissement</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -231,7 +281,7 @@ export default function Hero() {
               </div>
               <ul className="list-disc list-inside space-y-3 text-gray-700 dark:text-gray-300 text-lg">
                 <li>Une expertise reconnue dans les secteurs du BTP, immobilier, énergie et services</li>
-                <li>Une équipe passionnée par l'innovation et la performance</li>
+                <li>Une équipe passionnée par l’innovation et la performance</li>
                 <li>Un accompagnement personnalisé et une écoute attentive</li>
                 <li>Une solution flexible et évolutive adaptée aux besoins spécifiques</li>
                 <li>Des résultats concrets et mesurables pour votre entreprise</li>

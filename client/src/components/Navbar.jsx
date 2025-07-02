@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
 import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import {useState,useEffect} from "react";
 
 const navItems = [
   { id: "accueil", label: "Accueil" },
@@ -15,15 +15,15 @@ const navItems = [
   },
   { id: "tarifs", label: "Tarifs" },
   { id: "a-propos", label: "À propos", scrollTo: "qui-sommes-nous" },
-  {
-    id: "ressources",
+  { 
+    id: "ressources", 
     label: "Ressources",
     submenu: [
-      { id: "blogs", label: "Blogs", path: "/blog" },
+      { id: "blogs", label: "Blogs" },
       { id: "avis-client", label: "Avis Client" },
       { id: "guide-utilisation", label: "Guide d'utilisation" },
       { id: "faq", label: "FAQ" },
-      { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" }
+      { id: "en-savoir-plus", label: "En savoir plus" }
     ]
   },
   { id: "contacts", label: "Contact" },
@@ -33,16 +33,15 @@ export default function Navbar() {
   const [active, setActive] = useState("accueil");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY + 100;
       let current = "accueil";
 
+      // Check for sections without submenus
       const sectionsToCheck = navItems.filter(item => !item.submenu);
-
+      
       for (const item of sectionsToCheck) {
         const sectionId = item.scrollTo || item.id;
         const section = document.getElementById(sectionId);
@@ -66,12 +65,6 @@ export default function Navbar() {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       setMenuOpen(false);
       setDropdownOpen(null);
-    } else {
-      if (location.pathname !== "/") {
-        navigate("/", { state: { scrollTo: sectionId } });
-        setMenuOpen(false);
-        setDropdownOpen(null);
-      }
     }
   };
 
@@ -84,9 +77,8 @@ export default function Navbar() {
   };
 
   const handleSubmenuClick = (parentId, submenuItem) => {
-    if (submenuItem.path) {
-      navigate(submenuItem.path);
-    }
+    // Handle submenu navigation logic here
+    console.log(`Clicked ${submenuItem.label} from ${parentId}`);
     setDropdownOpen(null);
     setMenuOpen(false);
   };
@@ -116,7 +108,8 @@ export default function Navbar() {
               {item.label}
               {item.submenu && <ChevronDown size={16} />}
             </div>
-
+            
+            {/* Desktop Dropdown */}
             {item.submenu && dropdownOpen === item.id && (
               <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
                 {item.submenu.map((submenuItem) => (
@@ -143,7 +136,7 @@ export default function Navbar() {
         <span className="font-medium">Créer un compte</span>
       </Link>
 
-      {/* Mobile Hamburger Icon */}
+      {/* Hamburger Button (Mobile) */}
       <div className="md:hidden">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -170,7 +163,8 @@ export default function Navbar() {
                 {item.label}
                 {item.submenu && <ChevronDown size={16} />}
               </button>
-
+              
+              {/* Mobile Submenu */}
               {item.submenu && dropdownOpen === item.id && (
                 <div className="pl-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-md mt-1">
                   {item.submenu.map((submenuItem) => (
@@ -198,4 +192,8 @@ export default function Navbar() {
       )}
     </nav>
   );
+
+
 }
+
+
