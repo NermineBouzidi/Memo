@@ -79,7 +79,7 @@ export const register = async (req, res) => {
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
-    
+
     // password encryption
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new userModel({
@@ -88,13 +88,13 @@ export const register = async (req, res) => {
       password: hashedPassword,
     });
 
-     // Generate OTP and set expiration time
+    // Generate OTP and set expiration time
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
     user.verifyOtp = otp;
     user.verifyOtpExpiresAt = expiresAt;
     await user.save();
-    
+
     // In register controller
     const preAuthToken = jwt.sign(
       { id: user._id, type: "pre-verification" },
@@ -109,7 +109,6 @@ export const register = async (req, res) => {
       maxAge: 30 * 60 * 1000, // 30 minutes
     });
 
-   
     // Send OTP via email
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
@@ -164,6 +163,7 @@ export const register = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 //-----------login -------------
 export const login = async (req, res) => {
   const { email, password } = req.body;
