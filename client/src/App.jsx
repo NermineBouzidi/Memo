@@ -18,14 +18,11 @@ import ResetPasswordFlow from "./pages/ResetPasswordFlow";
 import EmailStep from "./pages/test/EmailStep";
 import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
-
-
-
 import { Users } from "lucide-react";
-
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
 import Home from "./pages/Home";
+import ReviewList from "./components/ReviewList";
 
 
 
@@ -34,6 +31,8 @@ function App() {
     <>
       <BrowserRouter>
       <Routes>
+                  
+
  
       
 
@@ -48,10 +47,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
           <Route path="/resetpasswordflow" element={<ResetPasswordFlow />} />
-                    <Route path="/emailstep" element={<EmailStep />} />
-           <Route path="/otpstep" element={<OtpStep />} />
-                      <Route path="/nouveaupass" element={<NewPasswordStep />} />
+           <Route path="/emailstep" element={<EmailStep />} />
+          <Route path="/otpstep" element={<OtpStep />} />
+          <Route path="/nouveaupass" element={<NewPasswordStep />} />
 
+<Route path="/reviewlist" element={<ReviewList />} />
 
 
 
