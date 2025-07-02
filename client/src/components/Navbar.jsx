@@ -99,7 +99,7 @@ export default function Navbar() {
         <img
           src={image}
           alt="Logo"
-          className="h-24 w-auto md:h-24 drop-shadow-lg transition-all duration-300"
+          className="h-20 w-auto md:h-20 drop-shadow-lg transition-all duration-300"
         />
       </Link>
 
