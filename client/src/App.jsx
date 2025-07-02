@@ -42,6 +42,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+          
 
           {/* Catch-all route for 404 Not Found */}
           <Route path="*" element={<NotFound />} />
