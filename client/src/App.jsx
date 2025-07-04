@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import VerifyAccount from "./pages/VerifyAccount";
@@ -19,93 +20,105 @@ import EmailStep from "./pages/test/EmailStep";
 import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
 
-
-
-import { Users } from "lucide-react";
-
+import { CartProvider } from "./contexts/cartContext";
+import Categories from "./pages/Categories";
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
 import Home from "./pages/Home";
 
+function AppContent() {
+  const location = useLocation();
 
+  const noNavFooterPaths = [
+    "/login",
+    "/signup",
+    "/verify-account",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-reset-otp",
+    "/reset-pass-flow",
+    "/emailstep",
+    "/otpstep",
+    "/nouveaupass",
+     "/home" // ⬅️ Ajout de cette ligne
+    
+  ];
 
-function App() {
+  const hideNavFooter = noNavFooterPaths.includes(location.pathname);
+
   return (
     <>
-      <BrowserRouter>
-      <Routes>
- 
-      
+      {!hideNavFooter && <Navbar />}
+<main className={hideNavFooter ? "" : "pt-28"}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/savoir-plus" element={<SavoirPlus />} />
 
+          <Route
+            path="/signup"
+            element={
+              <ProtectedRoute requireAuth={false}>
+                <Signup />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute requireAuth={false}>
+                <Login />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route path="/login" element={
-      <ProtectedRoute requireAuth={false}>
-        <Login />
-      </ProtectedRoute>
-    } />
           <Route path="/verify-account" element={<VerifyAccount />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
-          <Route path="/resetpasswordflow" element={<ResetPasswordFlow />} />
-                    <Route path="/emailstep" element={<EmailStep />} />
-           <Route path="/otpstep" element={<OtpStep />} />
-                      <Route path="/nouveaupass" element={<NewPasswordStep />} />
+          <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+          <Route path="/emailstep" element={<EmailStep />} />
+          <Route path="/otpstep" element={<OtpStep />} />
+          <Route path="/nouveaupass" element={<NewPasswordStep />} />
+          <Route path="*" element={<NotFound />} />
 
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAuth={true} allowedRoles={["admin"]}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+          </Route>
 
-
-
-          
-    <Route path="/signup" element={
-      <ProtectedRoute requireAuth={false}>
-        <Signup />
-      </ProtectedRoute>
-    } />
-
-
-    <Route path="/login" element={
-      <ProtectedRoute requireAuth={false}>
-        <Login />
-      </ProtectedRoute>
-    } />
-      <Route path="/" element={<Home />} />
-
-    <Route path="/verify-account" element={<VerifyAccount />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
-
-    <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
-     <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
-    <Route path="/blog" element={<Blog />} />
-          <Route path="/savoir-plus" element={<SavoirPlus />} />
-
-    <Route path="*" element={<NotFound />} />
-
-    {/* Admin Routes */}
-    <Route path="/admin" element={
-      <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
-        <AdminLayout />
-      </ProtectedRoute>
-    }>
-      <Route index element={<AdminDashboard />} />
-      <Route path="users" element={<Users />} />
-    </Route>
-
-    {/* User Routes */}
-    <Route path="/home" element={
-      <ProtectedRoute requireAuth={true} allowedRoles={['user']}>
-        <UserLayout />
-      </ProtectedRoute>
-    }>
-      <Route index element={<UserHome />} />
-    </Route>
-          </Routes>
-
-  
-</BrowserRouter>
-
+          {/* User Routes */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute requireAuth={true} allowedRoles={["user"]}>
+                <UserLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<UserHome />} />
+          </Route>
+        </Routes>
+      </main>
+      {!hideNavFooter && <Footer />}
     </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </BrowserRouter>
+  );
+}

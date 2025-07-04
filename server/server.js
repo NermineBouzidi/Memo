@@ -4,11 +4,11 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
-import productRouter from './routes/ProductRoutes.js'; 
+import productRoutes from './routes/ProductRoutes.js'; 
 
 import statistiquesRouter from './routes/AdminRouter.js';
-
 import reviewRouter from './routes/reviewRoutes.js';
+import panierRoutes from "./routes/panierRoutes.js";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -28,11 +28,12 @@ app.get('/', (req, res) => {res.send('Server is running');    });
 app.use('/api/auth', authRouter);
 
 app.use('/api/users', userRouter);
-app.use('/api/products', productRouter);
+app.use('/api/products', productRoutes);
 //for review
 app.use('/api/review', reviewRouter);
 //for statistiques 
 app.use('/api/prod', statistiquesRouter);
+app.use("/api/panier", panierRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
