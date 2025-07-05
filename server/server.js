@@ -5,10 +5,10 @@ import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js'; 
 import productRouter from './routes/ProductRoutes.js'; 
-
 import statistiquesRouter from './routes/AdminRouter.js';
-
 import reviewRouter from './routes/reviewRoutes.js';
+import newsletterRouter from './routes/newsletterRoutes.js';
+import newsletterScheduler from './services/newsletterScheduler.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -33,7 +33,12 @@ app.use('/api/products', productRouter);
 app.use('/api/review', reviewRouter);
 //for statistiques 
 app.use('/api/prod', statistiquesRouter);
+//for newsletter
+app.use('/api/newsletter', newsletterRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  
+  // Start newsletter scheduler
+  newsletterScheduler.startScheduler();
 });
 
