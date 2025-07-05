@@ -5,6 +5,10 @@ import Swal from "sweetalert2";
 import Bar from "../components/Bar";
 import { signupUser } from "../api/auth"; // Import the signup API function
 
+import { useGoogleOneTapLogin } from "@react-oauth/google";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
 const Signup = () => {
   const { login } = useAuth(); // Assuming your AuthContext has a login function
   const navigate = useNavigate();
@@ -15,8 +19,11 @@ const Signup = () => {
     password: "",
   });
 
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+ const [ setError] = useState("");
+const [fieldErrors, setFieldErrors] = useState({});
+const [isLoading, setIsLoading] = useState(false);
+const initialRegisterSuccess = location.state?.isRegisterSuccess ?? false;
+const [isRegisterSuccess, setisRegisterSuccess] = useState(initialRegisterSuccess);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,9 +130,76 @@ const Signup = () => {
       setIsLoading(false);
     }
   };
+const handleGoogleLoginSuccess = async (response) => {
+  setIsLoading(true);
+  try {
+    const decoded = jwtDecode(response.credential);
+    const googleUserData = {
+      firstName: decoded.given_name,
+      lastName: decoded.family_name,
+      email: decoded.email,
+    };
+
+
+    const res = await axios.post(
+      "http://localhost:8080/api/auth/register/google",
+      googleUserData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (res.data) {
+     
+      setisRegisterSuccess(true);
+      const response = await login({
+  email: res.data.newUser.email,
+  password: res.data.finalPassword,
+  rememberMe: false
+});
+   const role = response.user.role;
+  
+        Swal.fire({
+          icon: "success",
+          title: "Connexion réussie",
+          position: "top-end",
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+  
+         navigate("/home");
+    }
+  } catch (err) {
+    console.error(err);
+   
+  } finally {
+    setIsLoading(false); // ✅ always run this at the end
+  }
+};
+
+
+  // Handle Google login error
+  const handleGoogleLoginError = () => {
+    setError("Google login failed.");
+  };
+
+  const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
+  useGoogleOneTapLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: handleGoogleLoginError,
+    disabled: !enableGoogleLogin,
+  });
+
+  const triggerGoogleLogin = () => {
+    setEnableGoogleLogin(true);
+  };
+
 
   return (
     <>
+    {isRegisterSuccess && <p>Registration successful!</p>}
+
       <Bar />
       <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 px-4 relative overflow-hidden">
         {/* Animation de fond */}
@@ -169,6 +243,7 @@ const Signup = () => {
                 <p className="text-red-600 text-sm mt-1">{fieldErrors.name}</p>
               )}
             </div>
+
 
             {/* Email */}
             <div>
@@ -249,8 +324,23 @@ const Signup = () => {
                 Connectez-vous
               </Link>
             </div>
+
+             {/* Google Login */}
+            <div className="">
+              <img
+                src="/assets/icons/google.png"
+                alt="Google"
+                width="24"
+                height="24"
+                onClick={triggerGoogleLogin}
+                style={{ cursor: "pointer" }}
+              />
+            </div>
           </form>
+          
         </div>
+        
+
       </div>
 
       {/* Styles pour les animations */}

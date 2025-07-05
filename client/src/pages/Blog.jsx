@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Calendar, User, ArrowRight, Search, Tag } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useTranslation } from 'react-i18next';
 const blogPosts = [
   {
     id: 1,
@@ -65,11 +66,19 @@ const blogPosts = [
   }
 ];
 
-const categories = ["Tous", "Gestion de Projets", "CRM", "Comptabilité", "Innovation", "Finance"];
-
 export default function Blog() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tous");
+
+  const categories = [
+    t('blog.categories.all'),
+    t('blog.categories.projectManagement'),
+    t('blog.categories.crm'),
+    t('blog.categories.accounting'),
+    t('blog.categories.innovation'),
+    t('blog.categories.finance')
+  ];
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,13 +106,13 @@ export default function Blog() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 px-6 py-3 rounded-full mb-6">
-            <span className="text-blue-600 dark:text-blue-400 text-sm font-semibold uppercase tracking-wide">BLOG</span>
+            <span className="text-blue-600 dark:text-blue-400 text-sm font-semibold uppercase tracking-wide">{t('blog.headerTag')}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-            Notre Blog
+            {t('blog.title')}
           </h1>
           <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Découvrez nos derniers articles, conseils et actualités pour optimiser la gestion de votre entreprise
+            {t('blog.subtitle')}
           </p>
         </div>
 
@@ -115,7 +124,7 @@ export default function Blog() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
-                placeholder="Rechercher un article..."
+                placeholder={t('blog.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
@@ -184,13 +193,13 @@ export default function Blog() {
                     </div>
                   </div>
                   <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">
-                    {post.readTime} de lecture
+                    {post.readTime} {t('blog.readTime')}
                   </span>
                 </div>
 
                 {/* Read More Button */}
                 <button className="flex items-center gap-2 text-red-600 hover:text-red-700 font-medium transition-colors group">
-                  Lire la suite
+                  {t('blog.readMore')}
                   <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                 </button>
               </div>
@@ -204,10 +213,10 @@ export default function Blog() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 max-w-md mx-auto">
               <Tag className="mx-auto mb-4 text-gray-400" size={48} />
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Aucun article trouvé
+                {t('blog.noResults')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Essayez de modifier vos critères de recherche ou de filtrage.
+                {t('blog.noResultsHint')}
               </p>
             </div>
           </div>
@@ -216,19 +225,19 @@ export default function Blog() {
         {/* Newsletter Subscription */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 text-center">
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Restez informé de nos dernières actualités
+            {t('blog.newsletterTitle')}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Recevez nos articles directement dans votre boîte mail
+            {t('blog.newsletterSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="Votre adresse email"
+              placeholder={t('blog.newsletterEmailPlaceholder')}
               className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
             />
             <button className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
-              S'abonner
+              {t('blog.subscribe')}
             </button>
           </div>
         </div>
