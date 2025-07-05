@@ -1,22 +1,37 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
-import { register } from './controllers/authController.js';
+import userRouter from './routes/userRoutes.js'; 
+import productRouter from './routes/ProductRoutes.js'; 
+import statistiquesRouter from './routes/AdminRouter.js';
+import reviewRouter from './routes/reviewRoutes.js';
+import messageRouter from './routes/messageRoutes.js'; // Nouvelle route
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const PORT =  8080;
+const PORT = process.env.PORT || 8080;
+
 connectDB();
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({credentials : true,origin:'http://localhost:5173'}));
-//api endpoints
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 
+// API endpoints
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
 
-app.get('/', (req, res) => {res.send('Server is running');    });
-app.use('/api/auth/signup',register);
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
+app.use('/api/review', reviewRouter);
+app.use('/api/prod', statistiquesRouter);
+app.use('/api/messages', messageRouter); // Ajout de la route pour les messages
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -2,75 +2,55 @@ import axios from 'axios';
 
 // Create a reusable Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/auth',
-  withCredentials: true,
-  
-});
-
-// Configurez les intercepteurs pour gérer les erreurs
-api.interceptors.request.use(config => {
-  // Vous pouvez ajouter des en-têtes ici si nécessaire
-  // Mais ne mettez pas d'authentification basique
-  return config;
-}, error => {
-  return Promise.reject(error);
-});
-
-api.interceptors.response.use(response => {
-  return response;
-}, error => {
-  // Gestion centralisée des erreurs
-  if (error.response && error.response.status === 401) {
-    // Redirigez vers la page de login si nécessaire
-    console.error('Non autorisé - Redirection vers login');
-  }
-  return Promise.reject(error);
+  baseURL: 'http://localhost:8080/api/auth', // ✅ Change if your backend runs on a different port or subdomain
+  withCredentials: true, // 🧠 Sends/receives cookies like preAuthToken and token
 });
 
 //-------------------------------
-//  SIGNUP
+//  singup
 export const signupUser = async (userData) => {
-  return  api.post('/signup', userData,{withCredentials:true});
+  // userData: { name, email, password }
+  return await api.post('/signup', userData);
 };
 
 //-------------------------------
-//  VERIFY ACCOUNT WITH OTP
+//  VERIFY ACCOUNT WITH OTP (using preAuthToken in cookie)
 export const verifyAccountUser = async (otp) => {
-  return api.post('/verify-account', { otp });
+  return await api.post('/verify-account', { otp });
 };
 
 //-------------------------------
 // LOGIN
 export const loginUser = async (formdata) => {
-  return api.post('/login', formdata);
+  return await api.post('/login', formdata);
 };
 
 //-------------------------------
-// CHECK AUTHENTICATION
+// 🟢 CHECK IF AUTHENTICATED (requires token cookie)
 export const checkAuthUser = async () => {
-  return api.post('/isAuth');
+  return await api.post('/isAuth');
 };
 
 //-------------------------------
-// LOGOUT
+// 🚪 LOGOUT
 export const logoutUser = async () => {
-  return api.get('/logout');
+  return await api.get('/logout');
 };
 
 //-------------------------------
-// RESEND VERIFY OTP
+// 🔁 RESEND VERIFY OTP (requires preAuthToken or token)
 export const resendVerifyOtpUser = async () => {
-  return api.post('/send-verify-otp');
+  return await api.post('/send-verify-otp');
 };
 
 //-------------------------------
-// RESET PASSWORD FLOW
+// 🔁 RESET PASSWORD FLOW
 export const sendResetOtpUser = async (email) => {
-  return api.post('/send-reset-otp', { email });
+  return await api.post('/send-reset-otp', { email });
 };
 
 export const resetPasswordUser = async (formdata) => {
-  return api.post('/reset-password', formdata);
+  return await api.post('/reset-password',  formdata );
 };
 
 export default api;

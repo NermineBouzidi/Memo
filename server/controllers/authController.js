@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
+import crypto from 'crypto';
 
 dotenv.config(); // Load environment variables
 
@@ -65,7 +66,7 @@ dotenv.config(); // Load environment variables
 };*/
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(name)
+
   if (!name || !email || !password) {
     return res
       .status(400)
@@ -164,9 +165,11 @@ export const register = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 //-----------login -------------
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   if (!email || !password) {
     return res
@@ -558,3 +561,41 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+export const regestergoogle = async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    // Create user data object
+    const newUserData = {
+      name: `${firstName} ${lastName}`,
+      email,
+      isAccountVerified: true,
+    };
+
+    let finalPassword = password;
+
+    // If no password provided (Google signup), generate random password
+    if (!finalPassword) {
+      finalPassword = crypto.randomBytes(9).toString('base64').slice(0, 12);
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(finalPassword, 10);
+    newUserData.password = hashedPassword;
+
+    const newUser = new userModel(newUserData);
+    await newUser.save();
+
+    return res.status(200).json({ success: true, message: "Login successful", newUser ,finalPassword});
+  } catch (err) {
+    console.error("Google registration error:", err);
+    res.status(500).json({ error: "Registration failed: " + err.message });
+  }
+};
+

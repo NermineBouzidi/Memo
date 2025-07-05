@@ -1,25 +1,20 @@
 import express from 'express';
-import {
-  register,
-  login,
-  logout,
-  verifyEmail,
-  sendVerifyOtp,
-  sendResetOtp,
-  resetPassword,
-  isAuthenticated
-} from '../controllers/authController.js';
 
-const router = express.Router();
+import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword, regestergoogle } from '../controllers/authController.js';
+import userAuth from '../middleware/userAuth.js';
+import { preAuth } from '../middleware/preAuthMiddleware.js';
 
-// Routes d'authentification
-router.post('/signup', register);
-router.post('/login', login);
-router.get('/logout', logout);
-router.post('/verify-account', verifyEmail);
-router.post('/send-verify-otp', sendVerifyOtp);
-router.post('/send-reset-otp', sendResetOtp);
-router.post('/reset-password', resetPassword);
-router.get('/isAuth', isAuthenticated);
+const authRouter = express.Router();
 
-export default router;
+authRouter.post('/signup' ,register);
+authRouter.post('/register/google' ,regestergoogle);
+authRouter.post('/login', login);
+authRouter.get('/logout',logout);
+authRouter.post('/send-verify-otp', userAuth, sendVerifyOtp);
+authRouter.post('/verify-account',preAuth,  verifyEmail);
+authRouter.post('/isAuth', userAuth, isAuthenticated);
+authRouter.post('/send-reset-otp', sendResetOtp);
+authRouter.post('/reset-password', resetPassword);
+
+
+export default authRouter;
