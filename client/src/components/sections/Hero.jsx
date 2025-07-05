@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, ArrowDown, ChevronDown, ChevronUp, Target, Users, Lightbulb, Rocket, Settings, Brain, DollarSign, Receipt, Sparkles, BarChart2, Clock, ShieldCheck, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from 'react-i18next';
 
 const services = [
   {
@@ -60,6 +61,7 @@ const stats = [
 ];
 
 export default function Hero() {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(Array(services.length).fill(false));
   const [activeTab, setActiveTab] = useState("features");
   const [currentImage, setCurrentImage] = useState(0);
@@ -102,13 +104,13 @@ export default function Hero() {
         >
           <div className="inline-flex items-center bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full mb-6">
             <Zap className="mr-2" size={18} />
-            <span>Nouvelle version disponible</span>
+            <span>{t('hero.newVersionAvailable')}</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
-            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">PEGASIO</span> - Votre Partenaire Digital
+            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">{t('hero.title')}</span> - {t('hero.partner')}
           </h1>
           <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10 max-w-3xl mx-auto">
-            La plateforme intelligente qui révolutionne la gestion de vos projets avec des outils intégrés et une interface intuitive conçue pour booster votre productivité.
+            {t('hero.description')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <motion.button 
@@ -116,7 +118,7 @@ export default function Hero() {
               whileTap={{ scale: 0.95 }}
               className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-full hover:shadow-xl transition-all duration-300 shadow-lg flex items-center gap-2"
             >
-              Commencer gratuitement
+              {t('hero.cta.startFree')}
               <ArrowRight size={20} />
             </motion.button>
             <motion.button 
@@ -124,7 +126,7 @@ export default function Hero() {
               whileTap={{ scale: 0.95 }}
               className="bg-white border-2 border-red-600 text-red-600 px-8 py-4 rounded-full hover:bg-red-50 transition-all duration-300 shadow-lg flex items-center gap-2"
             >
-              Voir la démo
+              {t('hero.cta.seeDemo')}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
               </svg>
@@ -174,20 +176,20 @@ export default function Hero() {
                     <Target className="text-red-600 dark:text-red-400" size={32} />
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Produit détaillé
+                    {t('hero.productDetails.title')}
                   </h2>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  CRP MEMO est une application web innovante conçue pour répondre aux besoins spécifiques des TPE/PME dans la gestion de projets, chantiers et missions ponctuelles. Contrairement aux outils traditionnels souvent segmentés entre CRM (orientés commercial) ou job managers (orientés production), MEMO fusionne les deux univers.
+                  {t('hero.productDetails.description')}
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mt-4">
-                  Il permet à un agent projet de piloter l'ensemble du cycle opérationnel : lancement, facturation, suivi comptable et financier. Cet outil hybride propose une flexibilité fonctionnelle avec 60 à 70 % de modules standards ajustables et 30 à 40 % de spécifiques métiers.
+                  {t('hero.productDetails.features')}
                 </p>
                 
                 <div className="mt-8 flex flex-wrap gap-3">
                   {["Gestion de projets", "CRM intégré", "Comptabilité", "Facturation", "Analytics"].map((feature, i) => (
                     <span key={i} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                      {feature}
+                      {t(`hero.productDetails.features.${feature}`)}
                     </span>
                   ))}
                 </div>
@@ -241,7 +243,7 @@ export default function Hero() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
-              <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">Nos Services</span>
+              <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">{t('hero.ourServices.title')}</span>
               <ArrowDown size={28} className="text-blue-600 animate-bounce" />
         <div className="mb-20">
           <div className="text-center mb-16">
@@ -249,7 +251,7 @@ export default function Hero() {
               Nos Services
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              Une suite complète d'outils pour optimiser la gestion de votre entreprise
+              {t('hero.ourServices.description')}
             </p>
           </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
@@ -301,7 +303,7 @@ export default function Hero() {
                     aria-expanded={expanded[idx]}
                     aria-controls={`service-details-${idx}`}
                   >
-                    {expanded[idx] ? "Réduire" : "Lire plus"}
+                    {expanded[idx] ? t('hero.ourServices.readLess') : t('hero.ourServices.readMore')}
                     {expanded[idx] ? (
                       <ChevronUp size={18} className="transition-transform" />
                     ) : (
@@ -426,8 +428,8 @@ export default function Hero() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-6 text-white">
-                  <h3 className="text-xl font-bold">Notre équipe</h3>
-                  <p className="text-blue-200">Experts en gestion de projets</p>
+                  <h3 className="text-xl font-bold">{t('hero.aboutUs.team')}</h3>
+                  <p className="text-blue-200">{t('hero.aboutUs.experts')}</p>
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg z-10">
                   <Users size={32} />
@@ -446,24 +448,24 @@ export default function Hero() {
                     <Users className="text-blue-600 dark:text-blue-400" size={32} />
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Qui sommes-nous ?
+                    {t('hero.aboutUs.title')}
                   </h2>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  Le projet CRP MEMO est porté par deux partenaires stratégiques. Habile Solutions SAS, basée à Paris, est détentrice de la marque CRP MEMO et en assure la distribution.
+                  {t('hero.aboutUs.description')}
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mt-4">
-                  Pegasio International / Equity Business, basée à Tunis, est le partenaire exclusif en charge du développement informatique. Cette collaboration allie expertise métier, excellence technologique, et proximité client pour offrir une solution performante et évolutive.
+                  {t('hero.aboutUs.partnership')}
                 </p>
                 
                 <div className="mt-8 grid grid-cols-2 gap-4">
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                    <h4 className="font-bold text-blue-800 dark:text-blue-300">Habile Solutions SAS</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Paris, France</p>
+                    <h4 className="font-bold text-blue-800 dark:text-blue-300">{t('hero.aboutUs.habileSolutions')}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('hero.aboutUs.habileSolutionsLocation')}</p>
                   </div>
                   <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800">
-                    <h4 className="font-bold text-purple-800 dark:text-purple-300">Pegasio International</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Tunis, Tunisie</p>
+                    <h4 className="font-bold text-purple-800 dark:text-purple-300">{t('hero.aboutUs.pegasioInternational')}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('hero.aboutUs.pegasioInternationalLocation')}</p>
                   </div>
                 </div>
               </motion.div>
@@ -486,16 +488,16 @@ export default function Hero() {
                     <Lightbulb className="text-green-600 dark:text-green-400" size={32} />
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Pourquoi choisir Pegasio ?
+                    {t('hero.whyChooseUs.title')}
                   </h2>
                 </div>
                 <ul className="space-y-4">
                   {[
-                    "Une expertise reconnue dans les secteurs du BTP, immobilier, énergie et services",
-                    "Une équipe passionnée par l'innovation et la performance",
-                    "Un accompagnement personnalisé et une écoute attentive",
-                    "Une solution flexible et évolutive adaptée aux besoins spécifiques",
-                    "Des résultats concrets et mesurables pour votre entreprise"
+                    t('hero.whyChooseUs.expertise'),
+                    t('hero.whyChooseUs.passion'),
+                    t('hero.whyChooseUs.personalizedSupport'),
+                    t('hero.whyChooseUs.flexibleSolution'),
+                    t('hero.whyChooseUs.measurableResults')
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
                       <div className="flex-shrink-0 mt-1">
@@ -535,8 +537,8 @@ export default function Hero() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-bold">Innovation & Performance</h3>
-                  <p className="text-blue-200">Notre engagement pour votre réussite</p>
+                  <h3 className="text-xl font-bold">{t('hero.innovationPerformance.title')}</h3>
+                  <p className="text-blue-200">{t('hero.innovationPerformance.commitment')}</p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 bg-green-600 text-white p-4 rounded-xl shadow-lg z-10">
                   <Rocket size={32} />
@@ -554,9 +556,9 @@ export default function Hero() {
           viewport={{ once: true }}
           className="bg-gradient-to-r from-blue-600 to-red-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl mb-20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Prêt à transformer votre gestion de projets ?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('hero.cta.readyToTransform')}</h2>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            Rejoignez des centaines d'entreprises qui ont déjà optimisé leurs processus avec PEGASIO.
+            {t('hero.cta.joinHundreds')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <motion.button 
@@ -564,20 +566,10 @@ export default function Hero() {
               whileTap={{ scale: 0.95 }}
               className="bg-white text-blue-600 px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg flex items-center gap-2 font-bold"
             >
-              Essai gratuit 30 jours
+              {t('hero.cta.freeTrial')}
               <ArrowRight size={20} />
             </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white/10 transition-all duration-300 shadow-lg flex items-center gap-2"
-            >
-              Contactez-nous
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
-            </motion.button>
+            
           </div>
         </motion.div>
       </div>

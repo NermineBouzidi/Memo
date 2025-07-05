@@ -3,31 +3,35 @@ import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
+import { useTranslation } from 'react-i18next';
 import {useState,useEffect} from "react";
 
+
 const navItems = [
-  { id: "accueil", label: "Accueil" },
+  { id: "accueil", label: "navbar.home" },
   {
     id: "produits",
-    label: "Produits",
+    label: "navbar.products",
     submenu: [
-      { id: "categories", label: "Catégories" }
+      { id: "categories", label: "navbar.categories" }
     ]
   },
-  { id: "tarifs", label: "Tarifs" },
-  { id: "a-propos", label: "À propos", scrollTo: "qui-sommes-nous" },
-  { 
-    id: "ressources", 
-    label: "Ressources",
+
+  { id: "tarifs", label: "navbar.pricing" },
+  { id: "a-propos", label: "navbar.about", scrollTo: "qui-sommes-nous" },
+  {
+    id: "ressources",
+    label: "navbar.resources",
     submenu: [
-      { id: "blogs", label: "Blogs" },
-      { id: "avis-client", label: "Avis Client" },
-      { id: "guide-utilisation", label: "Guide d'utilisation" },
-      { id: "faq", label: "FAQ" },
-      { id: "en-savoir-plus", label: "En savoir plus" }
+      { id: "blogs", label: "navbar.blogs", path: "/blog" },
+      { id: "avis-client", label: "navbar.clientReviews" },
+      { id: "guide-utilisation", label: "navbar.userGuide" },
+      { id: "faq", label: "navbar.faq" },
+      { id: "en-savoir-plus", label: "navbar.learnMore", path: "/savoir-plus" }
+
     ]
   },
-  { id: "contacts", label: "Contact" },
+  { id: "contacts", label: "navbar.contact" },
 ];
 
 export default function Navbar() {
@@ -37,6 +41,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,8 +98,9 @@ export default function Navbar() {
         <img
           src={image}
           alt="Logo"
-          className="h-24 w-auto md:h-24 drop-shadow-lg transition-all duration-300"
-          className="h-22 w-auto md:h-14 drop-shadow-lg transition-all duration-300"
+
+          className="h-20 w-auto md:h-20 drop-shadow-lg transition-all duration-300"
+
         />
       </Link>
 
@@ -110,7 +116,7 @@ export default function Navbar() {
               }`}
               onClick={() => handleItemClick(item)}
             >
-              {item.label}
+              {t(item.label)}
               {item.submenu && <ChevronDown size={16} />}
             </div>
             
@@ -123,7 +129,7 @@ export default function Navbar() {
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-600 transition-colors"
                     onClick={() => handleSubmenuClick(item.id, submenuItem)}
                   >
-                    {submenuItem.label}
+                    {t(submenuItem.label)}
                   </button>
                 ))}
               </div>
@@ -146,7 +152,7 @@ export default function Navbar() {
           className="flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-red-600 text-gray-600 dark:text-gray-300"
         >
           <User size={20} />
-          <span className="font-medium">Créer un compte</span>
+          <span className="font-medium">{t('navbar.createAccount')}</span>
         </Link>
       </div>
 
@@ -174,7 +180,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => handleItemClick(item)}
               >
-                {item.label}
+                {t(item.label)}
                 {item.submenu && <ChevronDown size={16} />}
               </button>
               
@@ -187,7 +193,7 @@ export default function Navbar() {
                       className="w-full text-left py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 transition-colors"
                       onClick={() => handleSubmenuClick(item.id, submenuItem)}
                     >
-                      {submenuItem.label}
+                      {t(submenuItem.label)}
                     </button>
                   ))}
                 </div>
@@ -208,7 +214,7 @@ export default function Navbar() {
               className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:text-red-600 transition-colors"
             >
               <User size={20} />
-              <span className="font-medium">Créer un compte</span>
+              <span className="font-medium">{t('navbar.createAccount')}</span>
             </Link>
           </div>
         </div>
