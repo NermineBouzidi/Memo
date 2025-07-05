@@ -69,6 +69,7 @@ const Login = () => {
     }
 
     try {
+      console.log("Login data:", formData);
       const response = await login(formData);
       const role = response.user.role;
 

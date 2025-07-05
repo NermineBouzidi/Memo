@@ -8,8 +8,10 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export default function Contact() {
+  const { t } = useTranslation();
   return (
     <section
       id="contacts"
@@ -28,10 +30,10 @@ export default function Contact() {
             <span className="text-red-600 dark:text-red-400 text-sm font-semibold uppercase tracking-wide">CONTACT</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white animate-fadeIn delay-100">
-            Contactez-nous
+            {t('contact.title')}
           </h2>
           <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto animate-fadeIn delay-200">
-            Nous aimerions avoir de vos nouvelles. Envoyez-nous un message et nous vous répondrons dès que possible.
+            {t('contact.description')}
           </p>
         </div>
 
@@ -79,7 +81,7 @@ export default function Contact() {
             {/* Socials */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                Suivez-nous
+                {t('contact.socials.title')}
               </h3>
               <div className="flex gap-4">
                 {[
@@ -107,29 +109,29 @@ export default function Contact() {
           {/* Contact Form */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-100 dark:border-gray-700">
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-              Envoyez-nous un message
+              {t('contact.form.title')}
             </h3>
             <form className="space-y-5">
               {[
                 {
-                  label: "Nom complet",
+                  label: t('contact.form.name.label'),
                   name: "name",
                   type: "text",
-                  placeholder: "Votre nom",
+                  placeholder: t('contact.form.name.placeholder'),
                   required: true,
                 },
                 {
-                  label: "Adresse email",
+                  label: t('contact.form.email.label'),
                   name: "email",
                   type: "email",
-                  placeholder: "votre@email.com",
+                  placeholder: t('contact.form.email.placeholder'),
                   required: true,
                 },
                 {
-                  label: "Sujet",
+                  label: t('contact.form.subject.label'),
                   name: "subject",
                   type: "text",
-                  placeholder: "Sujet de votre message",
+                  placeholder: t('contact.form.subject.placeholder'),
                   required: true,
                 },
               ].map(({ label, name, type, placeholder, required }) => (
@@ -155,14 +157,14 @@ export default function Contact() {
                   htmlFor="message"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                 >
-                  Message
+                  {t('contact.form.message.label')}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   rows="5"
                   required
-                  placeholder="Votre message..."
+                  placeholder={t('contact.form.message.placeholder')}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none resize-none"
                 />
               </div>
@@ -170,7 +172,7 @@ export default function Contact() {
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md"
               >
-                Envoyer le message
+                {t('contact.form.submit.button')}
               </button>
             </form>
           </div>
