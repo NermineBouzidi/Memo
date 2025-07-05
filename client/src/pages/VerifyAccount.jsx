@@ -12,24 +12,11 @@ const VerifyAccount = () => {
 
   const handleChange = (index, value) => {
     if (!/^\d*$/.test(value)) return; // Only digits allowed
-
-    // If full code is pasted
-    if (value.length === 6) {
-      const valueArray = value.split("").slice(0, 6);
-      setOtp(valueArray);
-      valueArray.forEach((v, i) => {
-        if (inputRefs.current[i]) {
-          inputRefs.current[i].value = v;
-        }
-      });
-      inputRefs.current[5]?.focus();
-      return;
-    }
-
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
+    // Move to next input
     if (value && index < 5) {
       inputRefs.current[index + 1].focus();
     }
@@ -38,21 +25,6 @@ const VerifyAccount = () => {
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1].focus();
-    }
-  };
-
-  const handlePaste = (e) => {
-    e.preventDefault();
-    const paste = e.clipboardData.getData("text").trim();
-    if (/^\d{6}$/.test(paste)) {
-      const pasteArray = paste.split("");
-      setOtp(pasteArray);
-      pasteArray.forEach((v, i) => {
-        if (inputRefs.current[i]) {
-          inputRefs.current[i].value = v;
-        }
-      });
-      inputRefs.current[5]?.focus();
     }
   };
 
@@ -70,6 +42,7 @@ const VerifyAccount = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 relative overflow-hidden px-4">
+      {/* 🔴 Background pulse */}
       <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-700 opacity-30 dark:opacity-20 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
 
       <form
@@ -83,7 +56,8 @@ const VerifyAccount = () => {
           Entrez le code à 6 chiffres envoyé à votre adresse e-mail
         </p>
 
-        <div className="flex justify-center gap-3" onPaste={handlePaste}>
+        {/* 🔢 OTP Boxes */}
+        <div className="flex justify-center gap-3">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -99,6 +73,7 @@ const VerifyAccount = () => {
           ))}
         </div>
 
+        {/* ⚠️ Error */}
         {error && (
           <p className="text-red-500 text-sm text-center">{error}</p>
         )}

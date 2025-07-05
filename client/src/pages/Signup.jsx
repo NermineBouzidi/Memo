@@ -4,9 +4,11 @@ import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import Bar from "../components/Bar";
 import { signupUser } from "../api/auth"; // Import the signup API function
+
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+
 const Signup = () => {
   const { login } = useAuth(); // Assuming your AuthContext has a login function
   const navigate = useNavigate();
@@ -16,11 +18,13 @@ const Signup = () => {
     email: "",
     password: "",
   });
+
  const [ setError] = useState("");
 const [fieldErrors, setFieldErrors] = useState({});
 const [isLoading, setIsLoading] = useState(false);
 const initialRegisterSuccess = location.state?.isRegisterSuccess ?? false;
 const [isRegisterSuccess, setisRegisterSuccess] = useState(initialRegisterSuccess);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -136,6 +140,7 @@ const handleGoogleLoginSuccess = async (response) => {
       email: decoded.email,
     };
 
+
     const res = await axios.post(
       "http://localhost:8080/api/auth/register/google",
       googleUserData,
@@ -239,6 +244,7 @@ const handleGoogleLoginSuccess = async (response) => {
               )}
             </div>
 
+
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
@@ -318,6 +324,7 @@ const handleGoogleLoginSuccess = async (response) => {
                 Connectez-vous
               </Link>
             </div>
+
              {/* Google Login */}
             <div className="">
               <img
@@ -333,6 +340,7 @@ const handleGoogleLoginSuccess = async (response) => {
           
         </div>
         
+
       </div>
 
       {/* Styles pour les animations */}
