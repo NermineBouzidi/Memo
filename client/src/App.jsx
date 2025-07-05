@@ -21,6 +21,7 @@ import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
 
 import { CartProvider } from "./contexts/cartContext";
+
 import Categories from "./pages/Categories";
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";

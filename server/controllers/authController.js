@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
+import crypto from 'crypto';
 
 dotenv.config(); // Load environment variables
 
@@ -168,6 +169,7 @@ export const register = async (req, res) => {
 //-----------login -------------
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   if (!email || !password) {
     return res
@@ -557,5 +559,81 @@ export const resetPassword = async (req, res) => {
       .json({ success: true, message: "Password has been reset successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const regestergoogle = async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    // Create user data object
+    const newUserData = {
+      name: `${firstName} ${lastName}`,
+      email,
+      isAccountVerified: true,
+    };
+
+    let finalPassword = password;
+
+    // If no password provided (Google signup), generate random password
+    if (!finalPassword) {
+      finalPassword = crypto.randomBytes(9).toString('base64').slice(0, 12);
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(finalPassword, 10);
+    newUserData.password = hashedPassword;
+
+    const newUser = new userModel(newUserData);
+    await newUser.save();
+
+    return res.status(200).json({ success: true, message: "Login successful", newUser ,finalPassword});
+  } catch (err) {
+    console.error("Google registration error:", err);
+    res.status(500).json({ error: "Registration failed: " + err.message });
+  }
+};
+export const logingoogle = async (req, res) => {
+  const { firstName, lastName, email } = req.body;
+console.log(req.body);
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid email" });
+    }
+
+    if (!user.isAccountVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Account not verified",
+        userId: user._id,
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user,
+    });
+
+  } catch (err) {
+    console.error("Google login error:", err);
+    res.status(500).json({ error: "Login failed: " + err.message });
   }
 };

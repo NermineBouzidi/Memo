@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import LogOutConfirmationModal from "../components/LogOutConfirmationModal";
+
 import logo from "../assets/logo4.png"; // 🖼 Make sure path is correct
 
 // Pré-génère étoiles une fois (500 étoiles pour un effet dense)

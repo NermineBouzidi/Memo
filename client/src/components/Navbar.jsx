@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useCart } from "../contexts/cartContext";
+import { useAuth } from "../contexts/AuthContext"; // adapt to your context
+
 
 const navItems = [
   { id: "accueil", label: "Accueil" },
@@ -50,6 +52,8 @@ export default function Navbar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { cartItems, itemCount, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth(); // ou isAuthenticated, selon ton contexte
+
 
   useEffect(() => {
     if (itemCount > 0) {
@@ -354,50 +358,56 @@ export default function Navbar() {
             <p className="text-gray-600 dark:text-gray-300">Votre panier est vide.</p>
           ) : (
             <ul>
-              {cartItems.map((item) => (
-                <li
-                  key={item.produit._id}
-                  className={`mb-4 border-b dark:border-gray-600 pb-2 flex justify-between items-center transition-all duration-500 ease-in-out ${
-                    removingItems.includes(item.produit._id)
-                      ? "fade-slide-out-rotate"
-                      : "fade-slide-in"
-                  }`}
-                  aria-live="polite"
-                >
-                  <div>
-                    <p
-                      className={`font-semibold ${
-                        theme === "dark" ? "text-white" : "text-black"
-                      }`}
-                    >
-                      {item.produit.name}
-                    </p>
-                    <p
-                      className={`text-sm ${
-                        theme === "dark" ? "text-white" : "text-gray-700"
-                      }`}
-                    >
-                      Quantité : {item.quantite}
-                    </p>
-                    <p className="text-sm text-red-600">
-                      Prix : {item.produit.price} TND
-                    </p>
-                  </div>
-                  <button
-                    id={`remove-btn-${item.produit._id}`}
-                    onClick={() => handleRemoveWithAnimation(item.produit._id)}
-                    className="text-red-600 hover:text-red-800 transition"
-                    aria-label={`Supprimer ${item.produit.name} du panier`}
-                    disabled={isClearing}
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </li>
-              ))}
+              {cartItems.map((item, index) => {
+  if (!item?.produit?._id) return null; // ignore les items mal formés
+
+  return (
+    <li
+      key={item.produit._id || index}
+      className={`mb-4 border-b dark:border-gray-600 pb-2 flex justify-between items-center transition-all duration-500 ease-in-out ${
+        removingItems.includes(item.produit._id)
+          ? "fade-slide-out-rotate"
+          : "fade-slide-in"
+      }`}
+      aria-live="polite"
+    >
+      <div>
+        <p
+          className={`font-semibold ${
+            theme === "dark" ? "text-white" : "text-black"
+          }`}
+        >
+          {item.produit.name}
+        </p>
+        <p
+          className={`text-sm ${
+            theme === "dark" ? "text-white" : "text-gray-700"
+          }`}
+        >
+          Quantité : {item.quantite}
+        </p>
+        <p className="text-sm text-red-600">
+          Prix : {item.produit.price} TND
+        </p>
+      </div>
+      <button
+        id={`remove-btn-${item.produit._id}`}
+        onClick={() => handleRemoveWithAnimation(item.produit._id)}
+        className="text-red-600 hover:text-red-800 transition"
+        aria-label={`Supprimer ${item.produit.name} du panier`}
+        disabled={isClearing}
+      >
+        <Trash2 size={20} />
+      </button>
+    </li>
+  );
+})}
+
             </ul>
           )}
-          {cartItems.length > 0 && (
-            <button
+         {cartItems.length > 0 && (
+  <>
+    <button
               onClick={handleClearCartWithAnimation}
               className={`mb-2 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition ${
                 isClearing ? "pulse disabled" : ""
@@ -407,7 +417,28 @@ export default function Navbar() {
             >
               Vider le panier
             </button>
-          )}
+
+    {user ? (
+      <button
+        onClick={() => navigate("/checkout")}
+        className="mb-2 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+      >
+        Passer à la caisse
+      </button>
+    ) : (
+     <button
+  onClick={() => {
+    setShowCart(false); // Ferme le panier avant redirection
+    navigate("/signup");
+  }}
+  className="mb-2 w-full bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition"
+>
+  Se connecter pour payer
+</button>
+    )}
+  </>
+)}
+
 
           <button
             onClick={() => setShowCart(false)}

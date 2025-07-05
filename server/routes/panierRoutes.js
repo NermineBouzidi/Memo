@@ -137,4 +137,45 @@ router.delete("/vider", auth, async (req, res) => {
 });
 
 
+// Route pour fusionner le panier invité avec le panier utilisateur connecté
+router.post("/merge", auth, async (req, res) => {
+  try {
+    const utilisateurId = req.userId;
+    const guestItems = req.body.items;
+
+    if (!Array.isArray(guestItems)) {
+      return res.status(400).json({ message: "Format invalide pour les items" });
+    }
+
+    let panier = await Panier.findOne({ utilisateur: utilisateurId });
+
+    if (!panier) {
+      panier = new Panier({ utilisateur: utilisateurId, items: [] });
+    }
+
+    // Fusion des items : addition des quantités si produit existe déjà
+    guestItems.forEach((guestItem) => {
+      const index = panier.items.findIndex(
+        (item) => item.produit.toString() === guestItem._id
+      );
+      if (index !== -1) {
+        panier.items[index].quantite += guestItem.quantite;
+      } else {
+        panier.items.push({
+          produit: guestItem._id,
+          quantite: guestItem.quantite,
+        });
+      }
+    });
+
+    await panier.save();
+    await panier.populate("items.produit");
+
+    res.status(200).json({ message: "Panier fusionné avec succès", items: panier.items });
+  } catch (error) {
+    console.error("Erreur POST /api/panier/merge :", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
 export default router;

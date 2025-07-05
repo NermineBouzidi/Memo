@@ -1,12 +1,14 @@
 import express from 'express';
 
-import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword} from '../controllers/authController.js';
+import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword, regestergoogle,logingoogle } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
 import { preAuth } from '../middleware/preAuthMiddleware.js';
 
 const authRouter = express.Router();
 
 authRouter.post('/signup' ,register);
+authRouter.post('/register/google' ,regestergoogle);
+authRouter.post('/login/google' ,logingoogle);
 authRouter.post('/login', login);
 authRouter.get('/logout',logout);
 authRouter.post('/send-verify-otp', userAuth, sendVerifyOtp);
