@@ -1,37 +1,33 @@
-import { useNavigate, useLocation  } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
-import { useTranslation } from 'react-i18next';
-import {useState,useEffect} from "react";
-
 
 const navItems = [
-  { id: "accueil", label: "navbar.home" },
+  { id: "accueil", label: "Accueil" },
   {
     id: "produits",
-    label: "navbar.products",
+    label: "Produits",
     submenu: [
-      { id: "categories", label: "navbar.categories" }
+      { id: "categories", label: "Catégories" }
     ]
   },
-
-  { id: "tarifs", label: "navbar.pricing" },
-  { id: "a-propos", label: "navbar.about", scrollTo: "qui-sommes-nous" },
+  { id: "tarifs", label: "Tarifs" },
+  { id: "a-propos", label: "À propos", scrollTo: "qui-sommes-nous" },
   {
     id: "ressources",
-    label: "navbar.resources",
+    label: "Ressources",
     submenu: [
-      { id: "blogs", label: "navbar.blogs", path: "/blog" },
-      { id: "avis-client", label: "navbar.clientReviews" },
-      { id: "guide-utilisation", label: "navbar.userGuide" },
-      { id: "faq", label: "navbar.faq" },
-      { id: "en-savoir-plus", label: "navbar.learnMore", path: "/savoir-plus" }
-
+      { id: "blogs", label: "Blogs", path: "/blog" },
+      { id: "avis-client", label: "Avis Client" },
+      { id: "guide-utilisation", label: "Guide d'utilisation" },
+      { id: "faq", label: "FAQ" },
+      { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" }
     ]
   },
-  { id: "contacts", label: "navbar.contact" },
+  { id: "contacts", label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -41,16 +37,14 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY + 100;
       let current = "accueil";
 
-      // Check for sections without submenus
       const sectionsToCheck = navItems.filter(item => !item.submenu);
-      
+
       for (const item of sectionsToCheck) {
         const sectionId = item.scrollTo || item.id;
         const section = document.getElementById(sectionId);
@@ -74,6 +68,12 @@ export default function Navbar() {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
       setMenuOpen(false);
       setDropdownOpen(null);
+    } else {
+      if (location.pathname !== "/") {
+        navigate("/", { state: { scrollTo: sectionId } });
+        setMenuOpen(false);
+        setDropdownOpen(null);
+      }
     }
   };
 
@@ -86,8 +86,9 @@ export default function Navbar() {
   };
 
   const handleSubmenuClick = (parentId, submenuItem) => {
-    // Handle submenu navigation logic here
-    console.log(`Clicked ${submenuItem.label} from ${parentId}`);
+    if (submenuItem.path) {
+      navigate(submenuItem.path);
+    }
     setDropdownOpen(null);
     setMenuOpen(false);
   };
@@ -98,9 +99,7 @@ export default function Navbar() {
         <img
           src={image}
           alt="Logo"
-
           className="h-20 w-auto md:h-20 drop-shadow-lg transition-all duration-300"
-
         />
       </Link>
 
@@ -116,11 +115,10 @@ export default function Navbar() {
               }`}
               onClick={() => handleItemClick(item)}
             >
-              {t(item.label)}
+              {item.label}
               {item.submenu && <ChevronDown size={16} />}
             </div>
-            
-            {/* Desktop Dropdown */}
+
             {item.submenu && dropdownOpen === item.id && (
               <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
                 {item.submenu.map((submenuItem) => (
@@ -129,7 +127,7 @@ export default function Navbar() {
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-600 transition-colors"
                     onClick={() => handleSubmenuClick(item.id, submenuItem)}
                   >
-                    {t(submenuItem.label)}
+                    {submenuItem.label}
                   </button>
                 ))}
               </div>
@@ -152,11 +150,11 @@ export default function Navbar() {
           className="flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-red-600 text-gray-600 dark:text-gray-300"
         >
           <User size={20} />
-          <span className="font-medium">{t('navbar.createAccount')}</span>
+          <span className="font-medium">Créer un compte</span>
         </Link>
       </div>
 
-      {/* Hamburger Button (Mobile) */}
+      {/* Mobile Hamburger Icon */}
       <div className="md:hidden">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -180,11 +178,10 @@ export default function Navbar() {
                 }`}
                 onClick={() => handleItemClick(item)}
               >
-                {t(item.label)}
+                {item.label}
                 {item.submenu && <ChevronDown size={16} />}
               </button>
-              
-              {/* Mobile Submenu */}
+
               {item.submenu && dropdownOpen === item.id && (
                 <div className="pl-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-md mt-1">
                   {item.submenu.map((submenuItem) => (
@@ -193,7 +190,7 @@ export default function Navbar() {
                       className="w-full text-left py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-red-600 transition-colors"
                       onClick={() => handleSubmenuClick(item.id, submenuItem)}
                     >
-                      {t(submenuItem.label)}
+                      {submenuItem.label}
                     </button>
                   ))}
                 </div>
@@ -214,15 +211,11 @@ export default function Navbar() {
               className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:text-red-600 transition-colors"
             >
               <User size={20} />
-              <span className="font-medium">{t('navbar.createAccount')}</span>
+              <span className="font-medium">Créer un compte</span>
             </Link>
           </div>
         </div>
       )}
     </nav>
   );
-
-
 }
-
-

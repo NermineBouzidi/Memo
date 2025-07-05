@@ -1,86 +1,110 @@
-import { useState, useEffect } from "react";
-import { ArrowRight, ArrowDown, ChevronDown, ChevronUp, Target, Users, Lightbulb, Rocket, Settings, Brain, DollarSign, Receipt, Sparkles, BarChart2, Clock, ShieldCheck, Zap } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from 'react-i18next';
+"use client"
+
+import { useState, useEffect } from "react"
+import {
+  ArrowRight,
+  ArrowDown,
+  ChevronDown,
+  ChevronUp,
+  Target,
+  Users,
+  Lightbulb,
+  Rocket,
+  Settings,
+  Brain,
+  DollarSign,
+  Receipt,
+  Sparkles,
+  BarChart2,
+  Clock,
+  ShieldCheck,
+  Zap,
+} from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { useTranslation } from "react-i18next"
 
 const services = [
   {
     icon: <Settings className="text-orange-600 dark:text-orange-400" size={32} />,
     emoji: "🔧",
     title: "Gestion de Projets / Job Manager",
-    preview: "Pilotage de projets, chantiers, missions, jobs (TPE/PME, BTP, agences, etc.). Suivi en temps réel de la performance de l'entreprise et des collaborateurs.",
+    preview:
+      "Pilotage de projets, chantiers, missions, jobs (TPE/PME, BTP, agences, etc.). Suivi en temps réel de la performance de l'entreprise et des collaborateurs.",
     details: [
       "Gestion multi-entités avec transversalité des fonctionnalités",
       "Génération d'écritures comptables liées aux projets",
       "Centralisation des informations projet : délais, coûts, livrables, marges",
       "Module de planification, affectation des ressources et contrôle qualité",
-      "Suivi budgétaire et analytique par job/projet"
-    ]
+      "Suivi budgétaire et analytique par job/projet",
+    ],
   },
   {
     icon: <Brain className="text-blue-600 dark:text-blue-400" size={32} />,
     emoji: "🧠",
     title: "CRM (Gestion de la relation client)",
-    preview: "Gestion des prospects et des clients. Suivi des devis, commandes, contrats. Pipeline commercial visuel et interactif.",
+    preview:
+      "Gestion des prospects et des clients. Suivi des devis, commandes, contrats. Pipeline commercial visuel et interactif.",
     details: [
       "Relances automatiques et historiques des interactions",
       "Intégration directe avec la facturation et la comptabilité",
-      "Uniformisation des process commerciaux"
-    ]
+      "Uniformisation des process commerciaux",
+    ],
   },
   {
     icon: <DollarSign className="text-green-600 dark:text-green-400" size={32} />,
     emoji: "💰",
     title: "Comptabilité & Finance",
-    preview: "Génération d'écritures comptables automatiques (ventes, achats, provisions). Synchronisation des données avec les outils comptables.",
+    preview:
+      "Génération d'écritures comptables automatiques (ventes, achats, provisions). Synchronisation des données avec les outils comptables.",
     details: [
       "Analyse financière par projet, client, équipe ou entité",
       "Préparation à la facturation électronique (obligatoire en 2027)",
       "GED intégrée (gestion documentaire numérique)",
-      "Réduction des délais de facturation et de paiement"
-    ]
+      "Réduction des délais de facturation et de paiement",
+    ],
   },
   {
     icon: <Receipt className="text-purple-600 dark:text-purple-400" size={32} />,
     emoji: "🧾",
     title: "Facturation & Paiements",
-    preview: "Facturation automatisée à partir des bons de commande ou livrables. Historique des paiements, alertes sur les impayés.",
+    preview:
+      "Facturation automatisée à partir des bons de commande ou livrables. Historique des paiements, alertes sur les impayés.",
     details: [
       "Modèles de factures paramétrables",
       "Export des données vers plateformes fiscales",
-      "Réduction du cycle facturation → encaissement"
-    ]
-  }
-];
+      "Réduction du cycle facturation → encaissement",
+    ],
+  },
+]
 
 const stats = [
   { value: "95%", label: "Satisfaction clients", icon: <Sparkles className="text-yellow-500" /> },
   { value: "40%", label: "Gain de temps", icon: <Clock className="text-blue-500" /> },
   { value: "30%", label: "Augmentation productivité", icon: <BarChart2 className="text-green-500" /> },
-  { value: "100%", label: "Sécurité des données", icon: <ShieldCheck className="text-purple-500" /> }
-];
+  { value: "100%", label: "Sécurité des données", icon: <ShieldCheck className="text-purple-500" /> },
+]
 
 export default function Hero() {
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(Array(services.length).fill(false));
-  const [activeTab, setActiveTab] = useState("features");
-  const [currentImage, setCurrentImage] = useState(0);
+  const { t } = useTranslation()
+  const [expanded, setExpanded] = useState(Array(services.length).fill(false))
+  const [currentImage, setCurrentImage] = useState(0)
+
   const images = [
     "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-  ];
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+  ]
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+      setCurrentImage((prev) => (prev + 1) % images.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [images.length])
 
-  const toggleExpand = idx => {
-    setExpanded(expanded => expanded.map((v, i) => (i === idx ? !v : v)));
-  };
+  const toggleExpand = (idx) => {
+    setExpanded((expanded) => expanded.map((v, i) => (i === idx ? !v : v)))
+  }
 
   return (
     <section
@@ -96,7 +120,7 @@ export default function Hero() {
 
       {/* Hero Header */}
       <div className="relative z-10 min-h-screen flex flex-col justify-center items-center px-4 text-center py-20">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -104,45 +128,57 @@ export default function Hero() {
         >
           <div className="inline-flex items-center bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full mb-6">
             <Zap className="mr-2" size={18} />
-            <span>{t('hero.newVersionAvailable')}</span>
+            <span>{t("hero.newVersionAvailable")}</span>
           </div>
+
           <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
-            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">{t('hero.title')}</span> - {t('hero.partner')}
+            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">
+              {t("hero.title")}
+            </span>
+            {" - "}
+            {t("hero.partner")}
           </h1>
+
           <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10 max-w-3xl mx-auto">
-            {t('hero.description')}
+            {t("hero.description")}
           </p>
+
           <div className="flex flex-wrap justify-center gap-4">
-            <motion.button 
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-full hover:shadow-xl transition-all duration-300 shadow-lg flex items-center gap-2"
             >
-              {t('hero.cta.startFree')}
+              {t("hero.cta.startFree")}
               <ArrowRight size={20} />
             </motion.button>
-            <motion.button 
+
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-white border-2 border-red-600 text-red-600 px-8 py-4 rounded-full hover:bg-red-50 transition-all duration-300 shadow-lg flex items-center gap-2"
             >
-              {t('hero.cta.seeDemo')}
+              {t("hero.cta.seeDemo")}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                  clipRule="evenodd"
+                />
               </svg>
             </motion.button>
           </div>
         </motion.div>
 
         {/* Floating stats */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 w-full max-w-5xl px-4"
         >
           {stats.map((stat, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               whileHover={{ y: -5 }}
               className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 flex flex-col items-center"
@@ -165,7 +201,7 @@ export default function Hero() {
         <div className="mb-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -175,28 +211,34 @@ export default function Hero() {
                   <div className="bg-red-100 dark:bg-red-900/20 p-3 rounded-full mr-4">
                     <Target className="text-red-600 dark:text-red-400" size={32} />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('hero.productDetails.title')}
-                  </h2>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{t("hero.productDetails.title")}</h2>
                 </div>
+
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  {t('hero.productDetails.description')}
+                  {t("hero.productDetails.description")}
                 </p>
+
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mt-4">
-                  {t('hero.productDetails.features')}
+                  {t("hero.productDetails.features")}
                 </p>
-                
+
                 <div className="mt-8 flex flex-wrap gap-3">
-                  {["Gestion de projets", "CRM intégré", "Comptabilité", "Facturation", "Analytics"].map((feature, i) => (
-                    <span key={i} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                      {t(`hero.productDetails.features.${feature}`)}
-                    </span>
-                  ))}
+                  {["Gestion de projets", "CRM intégré", "Comptabilité", "Facturation", "Analytics"].map(
+                    (feature, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                      >
+                        {t(`hero.productDetails.features.${feature}`)}
+                      </span>
+                    ),
+                  )}
                 </div>
               </motion.div>
             </div>
+
             <div className="order-1 lg:order-2">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -215,16 +257,20 @@ export default function Hero() {
                     transition={{ duration: 0.5 }}
                   />
                 </AnimatePresence>
+
                 <div className="absolute bottom-4 left-4 right-4 flex justify-center gap-2">
                   {images.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentImage(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${currentImage === index ? 'bg-red-600 w-6' : 'bg-gray-300'}`}
+                      className={`w-3 h-3 rounded-full transition-all ${
+                        currentImage === index ? "bg-red-600 w-6" : "bg-gray-300"
+                      }`}
                       aria-label={`Go to slide ${index + 1}`}
                     />
                   ))}
                 </div>
+
                 <div className="absolute -bottom-4 -right-4 bg-red-600 text-white p-4 rounded-xl shadow-lg z-10">
                   <span className="font-bold text-2xl">CRP MEMO</span>
                 </div>
@@ -235,7 +281,7 @@ export default function Hero() {
 
         {/* Nos Services Section */}
         <div id="nos-services" className="mb-32">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -243,17 +289,16 @@ export default function Hero() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
-              <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">{t('hero.ourServices.title')}</span>
+              <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">
+                {t("hero.ourServices.title")}
+              </span>
               <ArrowDown size={28} className="text-blue-600 animate-bounce" />
-        <div className="mb-20">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Nos Services
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              {t('hero.ourServices.description')}
+              {t("hero.ourServices.description")}
             </p>
           </motion.div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
             {services.map((service, idx) => (
               <motion.div
@@ -265,6 +310,7 @@ export default function Hero() {
                 className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 group relative overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-red-50 dark:from-blue-900/10 dark:to-red-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
                 <div className="relative z-10">
                   <div className="flex items-center mb-6">
                     <div className="bg-gradient-to-br from-blue-100 via-orange-100 to-purple-100 dark:from-blue-900/20 dark:via-orange-900/20 dark:to-purple-900/20 p-4 rounded-full mr-4">
@@ -272,29 +318,29 @@ export default function Hero() {
                     </div>
                     <div>
                       <span className="text-2xl mb-2 block">{service.emoji}</span>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {service.title}
-                      </h3>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
                     </div>
                   </div>
+
                   <div className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mb-4">
                     {service.preview}
                     <AnimatePresence>
                       {expanded[idx] && (
-                        <motion.ul 
+                        <motion.ul
                           initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
+                          animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3 }}
                           className="mt-3 list-disc list-inside text-base text-gray-600 dark:text-gray-400 space-y-1 overflow-hidden"
                         >
-                          {service.details.map((d, i) => (
-                            <li key={i}>{d}</li>
+                          {service.details.map((detail, i) => (
+                            <li key={i}>{detail}</li>
                           ))}
                         </motion.ul>
                       )}
                     </AnimatePresence>
                   </div>
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -303,7 +349,7 @@ export default function Hero() {
                     aria-expanded={expanded[idx]}
                     aria-controls={`service-details-${idx}`}
                   >
-                    {expanded[idx] ? t('hero.ourServices.readLess') : t('hero.ourServices.readMore')}
+                    {expanded[idx] ? t("hero.ourServices.readLess") : t("hero.ourServices.readMore")}
                     {expanded[idx] ? (
                       <ChevronUp size={18} className="transition-transform" />
                     ) : (
@@ -314,130 +360,37 @@ export default function Hero() {
               </motion.div>
             ))}
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {/* Gestion de Projets */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center mb-6">
-                <div className="bg-orange-100 dark:bg-orange-900/20 p-4 rounded-full mr-4">
-                  <Settings className="text-orange-600 dark:text-orange-400" size={32} />
-                </div>
-                <div>
-                  <span className="text-2xl mb-2 block">🔧</span>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Gestion de Projets / Job Manager
-                  </h3>
-                </div>
-              </div>
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <p>• Pilotage de projets, chantiers, missions, jobs (TPE/PME, BTP, agences, etc.)</p>
-                <p>• Suivi en temps réel de la performance de l'entreprise et des collaborateurs</p>
-                <p>• Gestion multi-entités avec transversalité des fonctionnalités</p>
-                <p>• Génération d'écritures comptables liées aux projets</p>
-                <p>• Centralisation des informations projet : délais, coûts, livrables, marges</p>
-                <p>• Module de planification, affectation des ressources et contrôle qualité</p>
-                <p>• Suivi budgétaire et analytique par job/projet</p>
-              </div>
-            </div>
-
-            {/* CRM */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center mb-6">
-                <div className="bg-blue-100 dark:bg-blue-900/20 p-4 rounded-full mr-4">
-                  <Brain className="text-blue-600 dark:text-blue-400" size={32} />
-                </div>
-                <div>
-                  <span className="text-2xl mb-2 block">🧠</span>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    CRM (Gestion de la relation client)
-                  </h3>
-                </div>
-              </div>
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <p>• Gestion des prospects et des clients</p>
-                <p>• Suivi des devis, commandes, contrats</p>
-                <p>• Pipeline commercial visuel et interactif</p>
-                <p>• Relances automatiques et historiques des interactions</p>
-                <p>• Intégration directe avec la facturation et la comptabilité</p>
-                <p>• Uniformisation des process commerciaux</p>
-              </div>
-            </div>
-
-            {/* Comptabilité & Finance */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center mb-6">
-                <div className="bg-green-100 dark:bg-green-900/20 p-4 rounded-full mr-4">
-                  <DollarSign className="text-green-600 dark:text-green-400" size={32} />
-                </div>
-                <div>
-                  <span className="text-2xl mb-2 block">💰</span>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Comptabilité & Finance
-                  </h3>
-                </div>
-              </div>
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <p>• Génération d'écritures comptables automatiques (ventes, achats, provisions)</p>
-                <p>• Synchronisation des données avec les outils comptables</p>
-                <p>• Analyse financière par projet, client, équipe ou entité</p>
-                <p>• Préparation à la facturation électronique (obligatoire en 2027)</p>
-                <p>• GED intégrée (gestion documentaire numérique)</p>
-                <p>• Réduction des délais de facturation et de paiement</p>
-              </div>
-            </div>
-
-            {/* Facturation & Paiements */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center mb-6">
-                <div className="bg-purple-100 dark:bg-purple-900/20 p-4 rounded-full mr-4">
-                  <Receipt className="text-purple-600 dark:text-purple-400" size={32} />
-                </div>
-                <div>
-                  <span className="text-2xl mb-2 block">🧾</span>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Facturation & Paiements
-                  </h3>
-                </div>
-              </div>
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <p>• Facturation automatisée à partir des bons de commande ou livrables</p>
-                <p>• Historique des paiements, alertes sur les impayés</p>
-                <p>• Modèles de factures paramétrables</p>
-                <p>• Export des données vers plateformes fiscales</p>
-                <p>• Réduction du cycle facturation → encaissement</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Qui sommes-nous */}
         <div id="qui-sommes-nous" className="mb-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-1">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
                 className="relative h-96 rounded-2xl overflow-hidden shadow-2xl"
               >
-                <img 
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                <img
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Équipe collaborative"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-6 text-white">
-                  <h3 className="text-xl font-bold">{t('hero.aboutUs.team')}</h3>
-                  <p className="text-blue-200">{t('hero.aboutUs.experts')}</p>
+                  <h3 className="text-xl font-bold">{t("hero.aboutUs.team")}</h3>
+                  <p className="text-blue-200">{t("hero.aboutUs.experts")}</p>
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg z-10">
                   <Users size={32} />
                 </div>
               </motion.div>
             </div>
+
             <div className="order-2">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -447,25 +400,31 @@ export default function Hero() {
                   <div className="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full mr-4">
                     <Users className="text-blue-600 dark:text-blue-400" size={32} />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('hero.aboutUs.title')}
-                  </h2>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{t("hero.aboutUs.title")}</h2>
                 </div>
+
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  {t('hero.aboutUs.description')}
+                  {t("hero.aboutUs.description")}
                 </p>
+
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg mt-4">
-                  {t('hero.aboutUs.partnership')}
+                  {t("hero.aboutUs.partnership")}
                 </p>
-                
+
                 <div className="mt-8 grid grid-cols-2 gap-4">
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                    <h4 className="font-bold text-blue-800 dark:text-blue-300">{t('hero.aboutUs.habileSolutions')}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('hero.aboutUs.habileSolutionsLocation')}</p>
+                    <h4 className="font-bold text-blue-800 dark:text-blue-300">{t("hero.aboutUs.habileSolutions")}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("hero.aboutUs.habileSolutionsLocation")}
+                    </p>
                   </div>
                   <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800">
-                    <h4 className="font-bold text-purple-800 dark:text-purple-300">{t('hero.aboutUs.pegasioInternational')}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{t('hero.aboutUs.pegasioInternationalLocation')}</p>
+                    <h4 className="font-bold text-purple-800 dark:text-purple-300">
+                      {t("hero.aboutUs.pegasioInternational")}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("hero.aboutUs.pegasioInternationalLocation")}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -477,7 +436,7 @@ export default function Hero() {
         <div className="mb-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -487,17 +446,16 @@ export default function Hero() {
                   <div className="bg-green-100 dark:bg-green-900/20 p-3 rounded-full mr-4">
                     <Lightbulb className="text-green-600 dark:text-green-400" size={32} />
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {t('hero.whyChooseUs.title')}
-                  </h2>
+                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{t("hero.whyChooseUs.title")}</h2>
                 </div>
+
                 <ul className="space-y-4">
                   {[
-                    t('hero.whyChooseUs.expertise'),
-                    t('hero.whyChooseUs.passion'),
-                    t('hero.whyChooseUs.personalizedSupport'),
-                    t('hero.whyChooseUs.flexibleSolution'),
-                    t('hero.whyChooseUs.measurableResults')
+                    t("hero.whyChooseUs.expertise"),
+                    t("hero.whyChooseUs.passion"),
+                    t("hero.whyChooseUs.personalizedSupport"),
+                    t("hero.whyChooseUs.flexibleSolution"),
+                    t("hero.whyChooseUs.measurableResults"),
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
                       <div className="flex-shrink-0 mt-1">
@@ -510,35 +468,25 @@ export default function Hero() {
                   ))}
                 </ul>
               </motion.div>
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  Pourquoi choisir Pegasio ?
-                </h2>
-              </div>
-              <ul className="list-disc list-inside space-y-3 text-gray-700 dark:text-gray-300 text-lg">
-                <li>Une expertise reconnue dans les secteurs du BTP, immobilier, énergie et services</li>
-                <li>Une équipe passionnée par l’innovation et la performance</li>
-                <li>Un accompagnement personnalisé et une écoute attentive</li>
-                <li>Une solution flexible et évolutive adaptée aux besoins spécifiques</li>
-                <li>Des résultats concrets et mesurables pour votre entreprise</li>
-              </ul>
             </div>
+
             <div className="order-1 lg:order-2">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
                 className="relative h-96 rounded-2xl overflow-hidden shadow-2xl"
               >
-                <img 
-                  src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                <img
+                  src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                   alt="Innovation and teamwork"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-xl font-bold">{t('hero.innovationPerformance.title')}</h3>
-                  <p className="text-blue-200">{t('hero.innovationPerformance.commitment')}</p>
+                  <h3 className="text-xl font-bold">{t("hero.innovationPerformance.title")}</h3>
+                  <p className="text-blue-200">{t("hero.innovationPerformance.commitment")}</p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 bg-green-600 text-white p-4 rounded-xl shadow-lg z-10">
                   <Rocket size={32} />
@@ -549,30 +497,27 @@ export default function Hero() {
         </div>
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
           className="bg-gradient-to-r from-blue-600 to-red-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl mb-20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('hero.cta.readyToTransform')}</h2>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            {t('hero.cta.joinHundreds')}
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("hero.cta.readyToTransform")}</h2>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">{t("hero.cta.joinHundreds")}</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <motion.button 
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-white text-blue-600 px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg flex items-center gap-2 font-bold"
             >
-              {t('hero.cta.freeTrial')}
+              {t("hero.cta.freeTrial")}
               <ArrowRight size={20} />
             </motion.button>
-            
           </div>
         </motion.div>
       </div>
     </section>
-  );
+  )
 }
