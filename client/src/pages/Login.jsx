@@ -3,7 +3,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../assets/logo4.png";
-
+import { useGoogleOneTapLogin } from "@react-oauth/google";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -19,7 +21,11 @@ const Login = () => {
     password: "",
     server: "",
   });
+const [ setError] = useState("");
 
+const [isLoading, setIsLoading] = useState(false);
+const initialRegisterSuccess = location.state?.isRegisterSuccess ?? false;
+const [isRegisterSuccess, setisRegisterSuccess] = useState(initialRegisterSuccess);
   const validateForm = () => {
     const newErrors = { email: "", password: "", server: "" };
     let isValid = true;
@@ -91,9 +97,73 @@ const Login = () => {
       }));
     }
   };
+  
+const handleGoogleLoginSuccess = async (response) => {
+  setIsLoading(true);
+  try {
+    const decoded = jwtDecode(response.credential);
+    const googleUserData = {
+      firstName: decoded.given_name,
+      lastName: decoded.family_name,
+      email: decoded.email,
+    };
+
+
+    const res = await axios.post(
+      "http://localhost:8080/api/auth/login/google",
+      googleUserData,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (res) {
+     
+      setisRegisterSuccess(true);
+   
+
+  
+        Swal.fire({
+          icon: "success",
+          title: "Connexion réussie",
+          position: "top-end",
+          toast: true,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+  
+        setTimeout(() => {
+        navigate("/home");
+        window.location.reload(); // ✅ This will refresh the page
+      }, 1500);
+        
+    }
+  } catch (err) {
+    console.error(err);
+   
+  } finally {
+    setIsLoading(false); // ✅ always run this at the end
+  }
+};
+
+
+  // Handle Google login error
+  const handleGoogleLoginError = () => {
+    setError("Google login failed.");
+  };
+   const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
+  useGoogleOneTapLogin({
+    onSuccess: handleGoogleLoginSuccess,
+    onError: handleGoogleLoginError,
+    disabled: !enableGoogleLogin,
+  });
+  const triggerGoogleLogin = () => {
+    setEnableGoogleLogin(true);
+  };
 
   return (
     <>
+     {isRegisterSuccess && <p>Registration successful!</p>}
       <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 px-4 relative overflow-hidden">
         <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-600 opacity-30 dark:opacity-20 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
 
@@ -202,6 +272,17 @@ const Login = () => {
               >
                 Créez-en un
               </Link>
+            </div>
+                 {/* Google Login */}
+            <div className="">
+              <img
+                src="/assets/icons/google.png"
+                alt="Google"
+                width="24"
+                height="24"
+                onClick={triggerGoogleLogin}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           </form>
         </div>

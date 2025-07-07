@@ -598,4 +598,42 @@ export const regestergoogle = async (req, res) => {
     res.status(500).json({ error: "Registration failed: " + err.message });
   }
 };
+export const logingoogle = async (req, res) => {
+  const { firstName, lastName, email } = req.body;
+console.log(req.body);
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid email" });
+    }
 
+    if (!user.isAccountVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Account not verified",
+        userId: user._id,
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user,
+    });
+
+  } catch (err) {
+    console.error("Google login error:", err);
+    res.status(500).json({ error: "Login failed: " + err.message });
+  }
+};

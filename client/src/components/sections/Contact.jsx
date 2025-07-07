@@ -37,10 +37,30 @@ export default function Contact() {
   ];
 
   const socialLinks = [
-    { icon: <Facebook />, href: "#", label: "Facebook" },
-    { icon: <Twitter />, href: "#", label: "Twitter" },
-    { icon: <Instagram />, href: "#", label: "Instagram" },
-    { icon: <Linkedin />, href: "#", label: "LinkedIn" },
+    { 
+      icon: <Facebook />, 
+      href: "https://www.facebook.com/PegasioOfficial", 
+      label: "Facebook",
+      color: "text-blue-600 dark:text-blue-400"
+    },
+    { 
+      icon: <Twitter />, 
+      href: "https://twitter.com/PegasioOfficial", 
+      label: "Twitter",
+      color: "text-sky-500 dark:text-sky-400"
+    },
+    { 
+      icon: <Instagram />, 
+      href: "https://www.instagram.com/PegasioOfficial", 
+      label: "Instagram",
+      color: "text-pink-600 dark:text-pink-400"
+    },
+    { 
+      icon: <Linkedin />, 
+      href: "https://www.linkedin.com/company/pegasio", 
+      label: "LinkedIn",
+      color: "text-blue-500 dark:text-blue-400"
+    },
   ];
 
   return (
@@ -99,15 +119,17 @@ export default function Contact() {
               {t('contact.socials.title')}
             </h3>
             <div className="flex gap-4">
-              {socialLinks.map(({ icon, href, label }) => (
+              {socialLinks.map(({ icon, href, label, color }) => (
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
-                  className="group relative w-11 h-11 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-800 transition-all"
+                  className={`group relative w-11 h-11 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-all ${color}`}
                 >
                   {React.cloneElement(icon, {
-                    className: "w-5 h-5 text-red-600 dark:text-red-400 transition-all group-hover:scale-110",
+                    className: "w-5 h-5 transition-all group-hover:scale-110",
                   })}
                   <span className="sr-only">{label}</span>
                 </a>

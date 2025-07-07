@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import image from "../assets/logo.png";
@@ -9,13 +10,34 @@ export default function Footer() {
     const [isSubscribed, setIsSubscribed] = useState(false);
     const { t, i18n } = useTranslation();
 
-    const handleSubscribe = (e) => {
+    const handleSubscribe = async (e) => {
         e.preventDefault();
-        setIsSubscribed(true);
-        setTimeout(() => {
-            setIsSubscribed(false);
-            setEmail("");
-        }, 3000);
+        
+        try {
+            const response = await fetch('http://localhost:8080/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setIsSubscribed(true);
+                setEmail("");
+                setTimeout(() => {
+                    setIsSubscribed(false);
+                }, 3000);
+            } else {
+                // Handle error response
+                alert(data.message || 'Subscription failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Newsletter subscription error:', error);
+            alert('Failed to subscribe. Please check your connection and try again.');
+        }
     };
 
     const handleLanguageChange = (e) => {
