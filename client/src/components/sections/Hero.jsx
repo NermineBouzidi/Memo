@@ -22,6 +22,8 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
+import DemoVideo from "../../assets/Demo.mp4"
 
 const services = [
   {
@@ -88,6 +90,7 @@ export default function Hero() {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(Array(services.length).fill(false))
   const [currentImage, setCurrentImage] = useState(0)
+  const [showDemo, setShowDemo] = useState(false)
 
   const images = [
     "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
@@ -111,6 +114,33 @@ export default function Hero() {
       id="accueil"
       className="relative overflow-hidden bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-black dark:via-gray-900 dark:to-blue-900"
     >
+      {/* Demo Video Modal */}
+      {showDemo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
+          onClick={() => setShowDemo(false)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div
+            className="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full p-4 max-h-[90vh] overflow-y-auto flex flex-col"
+            onClick={e => e.stopPropagation()}
+            style={{ cursor: 'default' }}
+          >
+            <button
+              className="absolute top-4 right-4 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-pink-500 text-white text-3xl font-bold shadow-lg border-2 border-white/70 dark:border-gray-800 transition-all duration-200 hover:scale-110 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-red-400 z-10"
+              onClick={() => setShowDemo(false)}
+              aria-label="Close"
+            >
+              <span className="sr-only">Close</span>
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="16" fill="none" />
+                <path d="M10 10L22 22M22 10L10 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </button>
+            <video src={DemoVideo} controls autoPlay className="w-full rounded-lg mt-8 max-h-[60vh] object-contain" />
+          </div>
+        </div>
+      )}
       {/* Animated background elements */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-10 dark:bg-blue-800 animate-blob"></div>
@@ -144,19 +174,22 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-full hover:shadow-xl transition-all duration-300 shadow-lg flex items-center gap-2"
-            >
-              {t("hero.cta.startFree")}
-              <ArrowRight size={20} />
-            </motion.button>
+            <Link to="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-red-600 to-red-500 text-white px-8 py-4 rounded-full hover:shadow-xl transition-all duration-300 shadow-lg flex items-center gap-2"
+              >
+                {t("hero.cta.startFree")}
+                <ArrowRight size={20} />
+              </motion.button>
+            </Link>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-white border-2 border-red-600 text-red-600 px-8 py-4 rounded-full hover:bg-red-50 transition-all duration-300 shadow-lg flex items-center gap-2"
+              onClick={() => setShowDemo(true)}
             >
               {t("hero.cta.seeDemo")}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -263,9 +296,8 @@ export default function Hero() {
                     <button
                       key={index}
                       onClick={() => setCurrentImage(index)}
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        currentImage === index ? "bg-red-600 w-6" : "bg-gray-300"
-                      }`}
+                      className={`w-3 h-3 rounded-full transition-all ${currentImage === index ? "bg-red-600 w-6" : "bg-gray-300"
+                        }`}
                       aria-label={`Go to slide ${index + 1}`}
                     />
                   ))}
@@ -361,6 +393,8 @@ export default function Hero() {
             ))}
           </div>
         </div>
+
+
 
         {/* Qui sommes-nous */}
         <div id="qui-sommes-nous" className="mb-32">
@@ -496,28 +530,84 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* CTA Section */}
+      </div>
+      {/* Tarifs Section */}
+      <div id="tarifs" className="mb-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-blue-600 to-red-600 rounded-3xl p-8 md:p-12 text-center text-white shadow-xl mb-20"
+          className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("hero.cta.readyToTransform")}</h2>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">{t("hero.cta.joinHundreds")}</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-blue-600 px-8 py-4 rounded-full hover:bg-gray-100 transition-all duration-300 shadow-lg flex items-center gap-2 font-bold"
-            >
-              {t("hero.cta.freeTrial")}
-              <ArrowRight size={20} />
-            </motion.button>
-          </div>
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-2">
+            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">
+              Tarifs & Abonnements
+            </span>
+          </h2>
+          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+            Choisissez la formule qui correspond à vos besoins. Sans engagement, évolutif à tout moment.
+          </p>
         </motion.div>
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Basic Plan */}
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            className="relative bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-2 border-blue-200 dark:border-blue-700 rounded-2xl shadow-xl p-8 flex flex-col items-center"
+          >
+            <div className="bg-blue-100 dark:bg-blue-900/40 p-4 rounded-full mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            </div>
+            <h3 className="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">Basic</h3>
+            <div className="text-4xl font-extrabold text-blue-700 dark:text-blue-200 mb-2">19€<span className="text-lg font-medium">/mois</span></div>
+            <ul className="text-gray-700 dark:text-gray-300 text-base mb-6 space-y-2 text-left">
+              <li>✔️ Gestion de projets</li>
+              <li>✔️ CRM de base</li>
+              <li>✔️ Facturation simple</li>
+              <li>❌ Support prioritaire</li>
+            </ul>
+            <button className="mt-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-full transition-all">Choisir</button>
+          </motion.div>
+          {/* Pro Plan */}
+          <motion.div
+            whileHover={{ scale: 1.07 }}
+            className="relative bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-900/30 dark:to-pink-800/30 border-4 border-red-400 dark:border-pink-600 rounded-2xl shadow-2xl p-8 flex flex-col items-center scale-105 z-10"
+          >
+            <div className="bg-red-100 dark:bg-red-900/40 p-4 rounded-full mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            </div>
+            <h3 className="text-2xl font-bold text-red-700 dark:text-pink-300 mb-2">Pro</h3>
+            <div className="text-4xl font-extrabold text-red-700 dark:text-pink-200 mb-2">39€<span className="text-lg font-medium">/mois</span></div>
+            <ul className="text-gray-700 dark:text-gray-300 text-base mb-6 space-y-2 text-left">
+              <li>✔️ Toutes les fonctionnalités Basic</li>
+              <li>✔️ Comptabilité avancée</li>
+              <li>✔️ Support prioritaire</li>
+              <li>✔️ Personnalisation</li>
+            </ul>
+            <button className="mt-auto bg-gradient-to-r from-red-600 to-pink-500 hover:from-pink-600 hover:to-red-500 text-white font-semibold px-6 py-2 rounded-full transition-all shadow-lg">Essayer Pro</button>
+            <span className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">Populaire</span>
+          </motion.div>
+          {/* Entreprise Plan */}
+          <motion.div
+            whileHover={{ scale: 1.04 }}
+            className="relative bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border-2 border-purple-200 dark:border-purple-700 rounded-2xl shadow-xl p-8 flex flex-col items-center"
+          >
+            <div className="bg-purple-100 dark:bg-purple-900/40 p-4 rounded-full mb-4">
+              <svg className="w-8 h-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            </div>
+            <h3 className="text-2xl font-bold text-purple-700 dark:text-purple-300 mb-2">Entreprise</h3>
+            <div className="text-4xl font-extrabold text-purple-700 dark:text-purple-200 mb-2">Sur devis</div>
+            <ul className="text-gray-700 dark:text-gray-300 text-base mb-6 space-y-2 text-left">
+              <li>✔️ Toutes les fonctionnalités Pro</li>
+              <li>✔️ Accompagnement dédié</li>
+              <li>✔️ Intégrations avancées</li>
+              <li>✔️ Formation sur-mesure</li>
+            </ul>
+            <button className="mt-auto bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2 rounded-full transition-all">Contactez-nous</button>
+          </motion.div>
+        </div>
       </div>
     </section>
+
   )
 }

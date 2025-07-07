@@ -21,9 +21,9 @@ const navItems = [
     label: "Ressources",
     submenu: [
       { id: "blogs", label: "Blogs", path: "/blog" },
-      { id: "avis-client", label: "Avis Client" },
+      { id: "avis-client", label: "Avis Client", path: "/avis-clients" },
       { id: "guide-utilisation", label: "Guide d'utilisation" },
-      { id: "faq", label: "FAQ" },
+      { id: "faq", label: "FAQ", path: "/faq" },
       { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" }
     ]
   },
