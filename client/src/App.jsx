@@ -18,6 +18,8 @@ import ResetPasswordFlow from "./pages/ResetPasswordFlow";
 import EmailStep from "./pages/test/EmailStep";
 import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
+import Faq from "./pages/Faq";
+import AvisClients from "./pages/AvisClients";
 
 
 
@@ -78,6 +80,10 @@ function App() {
      <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
     <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
+              <Route path="/faq" element={<Faq/>} />
+              <Route path="/avis-clients" element={<AvisClients/>} />
+
+
 
     <Route path="*" element={<NotFound />} />
 
