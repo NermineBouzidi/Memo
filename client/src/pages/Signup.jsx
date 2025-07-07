@@ -11,7 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import MascotteIntro from "../components/MascotteIntro";
 
 const Signup = () => {
-  const { signup, login } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -49,6 +49,7 @@ const Signup = () => {
     e.preventDefault();
     const errors = validateFields();
     setFieldErrors(errors);
+
     if (Object.keys(errors).length > 0) {
       Swal.fire({
         icon: "error",
@@ -62,27 +63,46 @@ const Signup = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await signupUser(formData);
-      Swal.fire({
-        icon: "success",
-        title: "Inscription réussie",
-        toast: true,
-        position: "top-end",
-        timer: 3000,
-        showConfirmButton: false,
-      });
-      navigate("/home");
+      const response = await signupUser(formData);
+
+      if (!response.data.user.isAccountVerified) {
+        Swal.fire({
+          icon: "success",
+          title: "Inscription réussie",
+          text: "Un email de vérification vous a été envoyé.",
+          position: "top-end",
+          toast: true,
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        navigate("/verify-account");
+      } else {
+        await login(response.data.user, response.data.token);
+        Swal.fire({
+          icon: "success",
+          title: "Bienvenue !",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        navigate("/home");
+      }
     } catch (err) {
+      const message = err.response?.data?.message || "Erreur lors de l'inscription";
       Swal.fire({
         icon: "error",
         title: "Erreur",
-        text: err.message || "Erreur lors de l'inscription",
+        text: message,
         toast: true,
         timer: 3000,
         position: "top-end",
         showConfirmButton: false,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,18 +118,22 @@ const Signup = () => {
       const res = await axios.post("http://localhost:8080/api/auth/register/google", googleUserData, {
         withCredentials: true,
       });
-      if (res.data) {
-        await login({ email: res.data.newUser.email, password: res.data.finalPassword });
-        Swal.fire({
-          icon: "success",
-          title: "Connexion réussie",
-          toast: true,
-          timer: 2000,
-          position: "top-end",
-          showConfirmButton: false,
-        });
-        navigate("/home");
-      }
+
+      const loginResponse = await login({
+        email: res.data.newUser.email,
+        password: res.data.finalPassword,
+        rememberMe: false,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Connexion réussie",
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+      });
+      navigate("/home");
     } catch (err) {
       console.error("Erreur Google Login :", err);
     } finally {
@@ -117,7 +141,9 @@ const Signup = () => {
     }
   };
 
-  const handleGoogleLoginError = () => console.error("Google login failed");
+  const handleGoogleLoginError = () => {
+    console.error("Google login failed");
+  };
 
   useGoogleOneTapLogin({
     onSuccess: handleGoogleLoginSuccess,
@@ -127,7 +153,16 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
-      {/* Mascotte avant le formulaire */}
+      {/* Accueil flottant */}
+      <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
+        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
+          </svg>
+          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
+        </div>
+      </Link>
+
       {!showForm ? (
         <MascotteIntro onFinish={() => setShowForm(true)} />
       ) : (
@@ -147,9 +182,7 @@ const Signup = () => {
           <div className="relative w-full max-w-md z-10">
             <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500 to-pink-600 opacity-30 blur-xl animate-rotate-slow" />
             <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">
-                Créer un compte
-              </h2>
+              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Créer un compte</h2>
 
               {["name", "email", "password"].map((field) => (
                 <div key={field}>
@@ -159,45 +192,25 @@ const Signup = () => {
                   <input
                     type={field === "password" ? "password" : "text"}
                     name={field}
-                    placeholder={
-                      field === "name" ? "Jean Dupont" : field === "email" ? "exemple@mail.com" : "••••••••"
-                    }
+                    placeholder={field === "name" ? "Jean Dupont" : field === "email" ? "exemple@mail.com" : "••••••••"}
                     value={formData[field]}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      fieldErrors[field] ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                    } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
+                    className={`w-full px-4 py-3 rounded-lg border ${fieldErrors[field] ? "border-red-500" : "border-gray-300 dark:border-gray-600"} bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
                   />
-                  {fieldErrors[field] && (
-                    <p className="text-red-500 text-xs mt-1 animate-shake">{fieldErrors[field]}</p>
-                  )}
+                  {fieldErrors[field] && <p className="text-red-500 text-xs mt-1 animate-shake">{fieldErrors[field]}</p>}
                 </div>
               ))}
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300"
-              >
+              <button type="submit" disabled={isLoading} className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300">
                 {isLoading ? "Traitement..." : "S'inscrire"}
               </button>
 
               <div className="text-center">
-                <img
-                  src="/assets/icons/google.png"
-                  alt="Google"
-                  width="24"
-                  height="24"
-                  onClick={() => setEnableGoogleLogin(true)}
-                  className="mx-auto cursor-pointer"
-                />
+                <img src="/assets/icons/google.png" alt="Google" width="24" height="24" onClick={() => setEnableGoogleLogin(true)} className="mx-auto cursor-pointer" />
               </div>
 
               <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                Vous avez déjà un compte ?{" "}
-                <Link to="/login" className="text-pink-500 hover:underline">
-                  Connectez-vous
-                </Link>
+                Vous avez déjà un compte ? <Link to="/login" className="text-pink-500 hover:underline">Connectez-vous</Link>
               </p>
             </form>
           </div>
