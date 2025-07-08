@@ -668,25 +668,26 @@ export default function Navbar() {
     <div className="mt-6 grid grid-cols-2 gap-2">
       <button
         onClick={() => setShowCart(false)}
-        className="col-span-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
       >
         Fermer
       </button>
 
-      <button
-        onClick={() => {
-          setShowCart(false);
-          navigate("/voir-panier");
-        }}
-        className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-      >
-        Voir le panier
-      </button>
+     <button
+  onClick={() => {
+    setShowCart(false);
+    navigate("/voir-panier");
+  }}
+  className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
+>
+  Voir le panier
+</button>
+
 
       {user ? (
         <button
           onClick={() => navigate("/checkout")}
-          className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+          className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
         >
           Passer à la caisse
         </button>
@@ -704,7 +705,7 @@ export default function Navbar() {
 
       <button
         onClick={handleClearCartWithAnimation}
-        className={`col-span-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition ${
+        className={`bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition ${
           isClearing ? "pulse disabled" : ""
         }`}
         disabled={isClearing}
