@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 
 dotenv.config(); // <-- Load .env variables here!
 
