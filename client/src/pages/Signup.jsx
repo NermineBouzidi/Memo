@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import logo from "../assets/logo.png";
 import axios from "axios";
 import { signupUser } from "../api/auth";
-import { useGoogleOneTapLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import MascotteIntro from "../components/MascotteIntro";
 
@@ -14,16 +14,15 @@ const Signup = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ 
+    name: "", 
+    email: "", 
+    password: "" 
+  });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [isRegisterSuccess, setIsRegisterSuccess] = useState(location.state?.isRegisterSuccess ?? false);
-
-  useEffect(() => {
-    if (showForm) setEnableGoogleLogin(true);
-  }, [showForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -106,51 +105,41 @@ const Signup = () => {
     }
   };
 
-  const handleGoogleLoginSuccess = async (response) => {
-    setIsLoading(true);
-    try {
-      const decoded = jwtDecode(response.credential);
-      const googleUserData = {
-        firstName: decoded.given_name,
-        lastName: decoded.family_name,
-        email: decoded.email,
-      };
+  const handleGoogleSignup = async (credentialResponse) => {
+  setGoogleLoading(true);
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/api/auth/google", // Nouvelle URL
+      { credential: credentialResponse.credential },
+      { withCredentials: true }
+    );
 
-      const res = await axios.post("http://localhost:8080/api/auth/register/google", googleUserData, {
-        withCredentials: true,
-      });
-
-      await login({
-        email: res.data.newUser.email,
-        password: res.data.finalPassword,
-        rememberMe: false,
-      });
-
+    if (response.data.success) {
       Swal.fire({
         icon: "success",
-        title: "Connexion réussie",
+        title: "Authentification réussie",
         toast: true,
-        timer: 2000,
         position: "top-end",
+        timer: 3000,
         showConfirmButton: false,
       });
-      navigate("/home");
-    } catch (err) {
-      console.error("Erreur Google Login :", err);
-    } finally {
-      setIsLoading(false);
+      navigate("/");
     }
-  };
-
-  const handleGoogleLoginError = () => {
-    console.error("Google login failed");
-  };
-
-  useGoogleOneTapLogin({
-    onSuccess: handleGoogleLoginSuccess,
-    onError: handleGoogleLoginError,
-    disabled: !enableGoogleLogin,
-  });
+  } catch (error) {
+    console.error("Google auth error:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Erreur",
+      text: error.response?.data?.message || "Échec de l'authentification Google",
+      toast: true,
+      position: "top-end",
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  } finally {
+    setGoogleLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
@@ -167,13 +156,11 @@ const Signup = () => {
         <MascotteIntro onFinish={() => setShowForm(true)} />
       ) : (
         <>
-          {/* Arrière-plan animé */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-red-500/10 to-pink-600/10 rounded-full blur-3xl animate-float-slow top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 z-0" />
             <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-cyan-600/10 rounded-full blur-3xl animate-float-medium top-3/4 left-3/4 -translate-x-1/2 -translate-y-1/2 z-0" />
           </div>
 
-          {/* Logo + Formulaire */}
           <div className="w-full lg:w-1/2 flex justify-center px-8">
             <img src={logo} alt="Logo" className="h-72 animate-fade-in" />
           </div>
@@ -200,12 +187,42 @@ const Signup = () => {
                 </div>
               ))}
 
-              <button type="submit" disabled={isLoading} className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300">
+              <button 
+                type="submit" 
+                disabled={isLoading || googleLoading}
+                className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300 disabled:opacity-70"
+              >
                 {isLoading ? "Traitement..." : "S'inscrire"}
               </button>
 
-              <div className="text-center">
-                <img src="/assets/icons/google.png" alt="Google" width="24" height="24" onClick={() => setEnableGoogleLogin(true)} className="mx-auto cursor-pointer" />
+              <div className="flex items-center justify-center">
+                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
+                <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">ou</span>
+                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
+              </div>
+
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSignup}
+                  onError={() => {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Erreur",
+                      text: "Échec de l'authentification Google",
+                      toast: true,
+                      position: "top-end",
+                      timer: 3000,
+                      showConfirmButton: false,
+                    });
+                  }}
+                  shape="pill"
+                  theme="filled_blue"
+                  size="large"
+                  text="signup_with"
+                  locale="fr"
+                  useOneTap={false}
+                  disabled={googleLoading || isLoading}
+                />
               </div>
 
               <p className="text-sm text-center text-gray-700 dark:text-gray-300">

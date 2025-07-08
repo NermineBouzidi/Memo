@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Lottie from "lottie-react"; // si tu utilises lottie-react
 import userIconAnimation from "../assets/userIcon.json";
@@ -55,34 +55,48 @@ export default function Navbar() {
   const [showCart, setShowCart] = useState(false);
   const [removingItems, setRemovingItems] = useState([]);
   const [isClearing, setIsClearing] = useState(false);
+  const [lineStyle, setLineStyle] = useState({ width: 0, left: 0 });
 
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { cartItems, itemCount, removeFromCart, clearCart,isAdding } = useCart();
-  const { user,logout } = useAuth(); // ou isAuthenticated, selon ton contexte
+  const { cartItems, itemCount, removeFromCart, clearCart, isAdding } = useCart();
+  const { user, logout } = useAuth(); // ou isAuthenticated, selon ton contexte
   const lottieCartRef = useRef();
+  const navRef = useRef(null);
   const [showAddAnimation, setShowAddAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState("idle"); // idle | animating
 
+  const [showLottie, setShowLottie] = useState(true);
+  
 
- const [showLottie, setShowLottie] = useState(true);
+  // Animation de la ligne rouge
+  useEffect(() => {
+    if (navRef.current && active) {
+      const activeButton = Array.from(navRef.current.children).find(
+        (child) => child.dataset.id === active
+      );
+      if (activeButton) {
+        const { offsetLeft, offsetWidth } = activeButton;
+        setLineStyle({
+          width: offsetWidth,
+          left: offsetLeft
+        });
+      }
+    }
+  }, [active]);
 
-useEffect(() => {
-  if (isAdding) {
-    // Démarre l'animation
-    lottieCartRef.current?.goToAndPlay(0, true);
+  useEffect(() => {
+    if (isAdding) {
+      // Démarre l'animation
+      lottieCartRef.current?.goToAndPlay(0, true);
 
-    setTimeout(() => {
-  setShowLottie(false);
-  setTimeout(() => setShowLottie(true), 50);
-}, 1800);
-  }
-}, [isAdding]);
-
-
-
-
+      setTimeout(() => {
+        setShowLottie(false);
+        setTimeout(() => setShowLottie(true), 50);
+      }, 1800);
+    }
+  }, [isAdding]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,6 +134,7 @@ useEffect(() => {
     if (item.submenu) {
       setDropdownOpen(dropdownOpen === item.id ? null : item.id);
     } else {
+      setActive(item.id);
       scrollToSection(item.id, item.scrollTo);
     }
   };
@@ -157,20 +172,20 @@ useEffect(() => {
       setIsClearing(false);
     }, 700);
   };
+  
   const updateQuantity = (productId, newQuantity) => {
-  if (newQuantity < 1) return;
-  setIsAnimating(true);
-  const timer = setTimeout(() => setIsAnimating(false), 600);
+    if (newQuantity < 1) return;
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 600);
 
-  // Appelle une méthode contextuelle si tu en as, sinon modifie localement
-  // Exemple si tu as updateCartQuantity dans ton useCart
-  if (typeof updateCartQuantity === "function") {
-    updateCartQuantity(productId, newQuantity);
-  }
+    // Appelle une méthode contextuelle si tu en as, sinon modifie localement
+    // Exemple si tu as updateCartQuantity dans ton useCart
+    if (typeof updateCartQuantity === "function") {
+      updateCartQuantity(productId, newQuantity);
+    }
 
-  return () => clearTimeout(timer);
-};
-
+    return () => clearTimeout(timer);
+  };
 
   return (
     <>
@@ -268,9 +283,6 @@ useEffect(() => {
   box-shadow: 0 0 10px rgba(255, 80, 80, 0.4);
   transform: scale(1.03);
 }
-
-
-
         `}
       </style>
 
@@ -283,38 +295,114 @@ useEffect(() => {
           />
         </Link>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex gap-8 items-center bg-gray-100 dark:bg-[#161616] rounded-full px-10 py-2 border border-gray-300 dark:border-gray-600 shadow-sm">
-          {navItems.map((item) => (
-            <li key={item.id} className="relative">
-              <div
-                className={`cursor-pointer text-sm md:text-base transition-colors duration-300 flex items-center gap-1 ${
-                  active === item.id
-                    ? "text-red-600 font-semibold"
-                    : "text-gray-700 dark:text-white hover:text-red-600"
-                }`}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.label}
-                {item.submenu && <ChevronDown size={16} />}
-              </div>
-
-              {item.submenu && dropdownOpen === item.id && (
-                <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
-                  {item.submenu.map((submenuItem) => (
-                    <button
-                      key={submenuItem.id}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-600 transition-colors"
-                      onClick={() => handleSubmenuClick(item.id, submenuItem)}
-                    >
-                      {submenuItem.label}
-                    </button>
-                  ))}
+        {/* Desktop Navigation with Animated Line */}
+        <div className="hidden md:block relative">
+          <ul 
+            ref={navRef}
+            className="flex gap-8 items-center px-2 py-2 relative"
+          >
+            {navItems.map((item) => (
+              <li key={item.id} className="relative" data-id={item.id}>
+                <div
+                  className={`cursor-pointer text-sm md:text-base transition-all duration-300 flex items-center gap-1 py-2 px-1 ${
+                    active === item.id
+                      ? "text-red-600 font-semibold transform scale-105"
+                      : "text-gray-700 dark:text-white hover:text-red-600 hover:scale-102"
+                  }`}
+                  onClick={() => handleItemClick(item)}
+                >
+                  {item.label}
+                  {item.submenu && <ChevronDown size={16} />}
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
+
+                {item.submenu && dropdownOpen === item.id && (
+                  <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
+                    {item.submenu.map((submenuItem) => (
+                      <button
+                        key={submenuItem.id}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-600 transition-colors"
+                        onClick={() => handleSubmenuClick(item.id, submenuItem)}
+                      >
+                        {submenuItem.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {/* Animated Red Line */}
+          <div 
+            className="absolute bottom-0 h-1 transition-all duration-700 ease-out transform origin-center"
+            style={{
+              width: `${lineStyle.width + 8}px`,
+              left: `${lineStyle.left - 4}px`,
+            }}
+          >
+            {/* Main animated line with red gradient */}
+            <div 
+              className="relative h-full rounded-full"
+              style={{
+                background: 'linear-gradient(90deg, #DC2626, #EF4444, #F87171, #FCA5A5)',
+                backgroundSize: '300% 100%',
+                animation: 'gradientShift 3s ease-in-out infinite, slideIn 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                filter: 'drop-shadow(0 0 12px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 24px rgba(220, 38, 38, 0.6))',
+                boxShadow: '0 0 20px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              {/* Bright white shimmer overlay */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent)',
+                  animation: 'shimmer 2s ease-in-out infinite',
+                }}
+              />
+              
+              {/* Red particle effects */}
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-red-400 rounded-full animate-bounce opacity-80" 
+                   style={{ 
+                     animationDelay: '0.1s', 
+                     animationDuration: '1.5s',
+                     filter: 'drop-shadow(0 0 4px rgba(248, 113, 113, 0.8))'
+                   }} />
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-300 rounded-full animate-bounce opacity-80" 
+                   style={{ 
+                     animationDelay: '0.3s', 
+                     animationDuration: '1.5s',
+                     filter: 'drop-shadow(0 0 4px rgba(252, 165, 165, 0.8))'
+                   }} />
+              
+              {/* Pulsing red ends */}
+              <div className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-red-500/70 rounded-full blur-sm animate-ping" 
+                   style={{ filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.9))' }} />
+              <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-red-400/70 rounded-full blur-sm animate-ping" 
+                   style={{ 
+                     animationDelay: '0.5s',
+                     filter: 'drop-shadow(0 0 6px rgba(248, 113, 113, 0.9))'
+                   }} />
+            </div>
+            
+            {/* Secondary red glow effect */}
+            <div 
+              className="absolute inset-0 rounded-full scale-150 blur-md"
+              style={{
+                background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.4), rgba(248, 113, 113, 0.3))',
+                animation: 'breathe 4s ease-in-out infinite',
+              }}
+            />
+            
+            {/* Bright highlight line */}
+            <div 
+              className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3/4 h-0.5 rounded-full"
+              style={{
+                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent)',
+                animation: 'shimmer 3s ease-in-out infinite reverse',
+              }}
+            />
+          </div>
+        </div>
 
         {/* Right actions (desktop) */}
         <div className="hidden md:flex items-center gap-4">
@@ -341,12 +429,6 @@ useEffect(() => {
     </span>
   )}
 </button>
-
-
-
-
-
-
 
           {/* Bouton bascule thème */}
           <button
@@ -587,25 +669,26 @@ useEffect(() => {
     <div className="mt-6 grid grid-cols-2 gap-2">
       <button
         onClick={() => setShowCart(false)}
-        className="col-span-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
       >
         Fermer
       </button>
 
-      <button
-        onClick={() => {
-          setShowCart(false);
-          navigate("/voir-panier");
-        }}
-        className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-      >
-        Voir le panier
-      </button>
+     <button
+  onClick={() => {
+    setShowCart(false);
+    navigate("/voir-panier");
+  }}
+  className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
+>
+  Voir le panier
+</button>
+
 
       {user ? (
         <button
           onClick={() => navigate("/checkout")}
-          className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition"
+          className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
         >
           Passer à la caisse
         </button>
@@ -623,7 +706,7 @@ useEffect(() => {
 
       <button
         onClick={handleClearCartWithAnimation}
-        className={`col-span-2 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition ${
+        className={`bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition ${
           isClearing ? "pulse disabled" : ""
         }`}
         disabled={isClearing}
