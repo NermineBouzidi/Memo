@@ -1,7 +1,6 @@
-// Signup.jsx
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../assets/logo.png";
 import axios from "axios";
@@ -13,12 +12,14 @@ import MascotteIntro from "../components/MascotteIntro";
 const Signup = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [showForm, setShowForm] = useState(false);
   const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [isRegisterSuccess, setIsRegisterSuccess] = useState(location.state?.isRegisterSuccess ?? false);
 
   useEffect(() => {
     if (showForm) setEnableGoogleLogin(true);
@@ -27,7 +28,7 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setFieldErrors({ ...fieldErrors, [name]: "" });
+    setFieldErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validateFields = () => {
@@ -41,7 +42,8 @@ const Signup = () => {
       formData.password.length < 6 ||
       !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/.test(formData.password)
     )
-      errors.password = "Mot de passe trop faible.";
+      errors.password =
+        "Le mot de passe doit contenir au moins 6 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
     return errors;
   };
 
@@ -49,12 +51,11 @@ const Signup = () => {
     e.preventDefault();
     const errors = validateFields();
     setFieldErrors(errors);
-
     if (Object.keys(errors).length > 0) {
       Swal.fire({
         icon: "error",
         title: "Erreur de saisie",
-        text: "Corrigez les champs indiqués.",
+        text: "Veuillez corriger les champs indiqués.",
         position: "top-end",
         toast: true,
         timer: 3000,
@@ -66,16 +67,15 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const response = await signupUser(formData);
-
       if (!response.data.user.isAccountVerified) {
         Swal.fire({
           icon: "success",
           title: "Inscription réussie",
           text: "Un email de vérification vous a été envoyé.",
-          position: "top-end",
           toast: true,
-          showConfirmButton: false,
+          position: "top-end",
           timer: 3000,
+          showConfirmButton: false,
         });
         navigate("/verify-account");
       } else {
@@ -84,8 +84,8 @@ const Signup = () => {
           icon: "success",
           title: "Bienvenue !",
           toast: true,
-          position: "top-end",
           timer: 3000,
+          position: "top-end",
           showConfirmButton: false,
         });
         navigate("/home");
@@ -115,11 +115,12 @@ const Signup = () => {
         lastName: decoded.family_name,
         email: decoded.email,
       };
+
       const res = await axios.post("http://localhost:8080/api/auth/register/google", googleUserData, {
         withCredentials: true,
       });
 
-      const loginResponse = await login({
+      await login({
         email: res.data.newUser.email,
         password: res.data.finalPassword,
         rememberMe: false,
@@ -153,13 +154,12 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
-      {/* Accueil flottant */}
       <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
-        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
           </svg>
-          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
+          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium">Accueil</span>
         </div>
       </Link>
 
@@ -167,18 +167,17 @@ const Signup = () => {
         <MascotteIntro onFinish={() => setShowForm(true)} />
       ) : (
         <>
-          {/* Fond animé */}
+          {/* Arrière-plan animé */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-red-500/10 to-pink-600/10 rounded-full blur-3xl animate-float-slow top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 z-0" />
             <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-cyan-600/10 rounded-full blur-3xl animate-float-medium top-3/4 left-3/4 -translate-x-1/2 -translate-y-1/2 z-0" />
           </div>
 
-          {/* Logo */}
+          {/* Logo + Formulaire */}
           <div className="w-full lg:w-1/2 flex justify-center px-8">
             <img src={logo} alt="Logo" className="h-72 animate-fade-in" />
           </div>
 
-          {/* Formulaire */}
           <div className="relative w-full max-w-md z-10">
             <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500 to-pink-600 opacity-30 blur-xl animate-rotate-slow" />
             <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">

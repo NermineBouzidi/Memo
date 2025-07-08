@@ -26,6 +26,12 @@ import Categories from "./pages/Categories";
 import Blog from "./pages/Blog";
 import SavoirPlus from "./pages/SavoirPlus";
 import Home from "./pages/Home";
+import VoirPanier from "./pages/VoirPanier";
+import Faq from "./pages/Faq";
+import AvisClients from "./pages/AvisClients";
+import GuideUtilisation from "./pages/GuideUtilisation";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function AppContent() {
   const location = useLocation();
@@ -56,6 +62,10 @@ function AppContent() {
           <Route path="/categories" element={<Categories />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
+           <Route path="/faq" element={<Faq/>} />
+              <Route path="/avis-clients" element={<AvisClients/>} />
+              <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+
 
           <Route
             path="/signup"
@@ -82,6 +92,7 @@ function AppContent() {
           <Route path="/emailstep" element={<EmailStep />} />
           <Route path="/otpstep" element={<OtpStep />} />
           <Route path="/nouveaupass" element={<NewPasswordStep />} />
+          <Route path="/voir-panier" element={<VoirPanier />} />
           <Route path="*" element={<NotFound />} />
 
           {/* Admin Routes */}
