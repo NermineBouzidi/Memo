@@ -92,6 +92,7 @@ export default function Contact() {
 
         {/* Contact Information Cards */}
         <div className="space-y-8 max-w-lg mx-auto">
+
           {contactInfo.map(({ icon, title, detail }) => (
             <div
               key={title}

@@ -1,368 +1,240 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import Bar from "../components/Bar";
-import { signupUser } from "../api/auth"; // Import the signup API function
-
-import { useGoogleOneTapLogin } from "@react-oauth/google";
+import logo from "../assets/logo.png";
 import axios from "axios";
+import { signupUser } from "../api/auth";
+import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import MascotteIntro from "../components/MascotteIntro";
 
 const Signup = () => {
-  const { login } = useAuth(); // Assuming your AuthContext has a login function
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [isRegisterSuccess, setIsRegisterSuccess] = useState(location.state?.isRegisterSuccess ?? false);
 
- const [ setError] = useState("");
-const [fieldErrors, setFieldErrors] = useState({});
-const [isLoading, setIsLoading] = useState(false);
-const initialRegisterSuccess = location.state?.isRegisterSuccess ?? false;
-const [isRegisterSuccess, setisRegisterSuccess] = useState(initialRegisterSuccess);
+  useEffect(() => {
+    if (showForm) setEnableGoogleLogin(true);
+  }, [showForm]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Clear error when user starts typing
-    if (fieldErrors[name]) {
-      setFieldErrors({ ...fieldErrors, [name]: "" });
-    }
+    setFieldErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validateFields = () => {
     const errors = {};
-    if (!formData.name || formData.name.trim().length < 3) {
+    if (!formData.name || formData.name.trim().length < 3)
       errors.name = "Le nom doit contenir au moins 3 caractères.";
-    }
-
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Veuillez entrer une adresse email valide.";
-    }
-
     if (
       !formData.password ||
       formData.password.length < 6 ||
       !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/.test(formData.password)
-    ) {
+    )
       errors.password =
         "Le mot de passe doit contenir au moins 6 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
-    }
-
     return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    
     const errors = validateFields();
     setFieldErrors(errors);
-
     if (Object.keys(errors).length > 0) {
       Swal.fire({
         icon: "error",
         title: "Erreur de saisie",
-        text: "Veuillez corriger les champs indiqués en rouge.",
+        text: "Veuillez corriger les champs indiqués.",
         position: "top-end",
         toast: true,
-        showConfirmButton: false,
         timer: 3000,
-        timerProgressBar: true,
+        showConfirmButton: false,
       });
-      setIsLoading(false);
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await signupUser(formData);
-      
-      if (response.data.success) {
-        if (!response.data.user.isAccountVerified) {
-          Swal.fire({
-            icon: "success",
-            title: "Inscription réussie",
-            text: "Un email de vérification vous a été envoyé.",
-            position: "top-end",
-            toast: true,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-          navigate("/verify-account");
-        } else {
-          // If account is already verified (unlikely but possible)
-          login(response.data.user, response.data.token);
-          Swal.fire({
-            icon: "success",
-            title: "Inscription réussie",
-            text: "Bienvenue !",
-            position: "top-end",
-            toast: true,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-          navigate("/home");
-        }
+      if (!response.data.user.isAccountVerified) {
+        Swal.fire({
+          icon: "success",
+          title: "Inscription réussie",
+          text: "Un email de vérification vous a été envoyé.",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+        navigate("/verify-account");
+      } else {
+        await login(response.data.user, response.data.token);
+        Swal.fire({
+          icon: "success",
+          title: "Bienvenue !",
+          toast: true,
+          timer: 3000,
+          position: "top-end",
+          showConfirmButton: false,
+        });
+        navigate("/home");
       }
     } catch (err) {
-      let errorMessage = "Une erreur est survenue lors de l'inscription";
-      if (err.response && err.response.data && err.response.data.message) {
-        errorMessage = err.response.data.message;
-      }
-      
+      const message = err.response?.data?.message || "Erreur lors de l'inscription";
       Swal.fire({
         icon: "error",
-        title: "Erreur d'inscription",
-        text: errorMessage,
-        position: "top-end",
+        title: "Erreur",
+        text: message,
         toast: true,
-        showConfirmButton: false,
         timer: 3000,
-        timerProgressBar: true,
+        position: "top-end",
+        showConfirmButton: false,
       });
     } finally {
       setIsLoading(false);
     }
   };
-const handleGoogleLoginSuccess = async (response) => {
-  setIsLoading(true);
-  try {
-    const decoded = jwtDecode(response.credential);
-    const googleUserData = {
-      firstName: decoded.given_name,
-      lastName: decoded.family_name,
-      email: decoded.email,
-    };
 
+  const handleGoogleLoginSuccess = async (response) => {
+    setIsLoading(true);
+    try {
+      const decoded = jwtDecode(response.credential);
+      const googleUserData = {
+        firstName: decoded.given_name,
+        lastName: decoded.family_name,
+        email: decoded.email,
+      };
 
-    const res = await axios.post(
-      "http://localhost:8080/api/auth/register/google",
-      googleUserData,
-      {
+      const res = await axios.post("http://localhost:8080/api/auth/register/google", googleUserData, {
         withCredentials: true,
-      }
-    );
+      });
 
-    if (res.data) {
-     
-      setisRegisterSuccess(true);
-      const response = await login({
-  email: res.data.newUser.email,
-  password: res.data.finalPassword,
-  rememberMe: false
-});
-   const role = response.user.role;
-  
-        Swal.fire({
-          icon: "success",
-          title: "Connexion réussie",
-          position: "top-end",
-          toast: true,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-  
-         navigate("/home");
+      await login({
+        email: res.data.newUser.email,
+        password: res.data.finalPassword,
+        rememberMe: false,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Connexion réussie",
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+      });
+      navigate("/home");
+    } catch (err) {
+      console.error("Erreur Google Login :", err);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-   
-  } finally {
-    setIsLoading(false); // ✅ always run this at the end
-  }
-};
-
-
-  // Handle Google login error
-  const handleGoogleLoginError = () => {
-    setError("Google login failed.");
   };
 
-  const [enableGoogleLogin, setEnableGoogleLogin] = useState(false);
+  const handleGoogleLoginError = () => {
+    console.error("Google login failed");
+  };
+
   useGoogleOneTapLogin({
     onSuccess: handleGoogleLoginSuccess,
     onError: handleGoogleLoginError,
     disabled: !enableGoogleLogin,
   });
 
-  const triggerGoogleLogin = () => {
-    setEnableGoogleLogin(true);
-  };
-
-
   return (
-    <>
-    {isRegisterSuccess && <p>Registration successful!</p>}
-
-      <Bar />
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 px-4 relative overflow-hidden">
-        {/* Animation de fond */}
-        <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-600 opacity-30 dark:opacity-20 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
-
-        {/* Conteneur du formulaire avec bordure animée */}
-        <div className="relative w-full max-w-md">
-          {/* Bordure animée - Couche 1 */}
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-red-500 to-pink-600 opacity-75 blur-lg animate-spin-slow z-0" />
-          
-          {/* Bordure animée - Couche 2 (sens inverse) */}
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-pink-600 to-red-500 opacity-75 blur-lg animate-spin-slow-reverse z-0" />
-          
-          {/* Formulaire */}
-          <form
-            onSubmit={handleSubmit}
-            className="relative z-10 bg-white/70 dark:bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 sm:p-10 w-full space-y-6"
-          >
-            <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white">
-              Créer un compte
-            </h2>
-
-            {/* Nom complet */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                Nom complet
-              </label>
-              <input
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Votre nom"
-                className={`w-full px-4 py-3 border ${
-                  fieldErrors.name
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } rounded-lg bg-white dark:bg-white/10 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-white/60 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition`}
-              />
-              {fieldErrors.name && (
-                <p className="text-red-600 text-sm mt-1">{fieldErrors.name}</p>
-              )}
-            </div>
-
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                Adresse email
-              </label>
-              <input
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="votre@email.com"
-                className={`w-full px-4 py-3 border ${
-                  fieldErrors.email
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } rounded-lg bg-white dark:bg-white/10 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-white/60 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition`}
-              />
-              {fieldErrors.email && (
-                <p className="text-red-600 text-sm mt-1">{fieldErrors.email}</p>
-              )}
-            </div>
-
-            {/* Mot de passe */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                Mot de passe
-              </label>
-              <input
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="********"
-                className={`w-full px-4 py-3 border ${
-                  fieldErrors.password
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } rounded-lg bg-white dark:bg-white/10 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-white/60 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition`}
-              />
-              {fieldErrors.password && (
-                <p className="text-red-600 text-sm mt-1">
-                  {fieldErrors.password}
-                </p>
-              )}
-            </div>
-
-            {/* Bouton d'inscription */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full py-3 px-6 rounded-lg font-semibold text-white 
-                bg-gradient-to-r from-red-500 to-pink-600 
-                shadow-lg shadow-pink-300/40
-                hover:from-pink-600 hover:to-red-500 
-                hover:scale-105 hover:shadow-xl 
-                focus-visible:outline focus-visible:outline-2 focus-visible:outline-pink-400
-                transition-all duration-300 ease-in-out
-                ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Traitement...
-                </span>
-              ) : "S'inscrire"}
-            </button>
-
-            <div className="text-center text-sm text-gray-700 dark:text-gray-300">
-              Vous avez déjà un compte ?{" "}
-              <Link
-                to="/login"
-                className="text-pink-500 dark:text-pink-400 hover:underline font-medium"
-              >
-                Connectez-vous
-              </Link>
-            </div>
-
-             {/* Google Login */}
-            <div className="">
-              <img
-                src="/assets/icons/google.png"
-                alt="Google"
-                width="24"
-                height="24"
-                onClick={triggerGoogleLogin}
-                style={{ cursor: "pointer" }}
-              />
-            </div>
-          </form>
-          
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
+      <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
+        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
+          </svg>
+          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium">Accueil</span>
         </div>
-        
+      </Link>
 
-      </div>
+      {!showForm ? (
+        <MascotteIntro onFinish={() => setShowForm(true)} />
+      ) : (
+        <>
+          {/* Arrière-plan animé */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-red-500/10 to-pink-600/10 rounded-full blur-3xl animate-float-slow top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 z-0" />
+            <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-cyan-600/10 rounded-full blur-3xl animate-float-medium top-3/4 left-3/4 -translate-x-1/2 -translate-y-1/2 z-0" />
+          </div>
 
-      {/* Styles pour les animations */}
-      <style jsx global>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
+          {/* Logo + Formulaire */}
+          <div className="w-full lg:w-1/2 flex justify-center px-8">
+            <img src={logo} alt="Logo" className="h-72 animate-fade-in" />
+          </div>
+
+          <div className="relative w-full max-w-md z-10">
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500 to-pink-600 opacity-30 blur-xl animate-rotate-slow" />
+            <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
+              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Créer un compte</h2>
+
+              {["name", "email", "password"].map((field) => (
+                <div key={field}>
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                    {field === "name" ? "Nom complet" : field === "email" ? "Adresse Email" : "Mot de passe"}
+                  </label>
+                  <input
+                    type={field === "password" ? "password" : "text"}
+                    name={field}
+                    placeholder={field === "name" ? "Jean Dupont" : field === "email" ? "exemple@mail.com" : "••••••••"}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-3 rounded-lg border ${fieldErrors[field] ? "border-red-500" : "border-gray-300 dark:border-gray-600"} bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400`}
+                  />
+                  {fieldErrors[field] && <p className="text-red-500 text-xs mt-1 animate-shake">{fieldErrors[field]}</p>}
+                </div>
+              ))}
+
+              <button type="submit" disabled={isLoading} className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300">
+                {isLoading ? "Traitement..." : "S'inscrire"}
+              </button>
+
+              <div className="text-center">
+                <img src="/assets/icons/google.png" alt="Google" width="24" height="24" onClick={() => setEnableGoogleLogin(true)} className="mx-auto cursor-pointer" />
+              </div>
+
+              <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+                Vous avez déjà un compte ? <Link to="/login" className="text-pink-500 hover:underline">Connectez-vous</Link>
+              </p>
+            </form>
+          </div>
+        </>
+      )}
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) translateX(0); }
+          50% { transform: translateY(-20px) translateX(10px); }
         }
-        .animate-spin-slow {
-          animation: spin 8s linear infinite;
+        @keyframes rotate { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-5px); }
+          40%, 80% { transform: translateX(5px); }
         }
-        @keyframes spin-reverse {
-          to {
-            transform: rotate(-360deg);
-          }
-        }
-        .animate-spin-slow-reverse {
-          animation: spin-reverse 10s linear infinite;
-        }
+        .animate-float-slow { animation: float 12s ease-in-out infinite; }
+        .animate-float-medium { animation: float 8s ease-in-out infinite reverse; }
+        .animate-rotate-slow { animation: rotate 20s linear infinite; }
+        .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
       `}</style>
-    </>
+    </div>
   );
 };
 

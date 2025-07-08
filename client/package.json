@@ -11,24 +11,20 @@
   },
   "dependencies": {
 
-    "@react-oauth/google": "^0.12.2",
-    "i18next": "^25.3.0",
-    "jwt-decode": "^4.0.0",
-
-
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-
+    "@react-oauth/google": "^0.12.2",
     "axios": "^1.10.0",
-
-    "framer-motion": "^12.20.5",
-    "lucide-react": "^0.523.0",
+    "framer-motion": "^12.23.0",
+    "i18next": "^25.3.1",
+    "jwt-decode": "^4.0.0",
+    "lottie-react": "^2.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-i18next": "^15.5.3",
+    "react-i18next": "^15.6.0",
     "react-router-dom": "^7.6.2",
-
+    "lucide-react": "^0.523.0",
     "react-toastify": "^11.0.5",
     "sweetalert2": "^11.22.2"
   },

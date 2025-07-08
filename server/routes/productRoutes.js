@@ -1,6 +1,8 @@
 import express from 'express';
 import userAuth from '../middleware/userAuth.js';
 import requireAdmin from '../middleware/requireAdmin.js';
+import Product from "../models/productModel.js";
+
 import {
   createProduct,
   getAllProducts,
@@ -18,5 +20,16 @@ productRoute.delete('/delete-product/:id', userAuth, requireAdmin, deleteProduct
 
 
 
+const router = express.Router();
 
-export default productRoute;
+router.get("/", async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
+export default router;
+
