@@ -4,33 +4,35 @@ import image from "../assets/logo.png";
 import { User, Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
-
-const navItems = [
-  { id: "accueil", label: "Accueil" },
-  {
-    id: "produits",
-    label: "Produits",
-    submenu: [
-      { id: "categories", label: "Catégories" }
-    ]
-  },
-  { id: "tarifs", label: "Tarifs" },
-  { id: "a-propos", label: "À propos", scrollTo: "qui-sommes-nous" },
-  {
-    id: "ressources",
-    label: "Ressources",
-    submenu: [
-      { id: "blogs", label: "Blogs", path: "/blog" },
-      { id: "avis-client", label: "Avis Client", path: "/avis-clients" },
-      { id: "guide-utilisation", label: "Guide d'utilisation", path: "/guide-utilisation" },
-      { id: "faq", label: "FAQ", path: "/faq" },
-      { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" }
-    ]
-  },
-  { id: "contacts", label: "Contact" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
+  const { t } = useTranslation();
+  const navItems = [
+    { id: "accueil", label: t("navbar.home") },
+    {
+      id: "produits",
+      label: t("navbar.products"),
+      submenu: [
+        { id: "categories", label: t("navbar.categories") }
+      ]
+    },
+    { id: "tarifs", label: t("navbar.pricing") },
+    { id: "a-propos", label: t("navbar.about"), scrollTo: "qui-sommes-nous" },
+    {
+      id: "ressources",
+      label: t("navbar.resources"),
+      submenu: [
+        { id: "blogs", label: t("navbar.blogs"), path: "/blog" },
+        { id: "avis-client", label: t("navbar.clientReviews"), path: "/avis-clients" },
+        { id: "guide-utilisation", label: t("navbar.userGuide"), path: "/guide-utilisation" },
+        { id: "faq", label: t("navbar.faq"), path: "/faq" },
+        { id: "en-savoir-plus", label: t("navbar.learnMore"), path: "/savoir-plus" }
+      ]
+    },
+    { id: "contacts", label: t("navbar.contact") },
+  ];
+
   const [active, setActive] = useState("accueil");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
