@@ -20,7 +20,7 @@ import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
 import Faq from "./pages/Faq";
 import AvisClients from "./pages/AvisClients";
-
+import GuideUtilisation from "./pages/GuideUtilisation";
 
 
 import { Users } from "lucide-react";
@@ -82,6 +82,8 @@ function App() {
           <Route path="/savoir-plus" element={<SavoirPlus />} />
               <Route path="/faq" element={<Faq/>} />
               <Route path="/avis-clients" element={<AvisClients/>} />
+              <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+
 
 
 
