@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import image from "../assets/logo.png";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Send } from "lucide-react";
 import { useTranslation } from 'react-i18next';
@@ -9,6 +8,8 @@ export default function Footer() {
     const [email, setEmail] = useState("");
     const [isSubscribed, setIsSubscribed] = useState(false);
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSubscribe = async (e) => {
         e.preventDefault();
@@ -43,6 +44,42 @@ export default function Footer() {
     const handleLanguageChange = (e) => {
         i18n.changeLanguage(e.target.value);
         localStorage.setItem('i18nextLng', e.target.value);
+    };
+
+    // Footer link handlers
+    const handleFooterLink = (type) => {
+        if (type === "about") {
+            if (location.pathname === "/") {
+                const el = document.getElementById("qui-sommes-nous");
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            } else {
+                navigate("/", { state: { scrollTo: "qui-sommes-nous" } });
+            }
+        } else if (type === "join_us") {
+            navigate("/signup");
+        } else if (type === "blog") {
+            navigate("/blog");
+        } else if (type === "all_services") {
+            if (location.pathname === "/") {
+                const el = document.getElementById("nos-services");
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            } else {
+                navigate("/", { state: { scrollTo: "nos-services" } });
+            }
+        } else if (type === "prices") {
+            if (location.pathname === "/") {
+                const el = document.getElementById("tarifs");
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            } else {
+                navigate("/", { state: { scrollTo: "tarifs" } });
+            }
+        }
     };
 
     return (
@@ -91,30 +128,7 @@ export default function Footer() {
                                 </div>
                             </div>
 
-                            {/* Social media */}
-                            <div className="mt-auto">
-                                <h3 className="text-lg font-semibold text-white mb-4 text-center lg:text-left">
-                                    {t('footer.follow_us')}
-                                </h3>
-                                <div className="flex justify-center lg:justify-start space-x-4">
-                                    {[
-                                        { Icon: Facebook, url: "#", color: "hover:bg-blue-600" },
-                                        { Icon: Twitter, url: "#", color: "hover:bg-sky-500" },
-                                        { Icon: Instagram, url: "#", color: "hover:bg-gradient-to-r hover:from-purple-600 hover:via-pink-600 hover:to-yellow-500" },
-                                        { Icon: Linkedin, url: "#", color: "hover:bg-blue-700" },
-                                    ].map(({ Icon, url, color }, index) => (
-                                        <a
-                                            key={index}
-                                            href={url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className={`p-3 bg-gray-700 rounded-full text-gray-300 ${color} hover:text-white transition-all duration-300 hover:shadow-lg hover:-translate-y-1`}
-                                        >
-                                            <Icon size={20} />
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
 
@@ -136,11 +150,18 @@ export default function Footer() {
                                         t('footer.company_closure'),
                                         t('footer.all_services'),
                                         t('footer.prices')
-                                    ].map((service) => (
+                                    ].map((service, idx) => (
                                         <li key={service}>
                                             <a
                                                 href="#"
                                                 className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                                                onClick={
+                                                    idx === 3
+                                                        ? (e) => { e.preventDefault(); handleFooterLink("all_services"); }
+                                                        : idx === 4
+                                                        ? (e) => { e.preventDefault(); handleFooterLink("prices"); }
+                                                        : undefined
+                                                }
                                             >
                                                 <span className="w-2 h-2 bg-gradient-to-r from-red-500 to-blue-500 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                                 {service}
@@ -160,17 +181,18 @@ export default function Footer() {
                                 </h3>
                                 <ul className="space-y-3">
                                     {[
-                                        t('footer.practical_sheets'),
-                                        t('footer.practical_guides'),
-                                        t('footer.templates'),
-                                        t('footer.webinars'),
                                         t('footer.blog'),
                                         t('footer.faq')
-                                    ].map((content) => (
+                                    ].map((content, idx) => (
                                         <li key={content}>
                                             <a
                                                 href="#"
                                                 className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                                                onClick={
+                                                    idx === 0
+                                                        ? (e) => { e.preventDefault(); handleFooterLink("blog"); }
+                                                        : undefined
+                                                }
                                             >
                                                 <span className="w-2 h-2 bg-gradient-to-r from-red-500 to-blue-500 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                                 {content}
@@ -189,20 +211,18 @@ export default function Footer() {
                                     </span>
                                 </h3>
                                 <ul className="space-y-3">
-                                    {[
-                                        t('footer.about'),
-                                        t('footer.team'),
-                                        t('footer.join_us'),
-                                        t('footer.partners'),
-                                        t('footer.press'),
-                                        t('footer.legal_notices'),
-                                        t('footer.cgu'),
-                                        t('footer.confidentiality')
-                                    ].map((item) => (
+                                    {[t('footer.about'), t('footer.join_us'), t('footer.legal_notices'), t('footer.confidentiality')].map((item, idx) => (
                                         <li key={item}>
                                             <a
                                                 href="#"
                                                 className="text-gray-400 hover:text-white transition-colors flex items-center group"
+                                                onClick={
+                                                    idx === 0
+                                                        ? (e) => { e.preventDefault(); handleFooterLink("about"); }
+                                                        : idx === 1
+                                                        ? (e) => { e.preventDefault(); handleFooterLink("join_us"); }
+                                                        : undefined
+                                                }
                                             >
                                                 <span className="w-2 h-2 bg-gradient-to-r from-red-500 to-blue-500 rounded-full mr-3 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                                 {item}
@@ -272,10 +292,7 @@ export default function Footer() {
                         </p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-gray-500 text-sm items-center">
-                        <a href="#" className="hover:text-white transition-colors">{t('footer.legal_mentions')}</a>
-                        <a href="#" className="hover:text-white transition-colors">{t('footer.cgu')}</a>
-                        <a href="#" className="hover:text-white transition-colors">{t('footer.confidentiality')}</a>
-                        <a href="#" className="hover:text-white transition-colors">{t('footer.cookies')}</a>
+                        
                         {/* Language Switcher - moved here for better placement */}
                         <div className="flex items-center ml-4 mt-2 md:mt-0 bg-gray-800 border border-gray-600 rounded px-2 py-1 hover:border-blue-500 transition-colors">
                             <span className="text-gray-400 mr-2" role="img" aria-label="language">🌐</span>

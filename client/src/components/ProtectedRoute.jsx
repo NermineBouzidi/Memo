@@ -24,7 +24,9 @@ const ProtectedRoute = ({ children, requireAuth = true, allowedRoles = [], redir
   // If authentication is not required but user is authenticated (like login/signup pages)
   if (!requireAuth && isAuthenticated) {
     // Redirect based on user role
+
     const redirectPath = user?.role === 'admin' ? '/admin' : '/';
+
     return <Navigate to={redirectPath} replace />;
   }
 
