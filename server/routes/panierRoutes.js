@@ -52,31 +52,51 @@ router.post("/add", auth, async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
-
-/*rimer complètement un produit
-router.delete("/remove/:produitId", auth, async (req, res) => {
+// 🔴 Vider complètement le panier
+router.delete("/vider", auth, async (req, res) => {
   try {
     const utilisateurId = req.userId;
-    const { produitId } = req.params;
+    const panier = await Panier.findOne({ utilisateur: utilisateurId });
 
-    let panier = await Panier.findOne({ utilisateur: utilisateurId });
     if (!panier) {
       return res.status(404).json({ message: "Panier non trouvé" });
     }
 
-    panier.items = panier.items.filter(
-      (item) => item.produit.toString() !== produitId
-    );
-
+    panier.items = []; // Supprimer tous les produits
     await panier.save();
-    await panier.populate("items.produit");
 
-    res.status(200).json({ success: true, items: panier.items });
+    res.status(200).json({ success: true, items: [] });
   } catch (error) {
-    console.error("Erreur DELETE /api/panier/remove/:produitId :", error);
+    console.error("Erreur DELETE /api/panier/vider :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
-});*/
+});
+
+// Exemple : DELETE /api/panier/:productId
+router.delete("/:productId", auth, async (req, res) => {
+  const userId = req.userId;
+  const { productId } = req.params;
+
+  try {
+    const panier = await Panier.findOneAndUpdate(
+      { utilisateur: userId },
+      { $pull: { items: { produit: productId } } },
+      { new: true }
+    );
+
+    if (!panier) {
+      return res.status(404).json({ message: "Panier non trouvé." });
+    }
+
+    res.status(200).json({ success: true, panier });
+  } catch (err) {
+    console.error("Erreur suppression produit :", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
+
+
 
 // 🔴 ➕ Route manquante ajoutée : décrémenter un produit
 router.post("/decrement", auth, async (req, res) => {
@@ -116,25 +136,7 @@ router.post("/decrement", auth, async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
-// 🔴 Vider complètement le panier
-router.delete("/vider", auth, async (req, res) => {
-  try {
-    const utilisateurId = req.userId;
-    const panier = await Panier.findOne({ utilisateur: utilisateurId });
 
-    if (!panier) {
-      return res.status(404).json({ message: "Panier non trouvé" });
-    }
-
-    panier.items = []; // Supprimer tous les produits
-    await panier.save();
-
-    res.status(200).json({ success: true, items: [] });
-  } catch (error) {
-    console.error("Erreur DELETE /api/panier/vider :", error);
-    res.status(500).json({ message: "Erreur serveur" });
-  }
-});
 
 
 // Route pour fusionner le panier invité avec le panier utilisateur connecté

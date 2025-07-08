@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import Swal from "sweetalert2";
 
 const CartContext = createContext();
 
@@ -8,57 +9,60 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const { isAuthenticated } = useAuth();
 
-  // Ref pour mémoriser l'ancien état d'authentification
   const wasAuthenticated = useRef(isAuthenticated);
 
+  // *** Nouvel état pour animation d'ajout ***
+  const [isAdding, setIsAdding] = useState(false);
+
+  // Fonction pour récupérer/fusionner panier local + serveur
+  const fetchCart = async () => {
+    if (!isAuthenticated) {
+      // Pas connecté → charger panier local
+      const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      setCartItems(localCart);
+      return;
+    }
+
+    try {
+      // Connecté → fusion panier local + récupérer panier serveur
+      const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      if (localCart.length > 0) {
+        await axios.post(
+          "http://localhost:8080/api/panier/merge",
+          { items: localCart },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        localStorage.removeItem("guest_cart");
+      }
+
+      const res = await axios.get("http://localhost:8080/api/panier", {
+        withCredentials: true,
+      });
+      setCartItems(res.data.items || []);
+    } catch (error) {
+      console.error("Erreur chargement/fusion panier :", error);
+      setCartItems([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchCart = async () => {
-      if (!isAuthenticated) {
-        // Pas connecté → charger panier local
-        const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
-        setCartItems(localCart);
-        return;
-      }
-
-      try {
-        // Connecté → fusionner panier local + récupérer panier serveur
-        const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
-        if (localCart.length > 0) {
-          await axios.post(
-            "http://localhost:8080/api/panier/merge",
-            { items: localCart },
-            {
-              withCredentials: true,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-          localStorage.removeItem("guest_cart");
-        }
-
-        const res = await axios.get("http://localhost:8080/api/panier", {
-          withCredentials: true,
-        });
-        setCartItems(res.data.items || []);
-      } catch (error) {
-        console.error("Erreur chargement/fusion panier :", error);
-        setCartItems([]);
-      }
-    };
-
     fetchCart();
   }, [isAuthenticated]);
 
-  // Détecte déconnexion et recharge panier local
+  // Détecter déconnexion pour charger panier local
   useEffect(() => {
     if (wasAuthenticated.current && !isAuthenticated) {
-      // Utilisateur vient de se déconnecter → charger panier local
       const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
       setCartItems(localCart);
     }
     wasAuthenticated.current = isAuthenticated;
   }, [isAuthenticated]);
 
-  const addToCart = async (product) => {
+  // Fonction interne d'ajout réelle sans animation
+  const _addToCart = async (product) => {
     if (!isAuthenticated) {
       const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
       const existing = localCart.find((item) => item._id === product._id);
@@ -92,6 +96,13 @@ export const CartProvider = ({ children }) => {
     } catch (error) {
       console.error("Erreur ajout panier :", error);
     }
+  };
+
+  // Nouvelle fonction publique qui ajoute ET déclenche l'animation
+  const addToCart = async (product) => {
+    await _addToCart(product);
+    setIsAdding(true);
+    setTimeout(() => setIsAdding(false), 1000); // Animation pendant 1s
   };
 
   const removeFromCart = async (productId) => {
@@ -140,6 +151,34 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const handleRemove = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/panier/${productId}`, {
+        withCredentials: true,
+      });
+      await fetchCart(); // Actualiser le panier local après suppression
+      Swal.fire({
+        icon: "success",
+        title: "Produit supprimé",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Erreur suppression produit :", error);
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: "Impossible de supprimer le produit",
+        toast: true,
+        position: "top-end",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+
   const itemCount = cartItems.reduce((total, item) => total + item.quantite, 0);
 
   return (
@@ -147,9 +186,11 @@ export const CartProvider = ({ children }) => {
       value={{
         cartItems,
         itemCount,
-        addToCart,
+        addToCart,       // ici on expose la fonction avec animation
         removeFromCart,
         clearCart,
+        handleRemove,
+        isAdding,        // expose l’état animation pour Navbar
       }}
     >
       {children}

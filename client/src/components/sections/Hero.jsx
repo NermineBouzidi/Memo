@@ -146,9 +146,18 @@ export default function Hero() {
             <Zap className="mr-2" size={18} />
             <span>Nouvelle version disponible</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
-            <span className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">PEGASIO</span> - Votre Partenaire Digital
-          </h1>
+<h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6">
+  <motion.span
+    className="bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent inline-block"
+    animate={{ opacity: [1, 0.4, 1], scale: [1, 1.05, 1] }}
+    transition={{ duration: 2, repeat: Infinity }}
+  >
+    PEGASIO
+  </motion.span>{" "}
+  - Votre Partenaire Digital
+</h1>
+
+
           <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-10 max-w-3xl mx-auto">
             La plateforme intelligente qui révolutionne la gestion de vos projets avec des outils intégrés et une interface intuitive conçue pour booster votre productivité.
           </p>
