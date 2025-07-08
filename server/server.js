@@ -11,6 +11,7 @@ import reviewRouter from './routes/reviewRoutes.js';
 import panierRoutes from "./routes/panierRoutes.js";
 import newsletterRouter from './routes/newsletterRoutes.js';
 import messageRouter from './routes/messageRoutes.js'; // Nouvelle route
+import newsletterScheduler from './services/newsletterScheduler.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -40,5 +41,6 @@ app.use('/api/newsletter', newsletterRouter);
 app.use('/api/messages', messageRouter); // Ajout de la route pour les messages
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  newsletterScheduler.startScheduler();
 });
 

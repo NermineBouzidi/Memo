@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
@@ -637,3 +636,4 @@ console.log(req.body);
     res.status(500).json({ error: "Login failed: " + err.message });
   }
 };
+

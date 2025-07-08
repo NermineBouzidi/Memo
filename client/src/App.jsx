@@ -1,26 +1,33 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "./index.css";
+
+// Layouts & Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
+// Contexts
+import { CartProvider } from "./contexts/cartContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+
+// Pages
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import VerifyAccount from "./pages/VerifyAccount";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import NotFound from "./pages/NotFound";
-import AdminLayout from "./layouts/AdminLayout";
-import UserLayout from "./layouts/UserLayout";
-import AdminDashboard from "./pages/admin/Dashboard";
-import UserHome from "./pages/user/UserHome";
-import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 import ResetPasswordFlow from "./pages/ResetPasswordFlow";
 import EmailStep from "./pages/test/EmailStep";
 import OtpStep from "./pages/test/OtpStep";
 import NewPasswordStep from "./pages/test/NewPasswordStep";
+import NotFound from "./pages/NotFound";
 
-import { CartProvider } from "./contexts/cartContext";
+import AdminLayout from "./layouts/AdminLayout";
+import UserLayout from "./layouts/UserLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import UserHome from "./pages/user/UserHome";
 
 import Categories from "./pages/Categories";
 import Blog from "./pages/Blog";
@@ -30,8 +37,6 @@ import VoirPanier from "./pages/VoirPanier";
 import Faq from "./pages/Faq";
 import AvisClients from "./pages/AvisClients";
 import GuideUtilisation from "./pages/GuideUtilisation";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
 
 function AppContent() {
   const location = useLocation();
@@ -47,8 +52,7 @@ function AppContent() {
     "/emailstep",
     "/otpstep",
     "/nouveaupass",
-     "/home" // ⬅️ Ajout de cette ligne
-    
+    "/home", // Authenticated user home
   ];
 
   const hideNavFooter = noNavFooterPaths.includes(location.pathname);
@@ -56,17 +60,19 @@ function AppContent() {
   return (
     <>
       {!hideNavFooter && <Navbar />}
-<main className={hideNavFooter ? "" : "pt-28"}>
+      <main className={hideNavFooter ? "" : "pt-28"}>
         <Routes>
+          {/* Public pages */}
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
-           <Route path="/faq" element={<Faq/>} />
-              <Route path="/avis-clients" element={<AvisClients/>} />
-              <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+          <Route path="/faq" element={<Faq />} />
+          <Route path="/avis-clients" element={<AvisClients />} />
+          <Route path="/guide-utilisation" element={<GuideUtilisation />} />
+          <Route path="/voir-panier" element={<VoirPanier />} />
 
-
+          {/* Auth-related pages */}
           <Route
             path="/signup"
             element={
@@ -83,7 +89,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route path="/verify-account" element={<VerifyAccount />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -92,10 +97,8 @@ function AppContent() {
           <Route path="/emailstep" element={<EmailStep />} />
           <Route path="/otpstep" element={<OtpStep />} />
           <Route path="/nouveaupass" element={<NewPasswordStep />} />
-          <Route path="/voir-panier" element={<VoirPanier />} />
-          <Route path="*" element={<NotFound />} />
 
-          {/* Admin Routes */}
+          {/* Admin routes */}
           <Route
             path="/admin"
             element={
@@ -107,7 +110,7 @@ function AppContent() {
             <Route index element={<AdminDashboard />} />
           </Route>
 
-          {/* User Routes */}
+          {/* User routes */}
           <Route
             path="/home"
             element={
@@ -118,6 +121,9 @@ function AppContent() {
           >
             <Route index element={<UserHome />} />
           </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       {!hideNavFooter && <Footer />}
@@ -128,9 +134,13 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
