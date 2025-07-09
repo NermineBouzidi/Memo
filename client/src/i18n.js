@@ -101,6 +101,7 @@ const resources = {
       "hero.title": "PEGASIO",
       "hero.partner": "Your Digital Partner",
       "hero.description": "The intelligent platform that revolutionizes your project management with integrated tools and an intuitive interface designed to boost your productivity.",
+
       "hero.cta.startFree": "Start Now",
       "hero.cta.seeDemo": "See the demo",
       "hero.productDetails.title": "Product Details",
@@ -132,6 +133,10 @@ const resources = {
       "hero.whyChooseUs.measurableResults": "Concrete and measurable results for your business",
       "hero.innovationPerformance.title": "Innovation & Performance",
       "hero.innovationPerformance.commitment": "Our commitment to your success",
+      "hero.cta.readyToTransform": "Ready to transform your project management?",
+      "hero.cta.joinHundreds": "Join hundreds of companies that have already optimized their processes with PEGASIO.",
+      "hero.cta.freeTrial": "30-day free trial",
+
       // Contact Section
       "contact.title": "Contact Us",
       "contact.description": "We would love to hear from you. Send us a message and we will get back to you as soon as possible.",
@@ -247,6 +252,7 @@ const resources = {
       "hero.title": "PEGASIO",
       "hero.partner": "Votre Partenaire Digital",
       "hero.description": "La plateforme intelligente qui révolutionne la gestion de vos projets avec des outils intégrés et une interface intuitive conçue pour booster votre productivité.",
+
       "hero.cta.startFree": "Commencer maintenant",
       "hero.cta.seeDemo": "Voir la démo",
       "hero.productDetails.title": "Produit détaillé",
@@ -278,6 +284,10 @@ const resources = {
       "hero.whyChooseUs.measurableResults": "Des résultats concrets et mesurables pour votre entreprise",
       "hero.innovationPerformance.title": "Innovation & Performance",
       "hero.innovationPerformance.commitment": "Notre engagement pour votre réussite",
+      "hero.cta.readyToTransform": "Prêt à transformer votre gestion de projets ?",
+      "hero.cta.joinHundreds": "Rejoignez des centaines d'entreprises qui ont déjà optimisé leurs processus avec PEGASIO.",
+      "hero.cta.freeTrial": "Essai gratuit 30 jours",
+
       // Contact Section
       "contact.title": "Contactez-nous",
       "contact.description": "Nous aimerions avoir de vos nouvelles. Envoyez-nous un message et nous vous répondrons dès que possible.",

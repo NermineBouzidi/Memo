@@ -68,6 +68,7 @@ export default function Navbar() {
   const [animationStep, setAnimationStep] = useState("idle"); // idle | animating
 
   const [showLottie, setShowLottie] = useState(true);
+  
 
   // Animation de la ligne rouge
   useEffect(() => {
