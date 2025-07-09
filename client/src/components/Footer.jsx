@@ -1,19 +1,48 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import image from "../assets/logo.png";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Send } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
     const [email, setEmail] = useState("");
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const { t, i18n } = useTranslation();
 
-    const handleSubscribe = (e) => {
+    const handleSubscribe = async (e) => {
         e.preventDefault();
-        setIsSubscribed(true);
-        setTimeout(() => {
-            setIsSubscribed(false);
-            setEmail("");
-        }, 3000);
+        
+        try {
+            const response = await fetch('http://localhost:8080/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setIsSubscribed(true);
+                setEmail("");
+                setTimeout(() => {
+                    setIsSubscribed(false);
+                }, 3000);
+            } else {
+                // Handle error response
+                alert(data.message || 'Subscription failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Newsletter subscription error:', error);
+            alert('Failed to subscribe. Please check your connection and try again.');
+        }
+    };
+
+    const handleLanguageChange = (e) => {
+        i18n.changeLanguage(e.target.value);
+        localStorage.setItem('i18nextLng', e.target.value);
     };
 
     return (
@@ -65,7 +94,7 @@ export default function Footer() {
                             {/* Social media */}
                             <div className="mt-auto">
                                 <h3 className="text-lg font-semibold text-white mb-4 text-center lg:text-left">
-                                    Suivez-nous
+                                    {t('footer.follow_us')}
                                 </h3>
                                 <div className="flex justify-center lg:justify-start space-x-4">
                                     {[
@@ -96,17 +125,17 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-6 pb-2 border-b border-gray-700 relative">
                                     <span className="relative">
-                                        Services
+                                        {t('footer.services')}
                                         <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></span>
                                     </span>
                                 </h3>
                                 <ul className="space-y-3">
                                     {[
-                                        "Création d'entreprise",
-                                        "Modification d'entreprise", 
-                                        "Fermeture d'entreprise",
-                                        "Tous les services",
-                                        "Nos tarifs"
+                                        t('footer.company_creation'),
+                                        t('footer.company_modification'), 
+                                        t('footer.company_closure'),
+                                        t('footer.all_services'),
+                                        t('footer.prices')
                                     ].map((service) => (
                                         <li key={service}>
                                             <a
@@ -125,18 +154,18 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-6 pb-2 border-b border-gray-700 relative">
                                     <span className="relative">
-                                        Ressources
+                                        {t('footer.resources')}
                                         <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></span>
                                     </span>
                                 </h3>
                                 <ul className="space-y-3">
                                     {[
-                                        "Fiches pratiques",
-                                        "Guides pratiques",
-                                        "Modèles",
-                                        "Webinars",
-                                        "Blog",
-                                        "FAQ"
+                                        t('footer.practical_sheets'),
+                                        t('footer.practical_guides'),
+                                        t('footer.templates'),
+                                        t('footer.webinars'),
+                                        t('footer.blog'),
+                                        t('footer.faq')
                                     ].map((content) => (
                                         <li key={content}>
                                             <a
@@ -155,20 +184,20 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-lg font-semibold text-white mb-6 pb-2 border-b border-gray-700 relative">
                                     <span className="relative">
-                                        Entreprise
+                                        {t('footer.company')}
                                         <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-red-500 to-blue-500 rounded-full"></span>
                                     </span>
                                 </h3>
                                 <ul className="space-y-3">
                                     {[
-                                        "À propos",
-                                        "L'équipe",
-                                        "Nous rejoindre",
-                                        "Partenaires",
-                                        "Presse",
-                                        "Mentions légales",
-                                        "CGU",
-                                        "Confidentialité"
+                                        t('footer.about'),
+                                        t('footer.team'),
+                                        t('footer.join_us'),
+                                        t('footer.partners'),
+                                        t('footer.press'),
+                                        t('footer.legal_notices'),
+                                        t('footer.cgu'),
+                                        t('footer.confidentiality')
                                     ].map((item) => (
                                         <li key={item}>
                                             <a
@@ -187,14 +216,14 @@ export default function Footer() {
                         {/* Newsletter */}
                         <div className="mt-10 bg-gray-800/50 p-6 rounded-xl border border-gray-700">
                             <h3 className="text-xl font-semibold text-white mb-4 text-center">
-                                Restez informé avec notre newsletter
+                                {t('footer.stay_informed')}
                             </h3>
                             <form onSubmit={handleSubscribe} className="max-w-2xl mx-auto">
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <input
                                         type="email"
                                         required
-                                        placeholder="Votre adresse email"
+                                        placeholder={t('footer.email_placeholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="flex-1 px-5 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-white placeholder-gray-400 transition-all"
@@ -209,44 +238,57 @@ export default function Footer() {
                                                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                                                 </svg>
-                                                Merci !
+                                                {t('footer.thank_you')}
                                             </span>
                                         ) : (
                                             <>
                                                 <Send size={18} />
-                                                <span>S'abonner</span>
+                                                <span>{t('footer.subscribe')}</span>
                                             </>
                                         )}
                                     </button>
                                 </div>
                                 {isSubscribed && (
                                     <p className="text-green-400 text-sm mt-2 text-center">
-                                        Vous êtes maintenant abonné à notre newsletter !
+                                        {t('footer.thank_you')}
                                     </p>
                                 )}
                             </form>
                             <p className="text-gray-400 text-xs mt-3 text-center">
-                                Nous ne partagerons jamais votre email avec des tiers.
+                                {t('footer.privacy_note')}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Bottom section */}
-                <div className="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4">
+                {/* Bottom section with language switcher */}
+                <div className="mt-12 pt-8 border-t border-gray-700 flex flex-col md:flex-row items-center justify-between gap-4 relative">
                     <div className="text-center md:text-left">
                         <p className="text-gray-500 text-sm">
-                            © {new Date().getFullYear()} Pegasio. Tous droits réservés.
+                            © {new Date().getFullYear()} Pegasio. {t('footer.rights_reserved')}
                         </p>
                         <p className="text-gray-600 text-xs mt-1">
-                            Legalstart est développé par Yolaw SAS - SIRET 123 456 789
+                            {t('footer.legal_disclaimer')}
                         </p>
                     </div>
-                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-gray-500 text-sm">
-                        <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
-                        <a href="#" className="hover:text-white transition-colors">CGU</a>
-                        <a href="#" className="hover:text-white transition-colors">Confidentialité</a>
-                        <a href="#" className="hover:text-white transition-colors">Cookies</a>
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-gray-500 text-sm items-center">
+                        <a href="#" className="hover:text-white transition-colors">{t('footer.legal_mentions')}</a>
+                        <a href="#" className="hover:text-white transition-colors">{t('footer.cgu')}</a>
+                        <a href="#" className="hover:text-white transition-colors">{t('footer.confidentiality')}</a>
+                        <a href="#" className="hover:text-white transition-colors">{t('footer.cookies')}</a>
+                        {/* Language Switcher - moved here for better placement */}
+                        <div className="flex items-center ml-4 mt-2 md:mt-0 bg-gray-800 border border-gray-600 rounded px-2 py-1 hover:border-blue-500 transition-colors">
+                            <span className="text-gray-400 mr-2" role="img" aria-label="language">🌐</span>
+                            <select
+                                value={i18n.language}
+                                onChange={handleLanguageChange}
+                                className="bg-gray-800 text-white px-2 py-1 rounded focus:outline-none border-none text-sm"
+                                aria-label="Select language"
+                            >
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Mail,
@@ -9,164 +8,134 @@ import {
   Instagram,
   Linkedin,
 } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export default function Contact() {
+  const { t } = useTranslation();
+
+  const contactInfo = [
+    {
+      icon: <Mail className="w-8 h-8 text-red-600 dark:text-red-400" />,
+      title: "Email",
+      detail: "contact@pegasio.com",
+    },
+    {
+      icon: <Phone className="w-8 h-8 text-red-600 dark:text-red-400" />,
+      title: "Téléphone",
+      detail: "+33 1 23 45 67 89",
+    },
+    {
+      icon: <MapPin className="w-8 h-8 text-red-600 dark:text-red-400" />,
+      title: "Adresse",
+      detail: (
+        <>
+          123 Rue des Affaires, Suite 100 <br />
+          75001 Paris, France
+        </>
+      ),
+    },
+  ];
+
+  const socialLinks = [
+    { 
+      icon: <Facebook />, 
+      href: "https://www.facebook.com/PegasioOfficial", 
+      label: "Facebook",
+      color: "text-blue-600 dark:text-blue-400"
+    },
+    { 
+      icon: <Twitter />, 
+      href: "https://twitter.com/PegasioOfficial", 
+      label: "Twitter",
+      color: "text-sky-500 dark:text-sky-400"
+    },
+    { 
+      icon: <Instagram />, 
+      href: "https://www.instagram.com/PegasioOfficial", 
+      label: "Instagram",
+      color: "text-pink-600 dark:text-pink-400"
+    },
+    { 
+      icon: <Linkedin />, 
+      href: "https://www.linkedin.com/company/pegasio", 
+      label: "LinkedIn",
+      color: "text-blue-500 dark:text-blue-400"
+    },
+  ];
+
   return (
     <section
       id="contacts"
       className="relative overflow-hidden bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-black dark:via-gray-900 dark:to-blue-900 py-20"
     >
-      {/* Animated background blobs - matching Hero style */}
+      {/* Background animation elements */}
       <div className="absolute inset-0 z-0">
-        <div className="blob blob1"></div>
-        <div className="blob blob2"></div>
+        <div className="blob blob1 animate-pulse-slow"></div>
+        <div className="blob blob2 animate-pulse-slower"></div>
       </div>
 
-      {/* Content Container */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 px-6 py-3 rounded-full mb-6">
-            <span className="text-red-600 dark:text-red-400 text-sm font-semibold uppercase tracking-wide">CONTACT</span>
+          <div className="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 px-6 py-3 rounded-full mb-6 animate-fadeIn">
+            <span className="text-red-600 dark:text-red-400 text-sm font-semibold uppercase tracking-wide">
+              CONTACT
+            </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
-            Contactez-nous
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white animate-fadeIn delay-100">
+            {t('contact.title')}
           </h2>
-          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Nous aimerions avoir de vos nouvelles. Envoyez-nous un message et
-            nous vous répondrons dès que possible.
+          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto animate-fadeIn delay-200">
+            {t('contact.description')}
           </p>
         </div>
 
-        {/* Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                  <Mail className="w-8 h-8 text-red-600 dark:text-red-400" />
+        {/* Contact Information Cards */}
+        <div className="space-y-8 max-w-lg mx-auto">
+          {contactInfo.map(({ icon, title, detail }, index) => (
+
+            <div
+              key={title}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-transform hover:scale-[1.02] hover:shadow-2xl"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                  {icon}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Email
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    {title}
                   </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-lg">
-                    contact@pegasio.com
+                  <p className="text-gray-700 dark:text-gray-300 mt-2 text-md">
+                    {detail}
                   </p>
                 </div>
               </div>
             </div>
+          ))}
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                  <Phone className="w-8 h-8 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Téléphone
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-lg">
-                    +33 1 23 45 67 89
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                  <MapPin className="w-8 h-8 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Adresse
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-lg">
-                    123 Rue des Affaires, Suite 100
-                    <br />
-                    75001 Paris, France
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Media */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                Suivez-nous
-              </h3>
-              <div className="flex gap-4">
-                <a href="#" className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors">
-                  <Facebook className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </a>
-                <a href="#" className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors">
-                  <Twitter className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </a>
-                <a href="#" className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors">
-                  <Instagram className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </a>
-                <a href="#" className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/40 transition-colors">
-                  <Linkedin className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Envoyez-nous un message
+          {/* Social Links */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              {t('contact.socials.title')}
             </h3>
-            <form className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Nom complet
-                </label>
-                <input
-                  type="text"
-                  placeholder="Votre nom"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Adresse email
-                </label>
-                <input
-                  type="email"
-                  placeholder="votre@email.com"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Sujet
-                </label>
-                <input
-                  type="text"
-                  placeholder="Sujet de votre message"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Message
-                </label>
-                <textarea
-                  rows="5"
-                  placeholder="Votre message..."
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-red-600 text-white py-4 rounded-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Envoyer le message
-              </button>
-            </form>
+            <div className="flex gap-4">
+              {socialLinks.map(({ icon, href, label, color }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className={`group relative w-11 h-11 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-all ${color}`}
+                >
+                  {React.cloneElement(icon, {
+                    className: "w-5 h-5 transition-all group-hover:scale-110",
+                  })}
+                  <span className="sr-only">{label}</span>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
