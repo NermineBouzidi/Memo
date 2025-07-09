@@ -576,7 +576,6 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-// Fonction unifiée pour l'authentification Google
 export const handleGoogleAuth = async (req, res) => {
   try {
     const { credential } = req.body;
@@ -584,12 +583,21 @@ export const handleGoogleAuth = async (req, res) => {
     if (!credential) {
       return res.status(400).json({ 
         success: false, 
-        message: "Token Google requis" 
+        message: "Google token is required" 
       });
     }
 
     const decoded = jwtDecode(credential);
-    const user = await userModel.findOne({ 
+    
+    // Validation basique du token Google
+    if (!decoded.email || !decoded.sub) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Google token"
+      });
+    }
+
+    let user = await userModel.findOne({ 
       $or: [
         { email: decoded.email },
         { googleId: decoded.sub }
@@ -598,7 +606,7 @@ export const handleGoogleAuth = async (req, res) => {
 
     // Nouvel utilisateur
     if (!user) {
-      const newUser = new userModel({
+      user = new userModel({
         name: decoded.name || `${decoded.given_name} ${decoded.family_name}`,
         email: decoded.email,
         password: crypto.randomBytes(16).toString('hex'),
@@ -606,43 +614,47 @@ export const handleGoogleAuth = async (req, res) => {
         profilePicture: decoded.picture,
         isAccountVerified: true
       });
-      await newUser.save();
-      return sendAuthResponse(res, newUser);
+      await user.save();
+    } 
+    // Mise à jour si l'utilisateur existait mais sans googleId
+    else if (!user.googleId) {
+      user.googleId = decoded.sub;
+      user.profilePicture = decoded.picture;
+      await user.save();
     }
 
-    // Utilisateur existant
-    return sendAuthResponse(res, user);
+    // Génération du token JWT
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1d'
+    });
+
+    // Configuration du cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 86400000, // 1 jour
+      domain: process.env.NODE_ENV === 'production' ? '.votredomaine.com' : undefined
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Google authentication successful',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profilePicture: user.profilePicture
+      },
+      token
+    });
+
   } catch (error) {
-    console.error("Erreur Google Auth:", error);
+    console.error("Google auth error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Erreur lors de l\'authentification Google'
+      message: 'Google authentication failed',
+      error: error.message
     });
   }
 };
-
-function sendAuthResponse(res, user) {
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d'
-  });
-
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 86400000,
-    domain: process.env.NODE_ENV === 'production' ? '.votredomaine.com' : undefined
-  });
-
-  return res.status(200).json({
-    success: true,
-    message: 'Connexion Google réussie',
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      profilePicture: user.profilePicture
-    },
-    token
-  });
-}

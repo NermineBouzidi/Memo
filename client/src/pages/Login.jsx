@@ -9,10 +9,13 @@ import { useGoogleOneTapLogin, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import MascotteIntro from "../components/MascotteIntro";
 
+
 const Login = () => {
-  const { login } = useAuth();
+  const { login,loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+
 
   const [formData, setFormData] = useState({ 
     email: "", 
@@ -96,25 +99,14 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLoginSuccess = async (credentialResponse) => {
+ const handleGoogleLoginSuccess = async (credentialResponse) => {
   setGoogleLoading(true);
   try {
-    console.log("Google Response:", credentialResponse); // Debug
-    
-    const response = await axios.post(
-      "http://localhost:8080/api/auth/google",
-      { credential: credentialResponse.credential },
-      { 
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const response = await loginWithGoogle({
+      credential: credentialResponse.credential
+    });
 
-    console.log("Backend Response:", response.data); // Debug
-
-    if (response.data.success) {
+    if (response?.success) {
       Swal.fire({
         icon: "success",
         title: "Connexion réussie",
@@ -123,15 +115,14 @@ const Login = () => {
         timer: 3000,
         showConfirmButton: false,
       });
-      navigate("/");
+      
+      // Redirection après un court délai
+      setTimeout(() => {
+        navigate(location.state?.from || "/");
+      }, 500);
     }
   } catch (error) {
-    console.error("Error details:", {
-      message: error.message,
-      response: error.response?.data,
-      config: error.config
-    });
-    
+    console.error("Google login error:", error);
     Swal.fire({
       icon: "error",
       title: "Erreur",
