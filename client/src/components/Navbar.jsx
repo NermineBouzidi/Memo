@@ -1,7 +1,8 @@
 import { useNavigate, useLocation  } from "react-router-dom";
 import image from "../assets/logo.png";
-import { User, Menu, X, ChevronDown } from "lucide-react";
+import { User, Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 import {useState,useEffect} from "react";
 
 const navItems = [
@@ -33,6 +34,9 @@ export default function Navbar() {
   const [active, setActive] = useState("accueil");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +93,8 @@ export default function Navbar() {
         <img
           src={image}
           alt="Logo"
-          className="h-22 w-auto md:h-14 drop-shadow-lg transition-all duration-300"
+          className="h-24 w-auto md:h-24 drop-shadow-lg transition-all duration-300"
+          
         />
       </Link>
 
@@ -127,14 +132,23 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* Desktop Account Link */}
-      <Link
-        to="/signup"
-        className="hidden md:flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-red-600 text-gray-600 dark:text-gray-300"
-      >
-        <User size={20} />
-        <span className="font-medium">Créer un compte</span>
-      </Link>
+      {/* Desktop Account Link & Theme Toggle */}
+      <div className="hidden md:flex items-center space-x-4">
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#161616] text-gray-700 dark:text-gray-200 hover:text-red-600 hover:border-red-400 transition-colors"
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+        <Link
+          to="/signup"
+          className="flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-red-600 text-gray-600 dark:text-gray-300"
+        >
+          <User size={20} />
+          <span className="font-medium">Créer un compte</span>
+        </Link>
+      </div>
 
       {/* Hamburger Button (Mobile) */}
       <div className="md:hidden">
@@ -181,13 +195,22 @@ export default function Navbar() {
             </div>
           ))}
 
-          <Link
-            to="/signup"
-            className="flex items-center gap-2 mt-4 cursor-pointer text-gray-700 dark:text-gray-200 hover:text-red-600 transition-colors"
-          >
-            <User size={20} />
-            <span className="font-medium">Créer un compte</span>
-          </Link>
+          <div className="flex items-center gap-4 mt-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#161616] text-gray-700 dark:text-gray-200 hover:text-red-600 hover:border-red-400 transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <Link
+              to="/signup"
+              className="flex items-center gap-2 cursor-pointer text-gray-700 dark:text-gray-200 hover:text-red-600 transition-colors"
+            >
+              <User size={20} />
+              <span className="font-medium">Créer un compte</span>
+            </Link>
+          </div>
         </div>
       )}
     </nav>
