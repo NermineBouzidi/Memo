@@ -27,6 +27,7 @@ export const loginUser = async (formdata) => {
 
 //-------------------------------
 // 🟢 CHECK IF AUTHENTICATED (requires token cookie)
+
 export const checkAuthUser = async () => {
   return await api.post('/isAuth');
 };
