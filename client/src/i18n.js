@@ -101,7 +101,8 @@ const resources = {
       "hero.title": "PEGASIO",
       "hero.partner": "Your Digital Partner",
       "hero.description": "The intelligent platform that revolutionizes your project management with integrated tools and an intuitive interface designed to boost your productivity.",
-      "hero.cta.startFree": "Start for free",
+
+      "hero.cta.startFree": "Start Now",
       "hero.cta.seeDemo": "See the demo",
       "hero.productDetails.title": "Product Details",
       "hero.productDetails.description": "CRP MEMO is an innovative web application designed to meet the specific needs of SMEs in project, site, and ad hoc mission management. Unlike traditional tools often segmented between CRM (commercial-oriented) or job managers (production-oriented), MEMO merges both worlds.",
@@ -135,6 +136,7 @@ const resources = {
       "hero.cta.readyToTransform": "Ready to transform your project management?",
       "hero.cta.joinHundreds": "Join hundreds of companies that have already optimized their processes with PEGASIO.",
       "hero.cta.freeTrial": "30-day free trial",
+
       // Contact Section
       "contact.title": "Contact Us",
       "contact.description": "We would love to hear from you. Send us a message and we will get back to you as soon as possible.",
@@ -250,7 +252,8 @@ const resources = {
       "hero.title": "PEGASIO",
       "hero.partner": "Votre Partenaire Digital",
       "hero.description": "La plateforme intelligente qui révolutionne la gestion de vos projets avec des outils intégrés et une interface intuitive conçue pour booster votre productivité.",
-      "hero.cta.startFree": "Commencer gratuitement",
+
+      "hero.cta.startFree": "Commencer maintenant",
       "hero.cta.seeDemo": "Voir la démo",
       "hero.productDetails.title": "Produit détaillé",
       "hero.productDetails.description": "CRP MEMO est une application web innovante conçue pour répondre aux besoins spécifiques des TPE/PME dans la gestion de projets, chantiers et missions ponctuelles. Contrairement aux outils traditionnels souvent segmentés entre CRM (orientés commercial) ou job managers (orientés production), MEMO fusionne les deux univers.",
@@ -284,6 +287,7 @@ const resources = {
       "hero.cta.readyToTransform": "Prêt à transformer votre gestion de projets ?",
       "hero.cta.joinHundreds": "Rejoignez des centaines d'entreprises qui ont déjà optimisé leurs processus avec PEGASIO.",
       "hero.cta.freeTrial": "Essai gratuit 30 jours",
+
       // Contact Section
       "contact.title": "Contactez-nous",
       "contact.description": "Nous aimerions avoir de vos nouvelles. Envoyez-nous un message et nous vous répondrons dès que possible.",
