@@ -30,7 +30,7 @@ const { name, description, price, category, features } = req.body;
 export const getAllProducts = async (req, res) => {
   try {
     const products = await productModel.find().sort({ createdAt: -1 });
-    res.status(200).json({ success: true, data: products });
+    res.status(200).json({ success: true, products: products });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

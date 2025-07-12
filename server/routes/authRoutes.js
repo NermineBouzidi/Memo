@@ -1,6 +1,7 @@
 import express from 'express';
 
-import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword} from '../controllers/authController.js';
+
+import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
 import { preAuth } from '../middleware/preAuthMiddleware.js';
 
