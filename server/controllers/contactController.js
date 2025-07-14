@@ -136,3 +136,56 @@ export const getContactById = async (req, res) => {
     });
   }
 }
+
+//reply
+export const replyToContact = async (req, res) => {
+  const { id } = req.params;
+  const { replyMessage } = req.body;
+
+  try {
+    if (!replyMessage) {
+      return res.status(400).json({
+        success: false,
+        message: "Reply message is required",
+      });
+    }
+
+    // Find the contact message by ID
+    const contact = await contactModel.findById(id);
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: "Contact message not found",
+      });
+    }
+
+    // Send reply email to the user
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: contact.email,
+      subject: `Re: ${contact.subject}`,
+      text: `Dear ${contact.name},\n\n${replyMessage}\n\nBest regards,\nYour Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Update the contact document (optional)
+    contact.reply = replyMessage;
+    contact.repliedAt = new Date();
+    contact.status = "resolved"; // optionally track status
+    await contact.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Reply sent and saved successfully",
+    });
+
+  } catch (error) {
+    console.error("Error replying to contact:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send reply",
+    });
+  }
+};

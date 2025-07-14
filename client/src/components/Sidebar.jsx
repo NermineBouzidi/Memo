@@ -27,7 +27,7 @@ const Sidebar = () => {
     { label: 'Users', icon: User, path: '/admin/users' },
     { label: 'Products', icon: Package, path: '/admin/products' },
     { label: 'Orders', icon: ShoppingBag, path: '/admin/orders' },
-    { label: 'Messages', icon: MessageCircle, path: '/admin/messages' },
+    { label: 'Contacts', icon: MessageCircle, path: '/admin/contacts' },
   ];
 
   const SidebarContent = ({ isMobile = false }) => (

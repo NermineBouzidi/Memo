@@ -26,5 +26,8 @@ export const deleteContact = async (id) => {
 export const updateContact = async (id, contactData) => {
   return await api.put(`/update/${id}`, contactData);
 }
-export default api;
 
+export const sendReply = async (id, replyMessage) => {
+  return await api.put(`/reply/${id}`, replyMessage);
+}
+export default api;

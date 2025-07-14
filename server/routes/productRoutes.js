@@ -10,25 +10,17 @@ import {
   updateProduct,
   deleteProduct
 } from '../controllers/productController.js';
-const productRoute = express.Router();
+const productRouter = express.Router();
 
-productRoute.post('/create-product', userAuth, requireAdmin, createProduct);
-productRoute.get('/get-all-products', userAuth, requireAdmin, getAllProducts);
-productRoute.get('/get-product/:id', userAuth, requireAdmin, getProductById);
-productRoute.put('/update-product/:id', userAuth, requireAdmin, updateProduct);
-productRoute.delete('/delete-product/:id', userAuth, requireAdmin, deleteProduct);  
+productRouter.post('/create-product', userAuth, requireAdmin, createProduct);
+productRouter.get('/get-all-products', userAuth, requireAdmin, getAllProducts);
+productRouter.get('/get-product/:id', userAuth, requireAdmin, getProductById);
+productRouter.put('/update-product/:id', userAuth, requireAdmin, updateProduct);
+productRouter.delete('/delete-product/:id', userAuth, requireAdmin, deleteProduct);  
 
 
 
-const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: "Erreur serveur" });
-  }
-});
+  
 
-export default router;
+export default productRouter;

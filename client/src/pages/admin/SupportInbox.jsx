@@ -1,14 +1,13 @@
-// src/pages/SupportInbox.jsx
 import { useState, useEffect } from "react";
-import { 
-  Mail, 
-  Search, 
-  Filter, 
-  ChevronLeft, 
-  ChevronRight, 
-  X, 
-  Reply, 
-  Archive, 
+import {
+  Mail,
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Reply,
+  Archive,
   Trash2,
   Circle,
   CheckCircle,
@@ -16,9 +15,14 @@ import {
   User,
   MailOpen,
   ArrowLeft,
-  Eye
+  Eye,
 } from "lucide-react";
-import { getAllContacts, updateContact, deleteContact } from "../../api/contacts";
+import {
+  getAllContacts,
+  updateContact,
+  deleteContact,
+  sendReply,
+} from "../../api/contacts";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
 const SupportInbox = () => {
@@ -31,7 +35,7 @@ const SupportInbox = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [replyContent, setReplyContent] = useState("");
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -39,11 +43,36 @@ const SupportInbox = () => {
   // Status options
   const statusOptions = [
     { value: "all", label: "All Messages" },
-    { value: "unread", label: "Unread", icon: Circle, color: "bg-blue-100 text-blue-800" },
-    { value: "read", label: "Read", icon: MailOpen, color: "bg-gray-100 text-gray-800" },
-    { value: "pending", label: "Pending", icon: Clock, color: "bg-yellow-100 text-yellow-800" },
-    { value: "resolved", label: "Resolved", icon: CheckCircle, color: "bg-green-100 text-green-800" },
-    { value: "archived", label: "Archived", icon: Archive, color: "bg-purple-100 text-purple-800" }
+    {
+      value: "unread",
+      label: "Unread",
+      icon: Circle,
+      color: "bg-blue-100 text-blue-800",
+    },
+    {
+      value: "read",
+      label: "Read",
+      icon: MailOpen,
+      color: "bg-gray-100 text-gray-800",
+    },
+    {
+      value: "pending",
+      label: "Pending",
+      icon: Clock,
+      color: "bg-yellow-100 text-yellow-800",
+    },
+    {
+      value: "resolved",
+      label: "Resolved",
+      icon: CheckCircle,
+      color: "bg-green-100 text-green-800",
+    },
+    {
+      value: "archived",
+      label: "Archived",
+      icon: Archive,
+      color: "bg-purple-100 text-purple-800",
+    },
   ];
 
   // Fetch messages
@@ -54,7 +83,10 @@ const SupportInbox = () => {
         setMessages(res.data.messages || []);
         setFilteredMessages(res.data.messages || []);
       } catch (err) {
-        console.error("Error loading messages:", err.response?.data || err.message);
+        console.error(
+          "Error loading messages:",
+          err.response?.data || err.message
+        );
       } finally {
         setLoading(false);
       }
@@ -65,23 +97,24 @@ const SupportInbox = () => {
   // Apply filters and search
   useEffect(() => {
     let result = [...messages];
-    
+
     // Apply search filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(msg => 
-        msg.name.toLowerCase().includes(term) ||
-        msg.email.toLowerCase().includes(term) ||
-        msg.subject.toLowerCase().includes(term) ||
-        msg.message.toLowerCase().includes(term)
+      result = result.filter(
+        (msg) =>
+          msg.name.toLowerCase().includes(term) ||
+          msg.email.toLowerCase().includes(term) ||
+          msg.subject.toLowerCase().includes(term) ||
+          msg.message.toLowerCase().includes(term)
       );
     }
-    
+
     // Apply status filter
     if (statusFilter !== "all") {
-      result = result.filter(msg => msg.status === statusFilter);
+      result = result.filter((msg) => msg.status === statusFilter);
     }
-    
+
     setFilteredMessages(result);
     setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, statusFilter, messages]);
@@ -89,7 +122,10 @@ const SupportInbox = () => {
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentMessages = filteredMessages.slice(indexOfFirstItem, indexOfLastItem);
+  const currentMessages = filteredMessages.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
 
   // Change page
@@ -97,26 +133,32 @@ const SupportInbox = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   // Get status details
   const getStatusDetails = (status) => {
-    const statusInfo = statusOptions.find(option => option.value === status);
+    const statusInfo = statusOptions.find((option) => option.value === status);
     return statusInfo || { label: status, color: "bg-gray-100 text-gray-800" };
   };
 
   // Select message to view
   const handleViewMessage = async (message) => {
     setSelectedMessage(message);
-    
+
     // Mark as read if unread
     if (message.status === "unread") {
       try {
         await updateContact(message._id, { status: "read" });
-        setMessages(prev => 
-          prev.map(msg => 
+        setMessages((prev) =>
+          prev.map((msg) =>
             msg._id === message._id ? { ...msg, status: "read" } : msg
           )
         );
@@ -135,15 +177,15 @@ const SupportInbox = () => {
   // Handle status change
   const handleStatusChange = async (newStatus) => {
     if (!selectedMessage) return;
-    
+
     try {
       await updateContact(selectedMessage._id, { status: newStatus });
-      setMessages(prev => 
-        prev.map(msg => 
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg._id === selectedMessage._id ? { ...msg, status: newStatus } : msg
         )
       );
-      setSelectedMessage(prev => ({ ...prev, status: newStatus }));
+      setSelectedMessage((prev) => ({ ...prev, status: newStatus }));
     } catch (err) {
       console.error("Error updating message status:", err);
     }
@@ -152,24 +194,36 @@ const SupportInbox = () => {
   // Handle reply submission
   const handleReplySubmit = async () => {
     if (!selectedMessage || !replyContent.trim()) return;
-    
+
     try {
-      // In a real app, you would send the reply via email or store it
-      alert(`Reply sent to ${selectedMessage.email}:\n\n${replyContent}`);
-      
-      // Update status to resolved
-      await updateContact(selectedMessage._id, { status: "resolved" });
-      setMessages(prev => 
-        prev.map(msg => 
-          msg._id === selectedMessage._id ? { ...msg, status: "resolved" } : msg
+      await sendReply(selectedMessage._id, {
+        replyMessage: replyContent,
+      });
+
+      // Update local state
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === selectedMessage._id
+            ? {
+                ...msg,
+                status: "resolved",
+                reply: replyContent,
+                repliedAt: new Date().toISOString(),
+              }
+            : msg
         )
       );
-      setSelectedMessage(prev => ({ ...prev, status: "resolved" }));
-      
-      // Reset reply content
+
+      setSelectedMessage((prev) => ({
+        ...prev,
+        status: "resolved",
+        reply: replyContent,
+        repliedAt: new Date().toISOString(),
+      }));
+
       setReplyContent("");
     } catch (err) {
-      console.error("Error sending reply:", err);
+      console.error("Error sending reply:", err.response?.data || err.message);
     }
   };
 
@@ -182,14 +236,14 @@ const SupportInbox = () => {
   const handleDelete = async () => {
     try {
       await deleteContact(deleteId);
-      setMessages(prev => prev.filter(msg => msg._id !== deleteId));
-      setFilteredMessages(prev => prev.filter(msg => msg._id !== deleteId));
-      
+      setMessages((prev) => prev.filter((msg) => msg._id !== deleteId));
+      setFilteredMessages((prev) => prev.filter((msg) => msg._id !== deleteId));
+
       // Close message view if deleting the currently viewed message
       if (selectedMessage && selectedMessage._id === deleteId) {
         closeMessageView();
       }
-      
+
       // Reset to first page if current page becomes invalid
       if (currentPage > Math.ceil(filteredMessages.length / itemsPerPage)) {
         setCurrentPage(1);
@@ -205,15 +259,15 @@ const SupportInbox = () => {
   const handleArchive = async (id) => {
     try {
       await updateContact(id, { status: "archived" });
-      setMessages(prev => 
-        prev.map(msg => 
+      setMessages((prev) =>
+        prev.map((msg) =>
           msg._id === id ? { ...msg, status: "archived" } : msg
         )
       );
-      
+
       // Update selected message if it's the current one
       if (selectedMessage && selectedMessage._id === id) {
-        setSelectedMessage(prev => ({ ...prev, status: "archived" }));
+        setSelectedMessage((prev) => ({ ...prev, status: "archived" }));
       }
     } catch (err) {
       console.error("Archive error:", err);
@@ -227,7 +281,9 @@ const SupportInbox = () => {
         <div className="mb-4 sm:mb-0">
           <div className="flex items-center space-x-3 mb-2">
             <Mail className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Support Inbox</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+              Support Inbox
+            </h1>
           </div>
           <p className="text-gray-600">Manage and respond to user messages</p>
         </div>
@@ -238,7 +294,9 @@ const SupportInbox = () => {
         <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Messages</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Messages
+              </p>
               <p className="text-xl font-bold mt-1">{messages.length}</p>
             </div>
             <div className="bg-indigo-100 p-2 rounded-lg">
@@ -246,13 +304,13 @@ const SupportInbox = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Unread</p>
               <p className="text-xl font-bold mt-1">
-                {messages.filter(m => m.status === "unread").length}
+                {messages.filter((m) => m.status === "unread").length}
               </p>
             </div>
             <div className="bg-blue-100 p-2 rounded-lg">
@@ -260,13 +318,13 @@ const SupportInbox = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-xl font-bold mt-1">
-                {messages.filter(m => m.status === "pending").length}
+                {messages.filter((m) => m.status === "pending").length}
               </p>
             </div>
             <div className="bg-yellow-100 p-2 rounded-lg">
@@ -274,13 +332,13 @@ const SupportInbox = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Resolved</p>
               <p className="text-xl font-bold mt-1">
-                {messages.filter(m => m.status === "resolved").length}
+                {messages.filter((m) => m.status === "resolved").length}
               </p>
             </div>
             <div className="bg-green-100 p-2 rounded-lg">
@@ -288,13 +346,13 @@ const SupportInbox = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Archived</p>
               <p className="text-xl font-bold mt-1">
-                {messages.filter(m => m.status === "archived").length}
+                {messages.filter((m) => m.status === "archived").length}
               </p>
             </div>
             <div className="bg-purple-100 p-2 rounded-lg">
@@ -320,7 +378,7 @@ const SupportInbox = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           {/* Status Filter */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -331,14 +389,14 @@ const SupportInbox = () => {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              {statusOptions.map(option => (
+              {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </select>
           </div>
-          
+
           {/* Clear Filters */}
           {(searchTerm || statusFilter !== "all") && (
             <button
@@ -393,7 +451,9 @@ const SupportInbox = () => {
                       <div className="flex flex-col items-center justify-center">
                         <Mail className="w-12 h-12 text-gray-400 mb-2" />
                         <p className="text-lg">No messages found</p>
-                        <p className="text-sm mt-1">Try adjusting your filters</p>
+                        <p className="text-sm mt-1">
+                          Try adjusting your filters
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -401,11 +461,13 @@ const SupportInbox = () => {
                   currentMessages.map((message) => {
                     const statusInfo = getStatusDetails(message.status);
                     const isUnread = message.status === "unread";
-                    
+
                     return (
                       <tr
                         key={message._id || message.id}
-                        className={`hover:bg-gray-50 transition-colors ${isUnread ? "bg-blue-50" : ""}`}
+                        className={`hover:bg-gray-50 transition-colors ${
+                          isUnread ? "bg-blue-50" : ""
+                        }`}
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center">
@@ -413,7 +475,11 @@ const SupportInbox = () => {
                               <User className="w-4 h-4 text-indigo-600" />
                             </div>
                             <div>
-                              <div className={`font-medium ${isUnread ? "text-indigo-700" : "text-gray-900"}`}>
+                              <div
+                                className={`font-medium ${
+                                  isUnread ? "text-indigo-700" : "text-gray-900"
+                                }`}
+                              >
                                 {message.name}
                               </div>
                               <div className="text-sm text-gray-500 truncate max-w-[120px]">
@@ -423,7 +489,13 @@ const SupportInbox = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className={`font-medium ${isUnread ? "text-indigo-700 font-semibold" : "text-gray-900"}`}>
+                          <div
+                            className={`font-medium ${
+                              isUnread
+                                ? "text-indigo-700 font-semibold"
+                                : "text-gray-900"
+                            }`}
+                          >
                             {message.subject}
                           </div>
                         </td>
@@ -438,7 +510,9 @@ const SupportInbox = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}
+                          >
                             {statusInfo.label}
                           </span>
                         </td>
@@ -488,13 +562,16 @@ const SupportInbox = () => {
             <div className="flex-1 flex items-center justify-between">
               <div className="flex items-center">
                 <span className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
+                  Showing{" "}
+                  <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
                   <span className="font-medium">
                     {Math.min(indexOfLastItem, filteredMessages.length)}
                   </span>{" "}
-                  of <span className="font-medium">{filteredMessages.length}</span> messages
+                  of{" "}
+                  <span className="font-medium">{filteredMessages.length}</span>{" "}
+                  messages
                 </span>
-                
+
                 <select
                   className="ml-4 border-gray-300 rounded-md text-sm py-1 px-2"
                   value={itemsPerPage}
@@ -510,7 +587,7 @@ const SupportInbox = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => currentPage > 1 && paginate(currentPage - 1)}
@@ -523,7 +600,7 @@ const SupportInbox = () => {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
-                
+
                 <div className="flex space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                     (number) => (
@@ -541,7 +618,7 @@ const SupportInbox = () => {
                     )
                   )}
                 </div>
-                
+
                 <button
                   onClick={() =>
                     currentPage < totalPages && paginate(currentPage + 1)
@@ -577,7 +654,7 @@ const SupportInbox = () => {
           <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center mb-6">
-                <button 
+                <button
                   onClick={closeMessageView}
                   className="mr-4 text-gray-500 hover:text-gray-700"
                 >
@@ -586,14 +663,14 @@ const SupportInbox = () => {
                 <h2 className="text-xl font-bold text-gray-800 flex-1">
                   {selectedMessage.subject}
                 </h2>
-                <button 
+                <button
                   onClick={closeMessageView}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               <div className="border-b border-gray-200 pb-4 mb-6">
                 <div className="flex justify-between items-start">
                   <div className="flex items-start">
@@ -601,21 +678,23 @@ const SupportInbox = () => {
                       <User className="w-6 h-6 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-800">{selectedMessage.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {selectedMessage.name}
+                      </h3>
                       <p className="text-gray-600">{selectedMessage.email}</p>
                       <p className="text-sm text-gray-500 mt-1">
                         {formatDate(selectedMessage.createdAt)}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <select
                       value={selectedMessage.status}
                       onChange={(e) => handleStatusChange(e.target.value)}
                       className="border border-gray-300 rounded-lg px-3 py-1 text-sm"
                     >
-                      {statusOptions.slice(1).map(option => (
+                      {statusOptions.slice(1).map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -624,15 +703,17 @@ const SupportInbox = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="prose max-w-none mb-8">
                 <p className="text-gray-700 whitespace-pre-line">
                   {selectedMessage.message}
                 </p>
               </div>
-              
+
               <div className="border-t border-gray-200 pt-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Reply to {selectedMessage.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  Reply to {selectedMessage.name}
+                </h3>
                 <textarea
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
@@ -640,7 +721,7 @@ const SupportInbox = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent mb-4"
                   placeholder="Type your response here..."
                 ></textarea>
-                
+
                 <div className="flex justify-end gap-3">
                   <button
                     type="button"
