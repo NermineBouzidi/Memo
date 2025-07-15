@@ -10,12 +10,9 @@ import {
   Menu,
   X,
   ChevronDown,
-  Sun,
-  Moon,
   ShoppingCart,
   Trash2,
 } from "lucide-react";
-import { useTheme } from "../contexts/ThemeContext";
 import { useCart } from "../contexts/cartContext";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -27,7 +24,6 @@ const navItems = [
     submenu: [{ id: "categories", label: "Catégories" }],
   },
   { id: "tarifs", label: "Tarifs" },
-  { id: "a-propos", label: "À propos", scrollTo: "qui-sommes-nous" },
   {
     id: "ressources",
     label: "Ressources",
@@ -39,7 +35,6 @@ const navItems = [
       { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" },
     ],
   },
-  { id: "contacts", label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -50,11 +45,9 @@ export default function Navbar() {
   const [showCart, setShowCart] = useState(false);
   const [removingItems, setRemovingItems] = useState([]);
   const [isClearing, setIsClearing] = useState(false);
-  const [lineStyle, setLineStyle] = useState({ width: 0, left: 0 });
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, toggleTheme } = useTheme();
   const { cartItems, itemCount, removeFromCart, clearCart, isAdding } = useCart();
   const { user, logout } = useAuth();
   const lottieCartRef = useRef();
@@ -62,21 +55,6 @@ export default function Navbar() {
   const [showAddAnimation, setShowAddAnimation] = useState(false);
   const [animationStep, setAnimationStep] = useState("idle");
   const [showLottie, setShowLottie] = useState(true);
-
-  useEffect(() => {
-    if (navRef.current && active) {
-      const activeButton = Array.from(navRef.current.children).find(
-        (child) => child.dataset.id === active
-      );
-      if (activeButton) {
-        const { offsetLeft, offsetWidth } = activeButton;
-        setLineStyle({
-          width: offsetWidth,
-          left: offsetLeft
-        });
-      }
-    }
-  }, [active]);
 
   useEffect(() => {
     if (isAdding) {
@@ -204,6 +182,10 @@ export default function Navbar() {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
           }
+          @keyframes underline {
+            from { width: 0; }
+            to { width: 100%; }
+          }
           .animate-shake {
             animation: shake 0.5s ease;
           }
@@ -256,18 +238,18 @@ export default function Navbar() {
             transform: scale(1.02);
           }
           .hover-glow-red:hover {
-            box-shadow: 0 0 10px rgba(255, 80, 80, 0.4);
+            box-shadow: 0 0 10px rgba(249, 168, 212, 0.4);
             transform: scale(1.03);
           }
         `}
       </style>
 
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black shadow-md px-6 md:px-12 py-2 flex items-center justify-between transition-colors duration-300">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 shadow-inner px-6 md:px-12 py-2 flex items-center justify-between transition-colors duration-300">
         <Link to="/" className="flex items-center space-x-2">
           <img
             src={image}
             alt="Logo"
-            className="h-24 w-auto md:h-24 drop-shadow-lg transition-all duration-300"
+            className="h-12 w-auto md:h-12 drop-shadow-lg transition-all duration-300"
           />
         </Link>
 
@@ -279,10 +261,10 @@ export default function Navbar() {
             {navItems.map((item) => (
               <li key={item.id} className="relative" data-id={item.id}>
                 <div
-                  className={`cursor-pointer text-sm md:text-base transition-all duration-300 flex items-center gap-1 py-2 px-1 ${
+                  className={`cursor-pointer text-sm md:text-base transition-all duration-300 flex items-center gap-1 py-2 px-1 relative ${
                     active === item.id
-                      ? "text-red-600 font-semibold transform scale-105"
-                      : "text-gray-700 dark:text-white hover:text-red-600 hover:scale-102"
+                      ? "text-red-600 font-semibold after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-pink-300 after:w-full"
+                      : "text-gray-700 dark:text-white hover:text-red-600 hover:scale-102 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-pink-300 after:w-0 hover:after:w-full after:transition-all after:duration-300"
                   }`}
                   onClick={() => handleItemClick(item)}
                 >
@@ -291,7 +273,7 @@ export default function Navbar() {
                 </div>
 
                 {item.submenu && dropdownOpen === item.id && (
-                  <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
+                  <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-inner border border-gray-200 dark:border-gray-600 min-w-48 py-2 z-50">
                     {item.submenu.map((submenuItem) => (
                       <button
                         key={submenuItem.id}
@@ -306,53 +288,12 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-
-          <div 
-            className="absolute bottom-0 h-1 transition-all duration-700 ease-out transform origin-center"
-            style={{
-              width: `${lineStyle.width + 8}px`,
-              left: `${lineStyle.left - 4}px`,
-            }}
-          >
-            <div 
-              className="relative h-full rounded-full"
-              style={{
-                background: 'linear-gradient(90deg, #DC2626, #EF4444, #F87171, #FCA5A5)',
-                backgroundSize: '300% 100%',
-                animation: 'gradientShift 3s ease-in-out infinite, slideIn 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                filter: 'drop-shadow(0 0 12px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 24px rgba(220, 38, 38, 0.6))',
-                boxShadow: '0 0 20px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)',
-              }}
-            >
-              <div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent)',
-                  animation: 'shimmer 2s ease-in-out infinite',
-                }}
-              />
-            </div>
-            <div 
-              className="absolute inset-0 rounded-full scale-150 blur-md"
-              style={{
-                background: 'linear-gradient(90deg, rgba(220, 38, 38, 0.3), rgba(239, 68, 68, 0.4), rgba(248, 113, 113, 0.3))',
-                animation: 'breathe 4s ease-in-out infinite',
-              }}
-            />
-            <div 
-              className="absolute top-0 left-1/2 transform -translate-x-1/2 w-3/4 h-0.5 rounded-full"
-              style={{
-                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent)',
-                animation: 'shimmer 3s ease-in-out infinite reverse',
-              }}
-            />
-          </div>
         </div>
 
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={() => setShowCart(!showCart)}
-            className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 dark:bg-gray-800 border border-gray-700 shadow transition p-0"
+            className="relative flex items-center justify-center w-11 h-11 rounded-full bg-gray-900 dark:bg-gray-800 border border-gray-700 shadow-inner transition p-0"
             aria-label="Afficher le panier"
           >
             {showLottie && (
@@ -366,18 +307,10 @@ export default function Navbar() {
               />
             )}
             {itemCount > 0 && (
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white rounded-full text-xs w-6 h-6 flex items-center justify-center font-bold shadow-md animate-pop">
+              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white rounded-full text-xs w-6 h-6 flex items-center justify-center font-bold shadow-inner animate-pop">
                 {itemCount}
               </span>
             )}
-          </button>
-
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#161616] text-gray-700 dark:text-gray-200 hover:text-red-600 hover:border-red-400 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           {user ? (
@@ -400,7 +333,7 @@ export default function Navbar() {
                 </div>
               </button>
               {dropdownOpen === "user" && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden animate-fade-slide-up">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg shadow-inner z-50 overflow-hidden animate-fade-slide-up">
                   <button
                     onClick={() => {
                       setDropdownOpen(null);
@@ -447,15 +380,15 @@ export default function Navbar() {
       </nav>
 
       {menuOpen && (
-        <div className="md:hidden fixed top-16 left-0 right-0 bg-white dark:bg-black shadow-lg border-t border-gray-300 dark:border-gray-700 z-40">
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-white dark:bg-gray-900 shadow-inner border-t border-gray-300 dark:border-gray-700 z-40">
           <ul className="flex flex-col gap-3 p-4">
             {navItems.map((item) => (
               <li key={item.id} className="relative">
                 <div
-                  className={`cursor-pointer text-base flex items-center justify-between px-3 py-2 rounded ${
+                  className={`cursor-pointer text-base flex items-center justify-between px-3 py-2 rounded relative ${
                     active === item.id
-                      ? "bg-red-100 dark:bg-red-900 text-red-600 font-semibold"
-                      : "text-gray-700 dark:text-white hover:text-red-600"
+                      ? "bg-red-100 dark:bg-red-900 text-red-600 font-semibold after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-pink-300 after:w-full"
+                      : "text-gray-700 dark:text-white hover:text-red-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-pink-300 after:w-0 hover:after:w-full after:transition-all after:duration-300"
                   }`}
                   onClick={() =>
                     item.submenu
@@ -522,7 +455,7 @@ export default function Navbar() {
 
       {showCart && (
         <div
-          className={`fixed top-20 right-4 w-80 max-h-[60vh] bg-white dark:bg-gray-900 border dark:border-gray-700 shadow-lg rounded-lg p-4 overflow-auto z-[1000] fade-zoom-in`}
+          className="fixed top-20 right-4 w-80 max-h-[60vh] bg-white dark:bg-gray-900 border dark:border-gray-700 shadow-inner rounded-lg p-4 overflow-auto z-[1000] fade-zoom-in"
           onClick={(e) => e.stopPropagation()}
         >
           <h3 className="text-lg font-bold mb-4 text-red-600 dark:text-red-400">
@@ -545,14 +478,10 @@ export default function Navbar() {
                     aria-live="polite"
                   >
                     <div className="w-full">
-                      <p className={`font-semibold ${theme === "dark" ? "text-white" : "text-black"}`}>
+                      <p className="font-semibold text-black dark:text-white">
                         {item.produit.name}
                       </p>
-                      <p
-                        className={`text-sm ${
-                          theme === "dark" ? "text-white" : "text-gray-700"
-                        }`}
-                      >
+                      <p className="text-sm text-gray-700 dark:text-white">
                         Quantité : {item.quantite}
                       </p>
                       <p className="text-sm text-gray-500 mt-1 transition-all duration-300">
@@ -580,53 +509,51 @@ export default function Navbar() {
             </ul>
           )}
           {cartItems.length > 0 && (
-            <>
-              <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="mt-6 grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setShowCart(false)}
+                className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Fermer
+              </button>
+              <button
+                onClick={() => {
+                  setShowCart(false);
+                  navigate("/voir-panier");
+                }}
+                className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Voir le panier
+              </button>
+              {user ? (
                 <button
-                  onClick={() => setShowCart(false)}
+                  onClick={() => navigate("/checkout")}
                   className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
                 >
-                  Fermer
+                  Passer à la caisse
                 </button>
+              ) : (
                 <button
                   onClick={() => {
                     setShowCart(false);
-                    navigate("/voir-panier");
+                    navigate("/signup");
                   }}
-                  className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
+                  className="bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition"
                 >
-                  Voir le panier
+                  Se connecter pour payer
                 </button>
-                {user ? (
-                  <button
-                    onClick={() => navigate("/checkout")}
-                    className="bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition"
-                  >
-                    Passer à la caisse
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setShowCart(false);
-                      navigate("/signup");
-                    }}
-                    className="bg-gray-400 text-white py-2 rounded-lg hover:bg-gray-500 transition"
-                  >
-                    Se connecter pour payer
-                  </button>
-                )}
-                <button
-                  onClick={handleClearCartWithAnimation}
-                  className={`bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition ${
-                    isClearing ? "pulse disabled" : ""
-                  }`}
-                  disabled={isClearing}
-                  aria-label="Vider le panier"
-                >
-                  Vider le panier
-                </button>
-              </div>
-            </>
+              )}
+              <button
+                onClick={handleClearCartWithAnimation}
+                className={`bg-[#ff1a1a] text-white py-2 px-2 rounded-lg hover:bg-red-600 transition ${
+                  isClearing ? "pulse disabled" : ""
+                }`}
+                disabled={isClearing}
+                aria-label="Vider le panier"
+              >
+                Vider le panier
+              </button>
+            </div>
           )}
         </div>
       )}

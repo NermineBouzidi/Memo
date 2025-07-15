@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 import walkAnimation from "../assets/mascotte-walk.json";
-
+import image from '../assets/logo8.png'
 const MascotteIntro = ({ onFinish }) => {
   const [shouldPlay, setShouldPlay] = useState(true);
 
@@ -21,12 +21,10 @@ const MascotteIntro = ({ onFinish }) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 min-h-screen bg-transparent">
       {shouldPlay && (
-        <Lottie
-          animationData={walkAnimation}
-          className="w-64 h-64"
-          loop={false}
-          autoplay
-        />
+       <div className="logo-wrapper">
+  <img src={image} alt="Logo" className="logo-img" />
+  <div className="spinner-ring"></div>
+</div>
       )}
 
       <div className="text-center animate-fade-in-down">
