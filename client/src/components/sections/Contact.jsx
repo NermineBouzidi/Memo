@@ -93,7 +93,6 @@ export default function Contact() {
         {/* Contact Information Cards */}
         <div className="space-y-8 max-w-lg mx-auto">
           {contactInfo.map(({ icon, title, detail }, index) => (
-
             <div
               key={title}
               className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-transform hover:scale-[1.02] hover:shadow-2xl"

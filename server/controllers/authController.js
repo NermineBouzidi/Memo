@@ -198,7 +198,9 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, email: user.email,
+    role: user.role // <-- IMPORTANT à inclure !
+     }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     res.cookie("token", token, {
@@ -448,7 +450,8 @@ export const isAuthenticated = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role 
       }
     });
   } catch (error) {

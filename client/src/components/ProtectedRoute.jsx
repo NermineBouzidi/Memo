@@ -24,8 +24,7 @@ const ProtectedRoute = ({ children, requireAuth = true, allowedRoles = [], redir
   // If authentication is not required but user is authenticated (like login/signup pages)
   if (!requireAuth && isAuthenticated) {
     // Redirect based on user role
-    const redirectPath = user?.role === 'admin' ? '/admin' : '/';
-
+    const redirectPath = user?.role === 'admin' ? '/admin' : '/home/dashboard';
     return <Navigate to={redirectPath} replace />;
   }
 
@@ -33,7 +32,7 @@ const ProtectedRoute = ({ children, requireAuth = true, allowedRoles = [], redir
   if (requireAuth && allowedRoles.length > 0 && user) {
     if (!allowedRoles.includes(user.role)) {
       // Redirect to appropriate dashboard based on user's actual role
-      const redirectPath = user.role === 'admin' ? '/admin' : '/home';
+      const redirectPath = user.role === 'admin' ? '/admin' : '/home/dashboard';
       return <Navigate to={redirectPath} replace />;
     }
   }

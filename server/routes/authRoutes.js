@@ -1,6 +1,7 @@
 import express from 'express';
 import { register,login , logout ,sendVerifyOtp , verifyEmail , isAuthenticated ,sendResetOtp ,resetPassword, handleGoogleAuth } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
+
 import { preAuth } from '../middleware/preAuthMiddleware.js';
 
 const authRouter = express.Router();
@@ -14,6 +15,7 @@ authRouter.post('/isAuth', userAuth, isAuthenticated);
 authRouter.post('/send-reset-otp', sendResetOtp);
 authRouter.post('/google', handleGoogleAuth);
 authRouter.post('/reset-password', resetPassword);
+
 
 
 export default authRouter;

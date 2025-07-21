@@ -1,28 +1,18 @@
 import productModel from "../models/productModel.js";
 
 // Create a new product (service)
-export const createProduct = async (req, res) => {
+export const createProduct = async (productData) => {
   try {
-const { name, description, price, category, features } = req.body;
-
-    if (!name || !description || price == null) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, description, and price are required.",
-      });
-    }
-
-    if (price <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Price must be greater than zero.",
-      });
-    }
-
-    const newProduct = await productModel.create(req.body);
-    res.status(201).json({ success: true, data: newProduct });
+    const response = await axios.post('http://localhost:8080/api/products/create-product', productData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error("Error creating product:", error);
+    throw error;
   }
 };
 
@@ -49,23 +39,21 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// Update a product
-export const updateProduct = async (req, res) => {
+/// Pour la mise à jour
+export const updateProduct = async (id, productData) => {
   try {
-    const updatedProduct = await productModel.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, updatedAt: Date.now() },
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
-    res.status(200).json({ success: true, data: updatedProduct });
+    const response = await axios.put(`http://localhost:8080/api/products/update-product/${id}`, productData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error("Error updating product:", error);
+    throw error;
   }
 };
-
 // Delete a product
 export const deleteProduct = async (req, res) => {
   try {

@@ -37,7 +37,7 @@ export default function Categories() {
             />
             <h2 className="text-2xl font-semibold mb-2">{product.name}</h2>
             <p className="text-gray-700 dark:text-gray-300 flex-grow">{product.description}</p>
-            <p className="text-red-600 font-bold mt-4 text-lg">{product.price} TND</p>
+            <p className="text-red-600 font-bold mt-4 text-lg">{product.price} $</p>
             <button
               onClick={() => addToCart(product)}
               className="mt-5 bg-red-600 text-white px-5 py-3 rounded hover:bg-red-700 transition"

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation,Navigate } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -12,7 +12,6 @@ import NotFound from "./pages/NotFound";
 import AdminLayout from "./layouts/AdminLayout";
 import UserLayout from "./layouts/UserLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
-import UserHome from "./pages/user/UserHome";
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 import ResetPasswordFlow from "./pages/ResetPasswordFlow";
@@ -30,8 +29,24 @@ import VoirPanier from "./pages/VoirPanier";
 import Faq from "./pages/Faq";
 import AvisClients from "./pages/AvisClients";
 import GuideUtilisation from "./pages/GuideUtilisation";
+import Support  from "./pages/support";
+
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+// Pages Utilisateur
+import UserHome from "./pages/user/UserHome";
+import ClientDashboard from "./pages/user/DashboardClient";
+import Paiements from "./pages/user/Paiements";
+import MesDocuments from "./pages/user/MesDocuments";
+import MesCommandes from "./pages/user/MesCommandes";
+import SupportInbox from "./pages/admin/SupportInbox";
+import SupportTickets from './pages/admin/SupportTickets';
+// ...
+
+
+import Users from "./pages/admin/Users";
+import Products from "./pages/admin/Products";
+
 
 function AppContent() {
   const location = useLocation();
@@ -47,7 +62,17 @@ function AppContent() {
     "/emailstep",
     "/otpstep",
     "/nouveaupass",
-     "/home" // ⬅️ Ajout de cette ligne
+    "/home/dashboard",
+    "/home/commandes",
+    "/home/paiements",
+    "/home/documents",
+    "/admin",
+    "/admin/",
+    "/admin/users",
+    "/admin/messages",
+    "/admin/products",
+    "/admin/support",
+ 
     
   ];
 
@@ -65,6 +90,7 @@ function AppContent() {
            <Route path="/faq" element={<Faq/>} />
               <Route path="/avis-clients" element={<AvisClients/>} />
               <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+          <Route path="/support" element={<Support/>} />
 
 
           <Route
@@ -96,28 +122,35 @@ function AppContent() {
           <Route path="*" element={<NotFound />} />
 
           {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAuth={true} allowedRoles={["admin"]}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-          </Route>
+       <Route
+  path="/admin/*"
+  element={
+    <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<AdminDashboard />} />
+  <Route path="users" element={<Users />} />
+  <Route path="messages" element={<SupportInbox />} />
+  <Route path="products" element={<Products />} />
+  <Route path="support" element={<SupportTickets/> } />
+</Route>
 
-          {/* User Routes */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute requireAuth={true} allowedRoles={["user"]}>
-                <UserLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<UserHome />} />
-          </Route>
+          
+<Route 
+  path="/home" 
+  element={
+    <ProtectedRoute>
+      <UserLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<ClientDashboard />} />
+  <Route path="commandes" element={<MesCommandes />} />
+  <Route path="paiements" element={<Paiements />} />
+  <Route path="documents" element={<MesDocuments />} />
+</Route>
         </Routes>
       </main>
       {!hideNavFooter && <Footer />}
@@ -128,9 +161,11 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
+    <AuthProvider>
       <CartProvider>
         <AppContent />
       </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

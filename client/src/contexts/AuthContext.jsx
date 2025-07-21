@@ -11,7 +11,10 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await checkAuthUser();
         if (res.data.success) {
-          setUser(res.data.user);
+         setUser({
+          ...res.data.user,
+          role: res.data.user.role || 'user' // Valeur par défaut si le rôle n'est pas défini
+        });
           setIsAuthenticated(true);
           
         }

@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import Lottie from "lottie-react"; // si tu utilises lottie-react
 import userIconAnimation from "../assets/userIcon.json";
 
+
 import SuccessAnimation from "./SuccessAnimation"; // adapte le chemin// chemin selon ton projet
  // adapte le chemin si besoin
  
@@ -44,8 +45,12 @@ const navItems = [
       { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" },
     ],
   },
+
   { id: "contacts", label: "Contact" },
+ 
+  
 ];
+
 
 export default function Navbar() {
   const [active, setActive] = useState("accueil");
@@ -294,6 +299,7 @@ export default function Navbar() {
             className="h-24 w-auto md:h-24 drop-shadow-lg transition-all duration-300"
           />
         </Link>
+        
 
         {/* Desktop Navigation with Animated Line */}
         <div className="hidden md:block relative">
@@ -406,6 +412,16 @@ export default function Navbar() {
 
         {/* Right actions (desktop) */}
         <div className="hidden md:flex items-center gap-4">
+          {/* À placer dans le div des actions de droite (à côté du panier) */}
+<Link 
+  to="/support" 
+  className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition hover-glow-red"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+  </svg>
+  Support
+</Link>
          {/* Panier avec animation et compteur */}
 <button
   onClick={() => setShowCart(!showCart)}
@@ -431,13 +447,7 @@ export default function Navbar() {
 </button>
 
           {/* Bouton bascule thème */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-[#161616] text-gray-700 dark:text-gray-200 hover:text-red-600 hover:border-red-400 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+       
 
           {/* Compte utilisateur ou inscription */}
 {user ? (
@@ -468,11 +478,11 @@ export default function Navbar() {
   <button
     onClick={() => {
       setDropdownOpen(null);
-      navigate("/profil");
+      navigate("/home/dashboard");
     }}
     className="w-full text-left px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover-glow"
   >
-    👤 Profil
+    👤 Votre  espace
   </button>
   <button
   onClick={() => {
@@ -519,6 +529,18 @@ export default function Navbar() {
 {menuOpen && (
   <div className="md:hidden fixed top-16 left-0 right-0 bg-white dark:bg-black shadow-lg border-t border-gray-300 dark:border-gray-700 z-40">
     <ul className="flex flex-col gap-3 p-4">
+      <li>
+  <Link
+    to="/support"
+    onClick={() => setMenuOpen(false)}
+    className="w-full block text-left px-4 py-2 text-base text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition flex items-center gap-2"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+    </svg>
+    Support Expert
+  </Link>
+</li>
       {navItems.map((item) => (
         <li key={item.id} className="relative">
           <div
@@ -639,12 +661,12 @@ export default function Navbar() {
     <p className="text-sm text-gray-500 mt-1 transition-all duration-300">
       Prix unitaire :{" "}
       <span className="text-red-500 font-semibold">
-        {item.produit.price.toFixed(2)} TND
+        {item.produit.price.toFixed(2)} $
       </span>
     </p>
 
     <p className="text-sm text-green-600 font-bold transition-all duration-300">
-      Total : {(item.produit.price * item.quantite).toFixed(2)} TND
+      Total : {(item.produit.price * item.quantite).toFixed(2)} $
     </p>
   </div>
 

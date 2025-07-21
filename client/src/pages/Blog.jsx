@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, User, ArrowRight, Search, Tag } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+
 import { useTranslation } from 'react-i18next';
 const blogPosts = [
   {
@@ -244,7 +244,7 @@ export default function Blog() {
       </div>
     </section>
     </main>
-    <Footer />
+
   </>
   );
 }

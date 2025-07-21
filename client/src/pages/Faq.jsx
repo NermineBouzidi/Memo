@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Search, HelpCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const faqData = [
   {
@@ -146,7 +145,7 @@ export default function Faq() {
           </div>
         </section>
       </main>
-      <Footer />
+
     </>
   );
 }

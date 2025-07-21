@@ -1,5 +1,4 @@
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import Contact from '../components/sections/Contact';
 import Hero from '../components/sections/Hero';
 import { useEffect } from "react";
@@ -24,7 +23,6 @@ export default function Home() {
  
   <Hero />
   <Contact />
-   <Footer />
 </>
 
   );
