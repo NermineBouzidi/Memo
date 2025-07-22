@@ -247,7 +247,7 @@ const resources = {
       "savoir.supportButton": "Contacter le support",
       // Hero Section
       "hero.newVersionAvailable": "Nouvelle version disponible",
-      "hero.title": "PEGASIO",
+      "hero.title": "Memo",
       "hero.partner": "Votre Partenaire Digital",
       "hero.description": "La plateforme intelligente qui révolutionne la gestion de vos projets avec des outils intégrés et une interface intuitive conçue pour booster votre productivité.",
       "hero.cta.startFree": "Commencer gratuitement",

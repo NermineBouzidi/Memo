@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import {
   Mail,
   Phone,
@@ -68,14 +68,14 @@ export default function Contact() {
       id="contacts"
       className="relative overflow-hidden bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-black dark:via-gray-900 dark:to-blue-900 py-20"
     >
-      {/* Background animation elements */}
+      {/* Background animation elements }
       <div className="absolute inset-0 z-0">
         <div className="blob blob1 animate-pulse-slow"></div>
         <div className="blob blob2 animate-pulse-slower"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Heading */}
+      //  {/* Heading }
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-red-100 dark:bg-red-900/20 px-6 py-3 rounded-full mb-6 animate-fadeIn">
             <span className="text-red-600 dark:text-red-400 text-sm font-semibold uppercase tracking-wide">
@@ -90,7 +90,7 @@ export default function Contact() {
           </p>
         </div>
 
-        {/* Contact Information Cards */}
+       // {/* Contact Information Cards }
         <div className="space-y-8 max-w-lg mx-auto">
           {contactInfo.map(({ icon, title, detail }, index) => (
             <div
@@ -113,7 +113,7 @@ export default function Contact() {
             </div>
           ))}
 
-          {/* Social Links */}
+       //   {/* Social Links }
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               {t('contact.socials.title')}
@@ -140,4 +140,4 @@ export default function Contact() {
       </div>
     </section>
   );
-}
+}*/

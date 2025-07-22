@@ -1,9 +1,10 @@
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import Contact from '../components/sections/Contact';
 import Hero from '../components/sections/Hero';
+import Highlights from '../components/sections/Highlights';
+import ProductDefinition from '../components/sections/ProductDefinition';
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import INPISection from '../components/sections/INPISection';
 
 export default function Home() {
   const location = useLocation();
@@ -20,11 +21,14 @@ export default function Home() {
 
   return (
   <>
-  <Navbar />
+  <div>
+      <Navbar />
+      <Hero />
+      <Highlights />
+      <ProductDefinition />
+      <INPISection/>
+    </div>
  
-  <Hero />
-  <Contact />
-   <Footer />
 </>
 
   );

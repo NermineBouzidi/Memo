@@ -189,7 +189,7 @@ const Signup = () => {
           </div>
 
           <div className="w-full lg:w-1/2 flex justify-center px-8">
-            <img src={logo} alt="Logo" className="h-72 animate-fade-in" />
+            <img src={logo} alt="Logo" className="h-34 animate-fade-in" />
           </div>
 
           <div className="relative w-full max-w-md z-10">

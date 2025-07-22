@@ -1,10 +1,4 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation,Navigate } from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -43,7 +37,6 @@ import ClientDashboard from "./pages/user/DashboardClient";
 import Paiements from "./pages/user/Paiements";
 import MesDocuments from "./pages/user/MesDocuments";
 import MesCommandes from "./pages/user/MesCommandes";
-import SupportInbox from "./pages/admin/SupportInbox";
 import Users from "./pages/admin/Users";
 import Products from "./pages/admin/Products";
 
@@ -62,12 +55,9 @@ function AppContent() {
     "/otpstep",
     "/nouveaupass",
     "/home/dashboard",
-    "/",
-    "/admin/",
-    "/admin/users",
-    "/admin/products",
-    "/admin/orders",
-    "/admin/contacts",
+    "/admin/"
+ 
+    
   ];
 
   const hideNavFooter = noNavFooterPaths.includes(location.pathname);
@@ -75,15 +65,16 @@ function AppContent() {
   return (
     <>
       {!hideNavFooter && <Navbar />}
-      <main className={hideNavFooter ? "" : "pt-28"}>
+<main className={hideNavFooter ? "" : ""}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/savoir-plus" element={<SavoirPlus />} />
-          <Route path="/faq" element={<Faq />} />
-          <Route path="/avis-clients" element={<AvisClients />} />
-          <Route path="/guide-utilisation" element={<GuideUtilisation />} />
+           <Route path="/faq" element={<Faq/>} />
+              <Route path="/avis-clients" element={<AvisClients/>} />
+              <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+
 
           <Route
             path="/signup"
@@ -119,28 +110,27 @@ function AppContent() {
             element={
               <ProtectedRoute requireAuth={true} allowedRoles={["admin"]}>
                 <AdminLayout />
+        
               </ProtectedRoute>
             }
           >
             <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<Users />} />
-            <Route path="contacts" element={<SupportInbox />} />
-            <Route path="products" element={<Products />} />
+            <Route path="users" element={<Users/>} />
+            <Route path="products" element={<Products />} />  
           </Route>
 
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <UserLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<ClientDashboard />} />
-            <Route path="commandes" element={<MesCommandes />} />
-            <Route path="paiements" element={<Paiements />} />
-            <Route path="documents" element={<MesDocuments />} />
-          </Route>
+          
+<Route 
+  path="/home" 
+  element={
+      <UserLayout />
+  }
+>
+  <Route path="dashboard" element={<ClientDashboard />} />
+  <Route path="commandes" element={<MesCommandes />} />
+  <Route path="paiements" element={<Paiements />} />
+  <Route path="documents" element={<MesDocuments />} />
+</Route>
         </Routes>
       </main>
       {!hideNavFooter && <Footer />}
@@ -151,10 +141,10 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <AppContent />
-        </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

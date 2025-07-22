@@ -3,23 +3,22 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/mongodb.js';
 import authRouter from './routes/authRoutes.js';
-import productRouter from './routes/productRoutes.js';
-import contactRouter from './routes/contactRoute.js';
 import userRouter from './routes/userRoutes.js'; 
+import productRoutes from './routes/productRoutes.js';
 import statistiquesRouter from './routes/AdminRouter.js';
 import reviewRouter from './routes/reviewRoutes.js';
 import panierRoutes from "./routes/panierRoutes.js";
 import newsletterRouter from './routes/newsletterRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
+import stripeRoutes from './routes/stripeRoutes.js';
+
+/*import commandeRoutes from './routes/commandeRoutes.js';
+import paiementRoutes from './routes/paiementRoutes.js';
+import documentRoutes from './routes/documentRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';*/
+
 import dotenv from 'dotenv';
-
-
-import newsletterScheduler from './services/newsletterScheduler.js';
 dotenv.config();
-
-
-
-
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -54,32 +53,27 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRouter);
-
 app.use('/api/users', userRouter);
-app.use('/api/products', productRouter);
-app.use('/api/contact', contactRouter);
-
+app.use('/api/products', productRoutes);
 app.use('/api/review', reviewRouter);
 app.use('/api/prod', statistiquesRouter);
 app.use("/api/panier", panierRoutes);
 app.use('/api/newsletter', newsletterRouter);
 app.use('/api/messages', messageRouter);
+app.use("/api/stripe", stripeRoutes);
+
+
+/*app.use('/api/commande', commandeRoutes);
+app.use('/api/paiement', paiementRoutes);
+app.use('/api/document', documentRoutes);
+app.use('/api/dashboard', dashboardRoutes);*/
+
 
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
 // Démarrer le serveur
-//for review
-app.use('/api/review', reviewRouter);
-//for statistiques 
-app.use('/api/prod', statistiquesRouter);
-//for newsletter
-app.use('/api/newsletter', newsletterRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  
-  // Start newsletter scheduler
-  newsletterScheduler.startScheduler();
 });
-
