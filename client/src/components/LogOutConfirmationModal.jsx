@@ -5,7 +5,7 @@ export default function LogOutConfirmationModal({ onConfirm, onCancel }) {
       <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm" />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-md bg-white/80 dark:bg-white/10 border border-white/30 dark:border-white/20 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 transition-all">
+      <div className="relative z-10 w-full max-w-md bg-white dark:bg-white/10 border border-white/30 dark:border-white/20 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 transition-all">
         {/* Title */}
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white text-center">
           Se Déconnecter

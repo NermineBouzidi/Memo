@@ -11,6 +11,7 @@ import panierRoutes from "./routes/panierRoutes.js";
 import newsletterRouter from './routes/newsletterRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import stripeRoutes from './routes/stripeRoutes.js';
+import contactRoute from './routes/contactRoute.js';
 
 /*import commandeRoutes from './routes/commandeRoutes.js';
 import paiementRoutes from './routes/paiementRoutes.js';
@@ -61,6 +62,9 @@ app.use("/api/panier", panierRoutes);
 app.use('/api/newsletter', newsletterRouter);
 app.use('/api/messages', messageRouter);
 app.use("/api/stripe", stripeRoutes);
+
+app.use("/api/contact", contactRoute);
+
 
 
 /*app.use('/api/commande', commandeRoutes);

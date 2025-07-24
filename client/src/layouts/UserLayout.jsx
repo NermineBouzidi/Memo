@@ -25,9 +25,8 @@ const UserLayout = () => {
   return (
     <div className="min-h-screen font-sans bg-white relative overflow-hidden text-gray-900 antialiased">
       {/* ➕ Ajoutez la Navbar ici */}
-      <Navbar /> 
 
-      <div className="flex pt-20"> {/* Compensez la hauteur de la navbar */}
+      <div className="flex "> {/* Compensez la hauteur de la navbar */}
         <AsideBarClient sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Zone "hover gauche" pour rétracter la sidebar */}

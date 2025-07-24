@@ -39,6 +39,7 @@ import MesDocuments from "./pages/user/MesDocuments";
 import MesCommandes from "./pages/user/MesCommandes";
 import Users from "./pages/admin/Users";
 import Products from "./pages/admin/Products";
+import SupportInbox from "./pages/admin/SupportInbox";
 
 function AppContent() {
   const location = useLocation();
@@ -64,8 +65,7 @@ function AppContent() {
 
   return (
     <>
-      {!hideNavFooter && <Navbar />}
-<main className={hideNavFooter ? "" : ""}>
+     
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
@@ -117,6 +117,8 @@ function AppContent() {
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<Users/>} />
             <Route path="products" element={<Products />} />  
+                        <Route path="contacts" element={<SupportInbox />} />  
+
           </Route>
 
           
@@ -132,8 +134,7 @@ function AppContent() {
   <Route path="documents" element={<MesDocuments />} />
 </Route>
         </Routes>
-      </main>
-      {!hideNavFooter && <Footer />}
+     
     </>
   );
 }

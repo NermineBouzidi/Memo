@@ -1,6 +1,6 @@
 // src/pages/Users.jsx
 import { useState, useEffect } from "react";
-import { User, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getAllUsers, deleteUser } from "../../api/users";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
@@ -62,20 +62,10 @@ const Users = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header with action button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <div className="mb-4 sm:mb-0">
-          <div className="flex items-center space-x-3 mb-2">
-            <User className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">User Management</h1>
-          </div>
-          <p className="text-gray-600">Manage your users, roles, and permissions</p>
-        </div>
-        
-        <button className="btn-primary flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg">
-          <Plus className="w-4 h-4" />
-          Add User
-        </button>
+      {/* Header */}
+      <div className="flex items-center space-x-3 mb-8">
+        <User className="w-8 h-8 text-indigo-600" />
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">User Management</h1>
       </div>
 
       {/* User Table Card */}
@@ -108,9 +98,8 @@ const Users = () => {
                   <tr>
                     <td colSpan={4} className="text-center p-8 text-gray-500">
                       <div className="flex flex-col items-center justify-center">
-                        <User className="w-12 h-12 text-gray-400 mb-2" />
+                        <User classClassName="w-12 h-12 text-gray-400 mb-2" />
                         <p className="text-lg">No users found</p>
-                        <p className="text-sm mt-1">Try adding a new user</p>
                       </div>
                     </td>
                   </tr>
@@ -142,16 +131,6 @@ const Users = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 flex justify-center gap-3">
-                        <button
-                          type="button"
-                          className="text-indigo-600 hover:text-indigo-900 transition-colors"
-                          title="Edit user"
-                        >
-                          <div className="bg-indigo-50 p-2 rounded-lg hover:bg-indigo-100">
-                            <Pencil className="w-4 h-4" />
-                          </div>
-                        </button>
-
                         <button
                           type="button"
                           onClick={() => handleDeleteClick(user._id)}
