@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -54,7 +54,6 @@ const Signup = () => {
       ...formData,
       [name]: value,
     });
-    // Effacer l'erreur quand l'utilisateur modifie le champ
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -169,13 +168,13 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 relative overflow-hidden">
       <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
-        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+        <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:bg-white cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
           </svg>
-          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
+          <span className="text-gray-700 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
         </div>
       </Link>
 
@@ -194,11 +193,11 @@ const Signup = () => {
 
           <div className="relative w-full max-w-md z-10">
             <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500 to-pink-600 opacity-30 blur-xl animate-rotate-slow" />
-            <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Créer un compte</h2>
+            <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
+              <h2 className="text-2xl font-bold text-center text-gray-800">Créer un compte</h2>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nom complet
                 </label>
                 <input 
@@ -208,8 +207,8 @@ const Signup = () => {
                   onChange={handleChange} 
                   placeholder="Votre nom" 
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.name ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white`} 
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-800`} 
                 />
                 {errors.name && (
                   <p className="text-red-500 text-xs mt-1 animate-shake">
@@ -219,7 +218,7 @@ const Signup = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Adresse email
                 </label>
                 <input 
@@ -229,8 +228,8 @@ const Signup = () => {
                   onChange={handleChange} 
                   placeholder="votre@email.com" 
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white`} 
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-800`} 
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1 animate-shake">
@@ -240,7 +239,7 @@ const Signup = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mot de passe
                 </label>
                 <input 
@@ -250,8 +249,8 @@ const Signup = () => {
                   onChange={handleChange} 
                   placeholder="••••••••" 
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.password ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white`} 
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-800`} 
                 />
                 {errors.password && (
                   <p className="text-red-500 text-xs mt-1 animate-shake">
@@ -269,9 +268,9 @@ const Signup = () => {
               </button>
               
               <div className="flex items-center justify-center">
-                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
-                <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">ou</span>
-                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
+                <div className="border-t border-gray-300 flex-grow"></div>
+                <span className="px-4 text-gray-500 text-sm">ou</span>
+                <div className="border-t border-gray-300 flex-grow"></div>
               </div>
               
               <div className="flex justify-center">
@@ -287,7 +286,7 @@ const Signup = () => {
                 />
               </div>
               
-              <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+              <p className="text-sm text-center text-gray-700">
                 Vous avez déjà un compte ?{" "}
                 <Link 
                   to="/login" 

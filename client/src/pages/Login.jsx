@@ -1,31 +1,26 @@
-// Login.jsx (avec formulaire de login intégré)
-import React, { useState, useEffect } from "react";
+// Login.jsx (sans dark mode)
+import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import logo from "../assets/logo.png";
-import axios from "axios";
 import { useGoogleOneTapLogin, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
 import MascotteIntro from "../components/MascotteIntro";
 
-
 const Login = () => {
-  const { login,loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-
-
-  const [formData, setFormData] = useState({ 
-    email: "", 
-    password: "", 
-    rememberMe: false 
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
   });
-  const [errors, setErrors] = useState({ 
-    email: "", 
-    password: "", 
-    server: "" 
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    server: "",
   });
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,60 +85,58 @@ const Login = () => {
       });
       navigate(location.state?.from || "/home/dashboard");
     } catch (err) {
-      setErrors((prev) => ({ 
-        ...prev, 
-        server: "Email ou mot de passe incorrect." 
+      setErrors((prev) => ({
+        ...prev,
+        server: "Email ou mot de passe incorrect.",
       }));
     } finally {
       setIsLoading(false);
     }
   };
 
- const handleGoogleLoginSuccess = async (credentialResponse) => {
-  setGoogleLoading(true);
-  try {
-    const response = await loginWithGoogle({
-      credential: credentialResponse.credential
-    });
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    setGoogleLoading(true);
+    try {
+      const response = await loginWithGoogle({
+        credential: credentialResponse.credential,
+      });
 
-    if (response?.success) {
+      if (response?.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Connexion réussie",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        setTimeout(() => {
+          navigate(location.state?.from || "/home/dashboard");
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
       Swal.fire({
-        icon: "success",
-        title: "Connexion réussie",
+        icon: "error",
+        title: "Erreur",
+        text: error.response?.data?.message || "Échec de la connexion Google",
         toast: true,
         position: "top-end",
         timer: 3000,
         showConfirmButton: false,
       });
-      
-      // Redirection après un court délai
-      setTimeout(() => {
-        navigate(location.state?.from || "/home/dashboard");
-      }, 500);
+    } finally {
+      setGoogleLoading(false);
     }
-  } catch (error) {
-    console.error("Google login error:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Erreur",
-      text: error.response?.data?.message || "Échec de la connexion Google",
-      toast: true,
-      position: "top-end",
-      timer: 3000,
-      showConfirmButton: false,
-    });
-  } finally {
-    setGoogleLoading(false);
-  }
-};
+  };
   const handleGoogleLoginError = () => {
-    setErrors((prev) => ({ 
-      ...prev, 
-      server: "Échec de la connexion Google. Veuillez réessayer." 
+    setErrors((prev) => ({
+      ...prev,
+      server: "Échec de la connexion Google. Veuillez réessayer.",
     }));
   };
 
-  // One-tap Google login
   useGoogleOneTapLogin({
     onSuccess: handleGoogleLoginSuccess,
     onError: handleGoogleLoginError,
@@ -151,13 +144,13 @@ const Login = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 relative overflow-hidden">
       <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
-        <div className="flex items-center space-x-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 cursor-pointer">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 dark:text-gray-300 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+        <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:bg-white cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
           </svg>
-          <span className="text-gray-700 dark:text-gray-300 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
+          <span className="text-gray-700 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
         </div>
       </Link>
 
@@ -176,27 +169,27 @@ const Login = () => {
 
           <div className="relative w-full max-w-md z-10">
             <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-red-500 to-pink-600 opacity-30 blur-xl animate-rotate-slow" />
-            <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">Connexion</h2>
+            <form onSubmit={handleSubmit} className="relative z-10 bg-white/90 backdrop-blur-xl border rounded-2xl shadow-2xl p-8 space-y-6">
+              <h2 className="text-2xl font-bold text-center text-gray-800">Connexion</h2>
               {errors.server && (
                 <p className="text-red-500 text-sm text-center animate-shake">
                   {errors.server}
                 </p>
               )}
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Adresse email
                 </label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  placeholder="votre@email.com" 
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="votre@email.com"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.email ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white`} 
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-800`}
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs mt-1 animate-shake">
@@ -204,20 +197,20 @@ const Login = () => {
                   </p>
                 )}
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mot de passe
                 </label>
-                <input 
-                  type="password" 
-                  name="password" 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  placeholder="••••••••" 
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    errors.password ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700/50 text-gray-800 dark:text-white`} 
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-800`}
                 />
                 {errors.password && (
                   <p className="text-red-500 text-xs mt-1 animate-shake">
@@ -225,49 +218,46 @@ const Login = () => {
                   </p>
                 )}
               </div>
-              
-              <button 
-                type="submit" 
+
+              <button
+                type="submit"
                 disabled={isLoading}
                 className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-600 hover:scale-105 transition duration-300"
               >
                 {isLoading ? "Connexion..." : "Se connecter"}
               </button>
-              
+
               <div className="flex items-center justify-center">
-                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
-                <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">ou</span>
-                <div className="border-t border-gray-300 dark:border-gray-600 flex-grow"></div>
+                <div className="border-t border-gray-300 flex-grow"></div>
+                <span className="px-4 text-gray-500 text-sm">ou</span>
+                <div className="border-t border-gray-300 flex-grow"></div>
               </div>
-              
+
               <div className="flex justify-center">
                 <GoogleLogin
-  onSuccess={handleGoogleLoginSuccess}
-  onError={() => {
-    Swal.fire({
-      icon: "error",
-      title: "Erreur",
-      text: "Échec de l'authentification Google",
-      toast: true,
-      position: "top-end",
-      timer: 3000,
-      showConfirmButton: false,
-    });
-  }}
-  shape="pill"
-  theme="filled_blue"
-  size="large"
-  text="continue_with" // Ou "signin_with" selon préférence
-  locale="fr"
-/>
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={() => {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Erreur",
+                      text: "Échec de l'authentification Google",
+                      toast: true,
+                      position: "top-end",
+                      timer: 3000,
+                      showConfirmButton: false,
+                    });
+                  }}
+                  shape="pill"
+                  theme="filled_blue"
+                  size="large"
+                  text="continue_with"
+                  locale="fr"
+                />
               </div>
-              
-              <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+
+              <p className="text-sm text-center text-gray-700">
                 Vous n'avez pas de compte ?{" "}
-                <Link 
-                  to="/signup" 
-                  className="text-pink-500 hover:underline"
-                >
+                <Link to="/signup" className="text-pink-500 hover:underline">
                   Inscrivez-vous
                 </Link>
               </p>
