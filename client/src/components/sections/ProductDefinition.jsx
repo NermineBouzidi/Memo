@@ -1,51 +1,88 @@
-import React from 'react';
-import logo from '../../assets/logo9.png'; // Adjust path if needed
-import { Target } from 'lucide-react';
-import { useTranslation } from "react-i18next";
+import React from "react";
+import { CheckCircle, Zap, Shield, Coins } from "lucide-react";
 
-const ProductDefinition = () => {
-    const { t } = useTranslation();
+const features = [
+  "60 à 70% de fonctionnalités standard mais ajustables",
+  "30 à 40% de spécifique inhérent au métier et à l'organisation",
+  "Tarification de conception au forfait",
+  "Droits d'utilisation logicielle au forfait sans récurrence",
+  "Coût de maintenance mensuel bas au forfait",
+  "Assistance illimitée au forfait sans engagement",
+  "Prix divisé par 3 par rapport aux solutions concurrentes",
+];
 
+const highlights = [
+  {
+    icon: Zap,
+    title: "Rapidité de déploiement",
+    description:
+      "Mise en place rapide grâce à notre base standard personnalisable",
+  },
+  {
+    icon: Shield,
+    title: "Sécurité & Fiabilité",
+    description: "Architecture robuste et sécurisée pour protéger vos données",
+  },
+  {
+    icon: Coins,
+    title: "Économique",
+    description:
+      "Prix divisé par 3 comparé aux solutions CRM/ERP traditionnelles",
+  },
+];
+
+export default function ProductDefinition() {
   return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          {/* Text Section */}
+    <section className="py-20 bg-gradient-subtle">
+      <div className="container mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="flex items-center mb-4">
-                  <div className="bg-red-100 dark:bg-red-900/20 p-3 rounded-full mr-4">
-                    <Target className="text-[#ff625a] " size={32} />
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{t("hero.productDetails.title")}</h2>
-                </div>
-            <p className="text-lg text-gray-600 mb-4">
-                                {t("hero.productDetails.description")}
-
+            <span className="inline-block bg-[#fce7eb] text-[#ef718f] text-xs font-semibold rounded-md px-3 py-1 mb-3">
+              Produit Hybride
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              MEMO, la solution <span className="text-[#ef5d81]">hybride</span>{" "}
+              parfaite
+            </h2>
+            <p className="text-xl text-muted-foreground mb-8 leading-relaxed text-gray-700">
+              MEMO est un produit hybride entre le logiciel standard (SAGE) et
+              le logiciel sur mesure (SAP), offrant le meilleur des deux mondes.
             </p>
-            <p className="text-lg text-gray-600 mb-4">
-                                {t("hero.productDetails.features")}
 
-            </p>
-            
+            {/* Feature List */}
+            <ul className="space-y-3 text-sm max-w-xl">
+              {features.map((text, i) => (
+                <li key={i} className="flex items-center space-x-3">
+                  <CheckCircle className="w-6 h-6 text-[#ef5d81] flex-shrink-0 mt-0.5" />
+
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Logo Section */}
-          <div className="flex justify-center">
-            <div className="relative p-8 rounded-3xl  bg-white/60 backdrop-blur-lg border border-white/30">
-              {/* Glow background */}
-              <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#ff4e50] via-[#ff7a5c] to-transparent opacity-20 blur-3xl rounded-3xl" />
-              {/* Actual logo */}
-              <img
-                src={logo}
-                alt="Logo du produit"
-                className="w-auto max-w-[450px] object-contain mx-auto"
-              />
-            </div>
+          {/* Highlight Boxes */}
+          <div className="space-y-6">
+            {highlights.map((h, i) => (
+              <div
+                key={i}
+                className="flex items-center space-x-4 bg-white rounded-lg p-5 shadow-sm"
+              >
+                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-[#ef718f] to-[#fca07a] text-white">
+                  <h.icon className="w-6 h-6" />
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-base">{h.title}</h3>
+                  <p className="text-[#5f6a7d] text-sm max-w-xl">
+                    {h.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
     </section>
   );
-};
-
-export default ProductDefinition;
+}

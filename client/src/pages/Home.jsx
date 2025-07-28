@@ -5,6 +5,9 @@ import ProductDefinition from '../components/sections/ProductDefinition';
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import INPISection from '../components/sections/INPISection';
+import QuEstCeQuUnCRP from '../components/sections/QuEstCeQuUnCRP';
+import Etapes from '../components/sections/Etapes';
+import Tarifs from '../components/sections/Tarifs';
 
 export default function Home() {
   const location = useLocation();
@@ -24,8 +27,11 @@ export default function Home() {
   <div>
       <Navbar />
       <Hero />
+      <QuEstCeQuUnCRP/>
       <Highlights />
       <ProductDefinition />
+      <Etapes/>
+      <Tarifs/>
       <INPISection/>
     </div>
  
