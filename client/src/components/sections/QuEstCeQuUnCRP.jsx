@@ -9,22 +9,22 @@ import {
 
 const features = [
   {
-    icon: <Building2 className="w-8 h-8 text-white" />,
+    icon: <Building2 className="w-7 h-7 text-white" />,
     title: "Gestion Intégrée",
     description: "Centralisez tous vos processus métier dans une solution unique",
   },
   {
-    icon: <Settings className="w-8 h-8 text-white" />,
+    icon: <Settings className="w-7 h-7 text-white" />,
     title: "Automatisation",
     description: "Automatisez vos tâches répétitives et gagnez en efficacité",
   },
   {
-    icon: <Users className="w-8 h-8 text-white" />,
+    icon: <Users className="w-7 h-7 text-white" />,
     title: "Collaboration",
     description: "Facilitez la communication entre vos équipes",
   },
   {
-    icon: <TrendingUp className="w-8 h-8 text-white" />,
+    icon: <TrendingUp className="w-7 h-7 text-white" />,
     title: "Performance",
     description: "Suivez vos KPI en temps réel et optimisez vos résultats",
   },
@@ -32,7 +32,7 @@ const features = [
 
 export default function QuEstCeQuUnCRP() {
   return (
-    <section className="py-28 px-6 md:px-12 bg-[#f9fafb] text-gray-800">
+    <section className="py-24 px-6 md:px-12 bg-[#f9fafb] text-gray-800 min-h-screen ">
       {/* Title and Description */}
       <div className="max-w-5xl mx-auto text-center mb-20">
         <motion.h2
@@ -58,21 +58,21 @@ export default function QuEstCeQuUnCRP() {
       </div>
 
       {/* Feature Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-md hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            className="bg-white rounded-xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 * index, duration: 0.6, ease: "easeOut" }}
           >
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#ef718f] to-[#fca07a] flex items-center justify-center shadow-lg">
+            <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-gradient-to-br from-[#ef718f] to-[#fca07a] flex items-center justify-center shadow-md">
               {feature.icon}
             </div>
-            <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-            <p className="text-gray-600 text-base">{feature.description}</p>
+            <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+            <p className="text-gray-600 text-sm">{feature.description}</p>
           </motion.div>
         ))}
       </div>
