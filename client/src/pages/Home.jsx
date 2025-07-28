@@ -8,7 +8,7 @@ import INPISection from '../components/sections/INPISection';
 import QuEstCeQuUnCRP from '../components/sections/QuEstCeQuUnCRP';
 import Etapes from '../components/sections/Etapes';
 import Tarifs from '../components/sections/Tarifs';
-
+import Contact from '../components/sections/Contact';
 export default function Home() {
   const location = useLocation();
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function Home() {
       <ProductDefinition />
       <Etapes/>
       <Tarifs/>
+      <Contact />
       <INPISection/>
     </div>
  
