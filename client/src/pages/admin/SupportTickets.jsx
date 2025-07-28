@@ -27,10 +27,12 @@ export default function SupportTickets() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
   useEffect(() => {
+    
+
     console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
     console.log('Using API_URL:', API_URL);
     console.log('User:', { id: user?._id, email: user?.email, role: user?.role });
-
+    if (!user) return;
     if (!user?._id) {
       setError('Please log in to view support tickets.');
       setIsLoading(false);

@@ -1,6 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Garantit la suppression même si le JS échoue */
+[data-lc-id], 
+#livechat-compact-container, 
+.lc-minimized {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 
 .blob {
   position: absolute;
@@ -11,6 +21,11 @@
   filter: blur(120px); /* slightly more blur for smoother edges */
   animation: float 8s ease-in-out infinite;
 }
+/* Masquer le widget de base Tawk.to */
+iframe[title="chat widget"] {
+  display: none !important;
+}
+
 
 
 .blob1 {

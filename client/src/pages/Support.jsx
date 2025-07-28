@@ -3,7 +3,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageCircle, Mail, Clock, CheckCircle, Plus, Send, X, User } from 'lucide-react';
+import LiveChatFab from '../components/LiveChatFab'; // Nous allons le déplacer
+import image360f from '../assets/360f.png';
+import wsm from '../assets/wsm.png';
+
+
 import axios from 'axios';
+
 
 export default function Support() {
   const { user } = useAuth();
@@ -18,6 +24,9 @@ export default function Support() {
   const [replyContent, setReplyContent] = useState('');
   const [replyError, setReplyError] = useState(null);
   const [replySuccess, setReplySuccess] = useState(null);
+
+  
+  
   const MAX_RETRIES = 2;
 
   // Fallback API URL if VITE_API_URL is undefined
@@ -228,39 +237,6 @@ export default function Support() {
       );
     }
   };
- useEffect(() => {
-  if (!user) return;
-
-  // Si script déjà chargé, juste mettre à jour visitor info
-  if (window.LC_API) {
-    window.LC_API.set_visitor_name(user.fullname || user.email);
-    window.LC_API.set_visitor_email(user.email);
-    window.LC_API.set_custom_variables({
-      user_id: user._id,
-    });
-    return;
-  }
-
-  // Sinon, injecter le script une fois
-  if (!document.getElementById('livechat-script')) {
-    window.__lc = window.__lc || {};
-    window.__lc.license = 19236662;
-    window.__lc.chat_between_groups = false;
-    window.__lc.visitor = {
-      name: user.fullname || user.email,
-      email: user.email,
-      custom_variables: {
-        user_id: user._id,
-      },
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.livechatinc.com/tracking.js';
-    script.async = true;
-    script.id = 'livechat-script';
-    document.body.appendChild(script);
-  }
-}, [user]);
 
 
 
@@ -336,25 +312,40 @@ export default function Support() {
             </AnimatePresence>
           </div>
 
-          {/* Trusted Clients */}
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4 text-red-500">Ils nous font confiance</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {['WSM', '360 Degrés Fahrenheit'].map((client, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className={`${colors.cardBg} rounded-xl shadow-lg p-4 text-center ${colors.text}`}
-                >
-                  {client}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-          
-
+{/* Trusted Clients */}
+<div className="mt-8">
+  <h2 className="text-2xl font-bold mb-4 text-red-500">Ils nous font confiance</h2>
+  <div className="grid grid-cols-2 gap-4">
+    {[
+      { 
+        name: 'WSM', 
+        logo: wsm,
+        url: 'https://www.wschupfer.com/new-york?region=row&fbclid=IwY2xjawLs2dZleHRuA2FlbQIxMABicmlkETFLZEtaM3RLMmVNZURrSTYyAR5XuBCe04LC7Z3w2sDS0rmj_0jk8GPZCydSi5AIjN2pgni9lNjNvHzAfofVrQ_aem_IQ31J7G7oOcFJDIXcsHvjg'
+      },
+      { 
+        name: '360 Degrés Fahrenheit', 
+        logo: image360f,
+        url: 'https://www.3cent60.net/'
+      }
+    ].map((client, index) => (
+      <motion.div
+        key={index}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ scale: 1.05 }}
+        className={`${colors.cardBg} rounded-xl shadow-lg p-4 flex items-center justify-center cursor-pointer`}
+        onClick={() => window.open(client.url, '_blank')}
+      >
+        <img 
+          src={client.logo} 
+          alt={client.name} 
+          className="max-h-16 max-w-full object-contain" 
+        />
+      </motion.div>
+    ))}
+  </div>
+</div>
 
           {/* User Tickets */}
           {user?._id && (
@@ -415,15 +406,7 @@ export default function Support() {
                         >
                           View & Reply
                         </motion.button>
-                        <motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={() => window.LC_API?.open_chat_window()}
-  className="fixed bottom-5 right-6 bg-red-500 text-white px-4 py-2 rounded-full shadow-lg z-50"
->
-  💬 Chat développeur
-</motion.button>
-
+                        
                       </div>
                     </motion.div>
 
@@ -440,7 +423,7 @@ export default function Support() {
     Discutez directement avec un consultant MEMO pour répondre à vos besoins spécifiques.
   </p>
   <a
-    href="https://calendly.com/bilel-khabthani-esprit/30min"
+    href="https://koalendar.com/e/meet-avec-expert"
     target="_blank"
     rel="noopener noreferrer"
     className="inline-block bg-gradient-to-r from-red-500 to-pink-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:scale-105 transition-all duration-300"
@@ -637,6 +620,7 @@ export default function Support() {
         .animate-rotate-slow { animation: rotate 20s linear infinite; }
         .animate-fade-in { animation: fadeIn 1s ease-out forwards; }
       `}</style>
+       <LiveChatFab />
     </div>
   );
 }

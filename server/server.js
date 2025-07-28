@@ -12,6 +12,7 @@ import newsletterRouter from './routes/newsletterRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import supportRouter from './routes/supportRoutes.js'; // Added support routes
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 dotenv.config();
 
 const app = express();
@@ -19,6 +20,10 @@ const PORT = process.env.PORT || 8080;
 
 // Connexion à la base de données
 connectDB();
+const generateTawkHash = (userId) => {
+  const secret = process.env.TAWKTO_SECRET;
+  return crypto.createHash('md5').update(userId + secret).digest('hex');
+};
 
 // ✅ Middleware CORS (AVANT les routes)
 app.use(cors({
