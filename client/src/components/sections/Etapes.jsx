@@ -74,33 +74,41 @@ const Etapes = () => {
 
       <div className="mt-16 max-w-4xl mx-auto space-y-8">
         {steps.map(({ step, icon, title, description, details }) => (
-          <article
-            key={step}
-            className="bg-white rounded-xl shadow-sm p-6 flex items-start space-x-6 border border-transparent hover:border-pink-200 transition"
-          >
-            <div className="flex flex-col items-center space-y-2">
-              <div
-                className="bg-gradient-to-br from-[#ef718f] to-[#fca07a] p-4 rounded-full text-white flex items-center justify-center"
-                style={{ width: 64, height: 64 }}
-              >
-                {React.createElement(icon, { size: 28 })}
-              </div>
-              <div className="text-[10px] text-gray-600 font-semibold bg-pink-50 border border-pink-200 rounded-md px-2 py-[2px]">
-                Étape {step}
-              </div>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">
-                {title}
-              </h3>
-              <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                {description}
-              </p>
-              <p className="text-[#ef5d81] text-xs md:text-sm mt-2 font-semibold">
-                {details}
-              </p>
-            </div>
-          </article>
+         <motion.article
+  key={step}
+  className="bg-white rounded-xl shadow-sm p-6 flex items-start space-x-6 border border-transparent transition"
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  whileHover={{
+    scale: 1.03,
+    boxShadow: "0px 10px 20px rgba(239, 93, 129, 0.15)"
+  }}
+  transition={{
+    duration: 0.2, // applies to both hover-in and hover-out
+    ease: "easeOut"
+  }}
+>
+
+
+  <div className="flex flex-col items-center space-y-2">
+    <div
+      className="bg-gradient-to-br from-[#ef718f] to-[#fca07a] p-4 rounded-full text-white flex items-center justify-center shadow-lg"
+      style={{ width: 64, height: 64 }}
+    >
+      {React.createElement(icon, { size: 28 })}
+    </div>
+    <div className="text-[10px] text-gray-600 font-semibold bg-pink-50 border border-pink-200 rounded-md px-2 py-[2px]">
+      Étape {step}
+    </div>
+  </div>
+  <div className="flex-1">
+    <h3 className="font-semibold text-gray-900 mb-1 text-sm md:text-base">{title}</h3>
+    <p className="text-gray-600 text-sm md:text-base leading-relaxed">{description}</p>
+    <p className="text-[#ef5d81] text-xs md:text-sm mt-2 font-semibold">{details}</p>
+  </div>
+</motion.article>
+
         ))}
       </div>
     </section>

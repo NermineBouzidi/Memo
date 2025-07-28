@@ -32,7 +32,7 @@ const features = [
 
 export default function QuEstCeQuUnCRP() {
   return (
-    <section className="py-28 px-6 md:px-12 bg-white text-gray-800">
+    <section className="py-28 px-6 md:px-12 bg-[#f9fafb] text-gray-800">
       {/* Title and Description */}
       <div className="max-w-5xl mx-auto text-center mb-20">
         <motion.h2

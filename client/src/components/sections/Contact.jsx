@@ -14,7 +14,7 @@ const Contact = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.9, ease: "easeOut" }}
                 >
-                  Recevoir l'appel d'une<span className="text-[#ef5d81]">attachée commerciale</span> 
+                  Recevoir l'appel d'une <span className="text-[#ef5d81]">attachée commerciale</span> 
                 </motion.h2>
                 <motion.p
                   className="text-lg md:text-xl text-gray-600 leading-relaxed"
