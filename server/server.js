@@ -36,6 +36,8 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
+
+
 // Configuration CORS
 app.use((req, res, next) => {
   const origin = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -102,22 +104,13 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ✅ Servir le frontend React en production
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use(cors());
 
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/build');
-  app.use(express.static(clientBuildPath));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-} else {
-  app.get('/', (req, res) => {
-    res.send('Server is running (dev mode)');
-  });
-}
+ const _dirname = path.resolve(); // Removed duplicate declaration
+ app.use(express.static(path.join(_dirname, '/client/dist')));
+ app.get('*', (req, res) => {
+   res.sendFile(path.join(_dirname, "client", "dist", "index.html"));
+ });
 
 // Démarrer le serveur
 app.listen(PORT, () => {
