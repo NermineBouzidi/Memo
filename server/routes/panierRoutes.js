@@ -82,7 +82,7 @@ router.delete("/:productId", auth, async (req, res) => {
       { utilisateur: userId },
       { $pull: { items: { produit: productId } } },
       { new: true }
-    );
+    ).populate("items.produit"); // <-- 🔴 AJOUT ICI
 
     if (!panier) {
       return res.status(404).json({ message: "Panier non trouvé." });

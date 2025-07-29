@@ -23,5 +23,7 @@ productRouter.delete('/delete-product/:id', userAuth, requireAdmin, deleteProduc
 
   
 
-export default productRouter;
 
+
+// ✅ Export correct
+export default productRouter;

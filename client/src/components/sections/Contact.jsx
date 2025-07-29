@@ -45,6 +45,7 @@ const Contact = () => {
               <div className="relative z-10">
                 <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-6">
                   <PhoneCall className="text-white" size={24} />
+
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">
                   Recevoir l'appel d'une attachée commerciale

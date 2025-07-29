@@ -1,8 +1,9 @@
-// src/pages/Products.jsx
 import { useState, useEffect } from "react";
 import { Box, Package, Plus, Pencil, Trash2, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { getAllProducts, deleteProduct, createProduct, updateProduct } from "../../api/products";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import { motion } from "framer-motion";
+import axios from "axios";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -12,12 +13,8 @@ const Products = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
-  
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-
-  // Form state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -25,28 +22,27 @@ const Products = () => {
     duration: "",
     category: "",
     imageUrl: "",
-    features: [""]
+    features: [""],
   });
-  
   const [errors, setErrors] = useState({});
 
-  // Fetch products
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("http://localhost:8080/api/products");
+      setProducts(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error("Error loading products:", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const res = await getAllProducts();
-        console.log("Product API response:", res.data);
-        setProducts(res.data.products || []);
-      } catch (err) {
-        console.error("Error loading products:", err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadProducts();
+    fetchProducts();
   }, []);
 
-  // Initialize form for new product
   const initForm = () => {
     setFormData({
       name: "",
@@ -55,20 +51,18 @@ const Products = () => {
       duration: "",
       category: "",
       imageUrl: "",
-      features: [""]
+      features: [""],
     });
     setErrors({});
     setIsEditing(false);
     setCurrentProduct(null);
   };
 
-  // Open modal for adding product
   const handleAddClick = () => {
     initForm();
     setShowProductModal(true);
   };
 
-  // Open modal for editing product
   const handleEditClick = (product) => {
     setCurrentProduct(product);
     setFormData({
@@ -78,49 +72,41 @@ const Products = () => {
       duration: product.duration || "",
       category: product.category || "",
       imageUrl: product.imageUrl || "",
-      features: product.features?.length ? [...product.features] : [""]
+      features: product.features?.length ? [...product.features] : [""],
     });
     setErrors({});
     setIsEditing(true);
     setShowProductModal(true);
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when field is changed
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
-  // Handle feature input changes
   const handleFeatureChange = (index, value) => {
     const newFeatures = [...formData.features];
     newFeatures[index] = value;
-    setFormData(prev => ({ ...prev, features: newFeatures }));
+    setFormData((prev) => ({ ...prev, features: newFeatures }));
   };
 
-  // Add a new feature field
   const addFeature = () => {
-    setFormData(prev => ({ ...prev, features: [...prev.features, ""] }));
+    setFormData((prev) => ({ ...prev, features: [...prev.features, ""] }));
   };
 
-  // Remove a feature field
   const removeFeature = (index) => {
     if (formData.features.length > 1) {
       const newFeatures = [...formData.features];
       newFeatures.splice(index, 1);
-      setFormData(prev => ({ ...prev, features: newFeatures }));
+      setFormData((prev) => ({ ...prev, features: newFeatures }));
     }
   };
 
-  // Validate form
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.description.trim()) newErrors.description = "Description is required";
     if (!formData.price) {
@@ -128,52 +114,41 @@ const Products = () => {
     } else if (isNaN(parseFloat(formData.price))) {
       newErrors.price = "Price must be a number";
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
+
+    const productData = {
+      ...formData,
+      price: parseFloat(formData.price),
+      features: formData.features.filter((f) => f.trim() !== ""),
+    };
+
     try {
-      const productData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        features: formData.features.filter(f => f.trim() !== "")
-      };
-      
       if (isEditing && currentProduct) {
         await updateProduct(currentProduct._id, productData);
       } else {
         await createProduct(productData);
       }
-      
-      // Refresh products
-      const res = await getAllProducts();
-      setProducts(res.data.products);
-      
-      // Close modal
+      await fetchProducts();
       setShowProductModal(false);
     } catch (err) {
-      console.error("Error saving product:", err.response?.data || err.message);
+      console.error("Error saving product:", err);
       alert("Failed to save product. Please try again.");
     }
   };
 
-  // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirstItem, indexOfLastItem);
+  const currentProducts = Array.isArray(products) ? products.slice(indexOfFirstItem, indexOfLastItem) : [];
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Delete product
   const handleDeleteClick = (id) => {
     setDeleteId(id);
     setShowDeleteModal(true);
@@ -182,415 +157,437 @@ const Products = () => {
   const handleDelete = async () => {
     try {
       await deleteProduct(deleteId);
-      const res = await getAllProducts();
-      setProducts(res.data.products);
-      // Reset to first page if current page becomes invalid
-      if (currentPage > Math.ceil(res.data.products.length / itemsPerPage)) {
+      await fetchProducts();
+      if (currentPage > Math.ceil((products.length - 1) / itemsPerPage)) {
         setCurrentPage(1);
       }
     } catch (err) {
       console.error("Delete error:", err);
     } finally {
       setShowDeleteModal(false);
+      setDeleteId(null);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header with action button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <div className="mb-4 sm:mb-0">
-          <div className="flex items-center space-x-3 mb-2">
-            <Package className="w-8 h-8 text-indigo-600" />
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Product Management</h1>
-          </div>
-          <p className="text-gray-600">Manage your products, pricing, and features</p>
-        </div>
-        
-        <button 
-          onClick={handleAddClick}
-          className="btn-primary flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg"
+    <div className="h-screen w-full overflow-y-auto transition-colors duration-300 bg-gray-50 text-gray-900">
+      <div className="p-6 md:p-8 lg:p-10">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="p-6 rounded-2xl shadow-lg mb-8 bg-white border border-gray-200"
         >
-          <Plus className="w-4 h-4" />
-          Add Product
-        </button>
-      </div>
-
-      {/* Product Table Card */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-xl">
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div className="mb-4 sm:mb-0">
+              <div className="flex items-center space-x-3 mb-2">
+                <Package className="w-8 h-8 text-indigo-600" />
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                  Product Management
+                </h1>
+              </div>
+              <p className="text-gray-600">
+                Manage your products, pricing, and features
+              </p>
             </div>
-          ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-indigo-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentProducts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center p-8 text-gray-500">
-                      <div className="flex flex-col items-center justify-center">
-                        <Package className="w-12 h-12 text-gray-400 mb-2" />
-                        <p className="text-lg">No products found</p>
-                        <p className="text-sm mt-1">Try adding a new product</p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  currentProducts.map((product) => (
-                    <tr
-                      key={product._id || product.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="flex items-center gap-3 px-6 py-4 whitespace-nowrap">
-                        {product.imageUrl ? (
-                          <img 
-                            src={product.imageUrl} 
-                            alt={product.name}
-                            className="w-10 h-10 rounded-md object-cover"
-                          />
-                        ) : (
-                          <div className="bg-indigo-100 p-2 rounded-md">
-                            <Package className="w-5 h-5 text-indigo-600" />
-                          </div>
-                        )}
-                        <span className="text-gray-800 font-medium">{product.name}</span>
-                      </td>
-                      <td className="px-6 py-4 text-gray-700 max-w-xs">
-                        <p className="truncate max-w-[200px]">{product.description}</p>
-                      </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        ${product.price.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        <span className="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-0.5 rounded-full">
-                          {product.category || "Uncategorized"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 flex justify-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => handleEditClick(product)}
-                          className="text-indigo-600 hover:text-indigo-900 transition-colors"
-                          title="Edit product"
-                        >
-                          <div className="bg-indigo-50 p-2 rounded-lg hover:bg-indigo-100">
-                            <Pencil className="w-4 h-4" />
-                          </div>
-                        </button>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteClick(product._id)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
-                          title="Delete product"
-                        >
-                          <div className="bg-red-50 p-2 rounded-lg hover:bg-red-100">
-                            <Trash2 className="w-4 h-4" />
-                          </div>
-                        </button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleAddClick}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-md hover:shadow-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              <Plus className="w-4 h-4" />
+              Add Product
+            </motion.button>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl bg-white border border-gray-200"
+        >
+          <div className="overflow-x-auto">
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+              </div>
+            ) : (
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-indigo-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Product</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Description</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Category</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {currentProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-10 text-gray-500">
+                        No products found.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {products.length > itemsPerPage && (
-          <div className="border-t border-gray-200 px-4 py-3 flex items-center justify-between sm:px-6">
-            <div className="flex-1 flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to{" "}
-                  <span className="font-medium">
-                    {Math.min(indexOfLastItem, products.length)}
-                  </span>{" "}
-                  of <span className="font-medium">{products.length}</span> products
-                </span>
-                
-                <select
-                  className="ml-4 border-gray-300 rounded-md text-sm py-1 px-2"
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                >
-                  {[5, 10, 20].map((size) => (
-                    <option key={size} value={size}>
-                      Show {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => currentPage > 1 && paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium ${
-                    currentPage === 1
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                
-                <div className="flex space-x-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (number) => (
-                      <button
-                        key={number}
-                        onClick={() => paginate(number)}
-                        className={`relative inline-flex items-center px-3 py-1.5 text-sm font-medium ${
-                          currentPage === number
-                            ? "bg-indigo-600 text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-50"
-                        } rounded-md border border-gray-300`}
+                  ) : (
+                    currentProducts.map((product) => (
+                      <motion.tr
+                        key={product._id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="hover:bg-indigo-50 cursor-pointer"
                       >
-                        {number}
-                      </button>
-                    )
+                        <td className="px-6 py-4 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis">
+                          <div className="flex items-center space-x-3">
+                            {product.imageUrl ? (
+                              <img className="w-12 h-12 rounded-lg object-cover" src={product.imageUrl} alt={product.name} />
+                            ) : (
+                              <Box className="w-12 h-12 p-1 rounded-lg text-indigo-600" />
+                            )}
+                            <span className="text-sm font-semibold">{product.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-normal max-w-md overflow-hidden text-ellipsis">
+                          {product.description}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          ${product.price.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          {product.category || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center space-x-3">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleEditClick(product)}
+                            className="inline-flex items-center p-2 rounded-md transition-colors hover:bg-indigo-100 text-indigo-600"
+                            title="Edit"
+                          >
+                            <Pencil className="w-5 h-5" />
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleDeleteClick(product._id)}
+                            className="inline-flex items-center p-2 rounded-md transition-colors hover:bg-red-100 text-red-600"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </motion.button>
+                        </td>
+                      </motion.tr>
+                    ))
                   )}
-                </div>
-                
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center p-4">
+            <div>
+              <p>Page {currentPage} of {totalPages}</p>
+            </div>
+            <div className="space-x-1">
+              <button
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === 1
+                    ? "cursor-not-allowed opacity-50"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                }`}
+              >
+                <ChevronLeft />
+              </button>
+              {[...Array(totalPages).keys()].map((num) => (
                 <button
-                  onClick={() =>
-                    currentPage < totalPages && paginate(currentPage + 1)
-                  }
-                  disabled={currentPage === totalPages}
-                  className={`relative inline-flex items-center px-3 py-1.5 rounded-md border border-gray-300 text-sm font-medium ${
-                    currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
+                  key={num + 1}
+                  onClick={() => paginate(num + 1)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === num + 1
+                      ? "bg-indigo-300 text-white"
+                      : "bg-gray-200 hover:bg-indigo-400 text-gray-700"
                   }`}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  {num + 1}
                 </button>
-              </div>
+              ))}
+              <button
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed opacity-50"
+                    : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                }`}
+              >
+                <ChevronRight />
+              </button>
             </div>
           </div>
+        </motion.div>
+
+        {showDeleteModal && (
+          <ConfirmationModal
+            title="Confirm Deletion"
+            message="Are you sure you want to delete this product?"
+            onConfirm={handleDelete}
+            onCancel={() => setShowDeleteModal(false)}
+            confirmText="Delete"
+            cancelText="Cancel"
+          />
         )}
-      </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <ConfirmationModal
-          message="product"
-          itemId={deleteId}
-          onConfirm={handleDelete}
-          onCancel={() => setShowDeleteModal(false)}
-        />
-      )}
-
-      {/* Product Form Modal */}
-      {showProductModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {isEditing ? "Edit Product" : "Add New Product"}
-                </h2>
-                <button 
-                  onClick={() => setShowProductModal(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name */}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Product Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                        errors.name ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder="Enter product name"
-                    />
-                    {errors.name && (
-                      <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                    )}
-                  </div>
-                  
-                  {/* Description */}
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description *
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows="3"
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                        errors.description ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder="Enter product description"
-                    ></textarea>
-                    {errors.description && (
-                      <p className="mt-1 text-sm text-red-600">{errors.description}</p>
-                    )}
-                  </div>
-                  
-                  {/* Price */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Price ($) *
-                    </label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      min="0"
-                      step="0.01"
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                        errors.price ? "border-red-500" : "border-gray-300"
-                      }`}
-                      placeholder="0.00"
-                    />
-                    {errors.price && (
-                      <p className="mt-1 text-sm text-red-600">{errors.price}</p>
-                    )}
-                  </div>
-                  
-                  {/* Duration */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Duration
-                    </label>
-                    <input
-                      type="text"
-                      name="duration"
-                      value={formData.duration}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      placeholder="e.g., 30 minutes"
-                    />
-                  </div>
-                  
-                  {/* Category */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category
-                    </label>
-                    <input
-                      type="text"
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      placeholder="Enter category"
-                    />
-                  </div>
-                  
-                  {/* Image URL */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL
-                    </label>
-                    <input
-                      type="text"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                  
-                  {/* Features */}
-                  <div className="col-span-2">
-                    <div className="flex justify-between items-center mb-1">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Features
-                      </label>
+        {showProductModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="p-6 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-lg bg-white text-gray-900"
+            >
+              <h2 className="text-xl font-semibold mb-4">
+                {isEditing ? "Edit Product" : "Add New Product"}
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="name">
+                    Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      errors.name
+                        ? "border-red-500"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="description">
+                    Description <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className={`w-full px-3 py-2 rounded-md border resize-none ${
+                      errors.description
+                        ? "border-red-500"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="price">
+                    Price (USD) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      errors.price
+                        ? "border-red-500"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                  {errors.price && (
+                    <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="duration">
+                    Duration (optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="duration"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="category">
+                    Category (optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="imageUrl"></label>
+                  <label className="block font-medium mb-1" htmlFor="price">
+                    Price (USD) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      errors.price
+                        ? "border-red-500"
+                        : theme === "dark"
+                        ? "border-gray-600 bg-gray-800 text-white"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                  {errors.price && (
+                    <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="duration">
+                    Duration (optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="duration"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      theme === "dark"
+                        ? "border-gray-600 bg-gray-800 text-white"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="category">
+                    Category (optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      theme === "dark"
+                        ? "border-gray-600 bg-gray-800 text-white"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1" htmlFor="imageUrl">
+                    Image URL (optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="imageUrl"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 rounded-md border ${
+                      theme === "dark"
+                        ? "border-gray-600 bg-gray-800 text-white"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Features</label>
+                  {formData.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center mb-2 space-x-2">
+                      <input
+                        type="text"
+                        value={feature}
+                        onChange={(e) => handleFeatureChange(idx, e.target.value)}
+                        className={`flex-grow px-3 py-2 rounded-md border ${
+                          theme === "dark"
+                            ? "border-gray-600 bg-gray-800 text-white"
+                            : "border-gray-300 bg-white"
+                        }`}
+                      />
                       <button
                         type="button"
-                        onClick={addFeature}
-                        className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center"
+                        onClick={() => removeFeature(idx)}
+                        disabled={formData.features.length === 1}
+                        className={`p-2 rounded-md transition-colors ${
+                          formData.features.length === 1
+                            ? "opacity-50 cursor-not-allowed"
+                            : theme === "dark"
+                            ? "hover:bg-red-600 text-red-400 hover:text-white"
+                            : "hover:bg-red-100 text-red-600"
+                        }`}
+                        title="Remove feature"
                       >
-                        <Plus className="w-4 h-4 mr-1" /> Add Feature
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
-                    
-                    <div className="space-y-2">
-                      {formData.features.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={feature}
-                            onChange={(e) => handleFeatureChange(index, e.target.value)}
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            placeholder={`Feature ${index + 1}`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeFeature(index)}
-                            className="text-red-500 hover:text-red-700 p-2"
-                            disabled={formData.features.length <= 1}
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addFeature}
+                    className={`mt-1 px-3 py-1 rounded-md transition-colors ${
+                      theme === "dark"
+                        ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    }`}
+                  >
+                    + Add Feature
+                  </button>
                 </div>
-                
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex justify-end space-x-4 pt-4 border-t">
                   <button
                     type="button"
                     onClick={() => setShowProductModal(false)}
-                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className={`px-4 py-2 rounded-md ${
+                      theme === "dark"
+                        ? "bg-gray-700 hover:bg-gray-600 text-white"
+                        : "bg-gray-300 hover:bg-gray-400 text-gray-800"
+                    }`}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                    className={`px-4 py-2 rounded-md ${
+                      theme === "dark"
+                        ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                    }`}
                   >
-                    {isEditing ? "Update Product" : "Create Product"}
+                    {isEditing ? "Update" : "Create"}
                   </button>
                 </div>
               </form>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

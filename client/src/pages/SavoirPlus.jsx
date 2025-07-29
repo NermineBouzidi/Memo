@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Search, HelpCircle, BookOpen, FileText, Video, Users, ChevronRight, Star, Clock, Tag } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { useTranslation } from 'react-i18next';
 
 export default function SavoirPlus() {

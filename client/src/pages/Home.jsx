@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar';
+
 import Hero from '../components/sections/Hero';
 import Highlights from '../components/sections/Highlights';
 import ProductDefinition from '../components/sections/ProductDefinition';
@@ -10,8 +11,14 @@ import Etapes from '../components/sections/Etapes';
 import Tarifs from '../components/sections/Tarifs';
 import Contact from '../components/sections/Contact';
 import VideoDemo from '../components/sections/VideoDemo';
+import Chatbot from '../components/sections/Chatbot';
+import React, { useState } from 'react';
+import Support from './support';
+import Footer from '../components/Footer';
 export default function Home() {
   const location = useLocation();
+    const [isChatOpen, setIsChatOpen] = useState(false);
+
   useEffect(() => {
     if (location.state?.scrollTo) {
       const el = document.getElementById(location.state.scrollTo);
@@ -22,6 +29,9 @@ export default function Home() {
       }
     }
   }, [location]);
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
 
   return (
   <>
@@ -34,10 +44,14 @@ export default function Home() {
       <VideoDemo/>
       <Etapes/>
       <Tarifs/>
-      <Contact />
-      <INPISection/>
+      <Support/>
+      <Footer/>
+              <Chatbot isChatOpen={isChatOpen} toggleChat={toggleChat} />
+
+    
     </div>
  
+
 </>
 
   );

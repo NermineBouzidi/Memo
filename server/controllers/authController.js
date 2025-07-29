@@ -35,7 +35,8 @@ dotenv.config(); // Load environment variables
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    res.cookie("token", token, {
+    
+    cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
@@ -65,6 +66,25 @@ dotenv.config(); // Load environment variables
     res.status(500).json({ success: false, message: error.message });
   }
 };*/
+export const getTawkHash = async (req, res) => {
+  try {
+    const userId = req.user?._id?.toString();
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Non autorisé" });
+    }
+
+    const hash = crypto
+      .createHash('md5')
+      .update(userId + process.env.TAWKTO_SECRET)
+      .digest('hex');
+
+    return res.json({ success: true, hash });
+  } catch (err) {
+    console.error('Erreur lors de la génération du hash Tawk.to:', err);
+    return res.status(500).json({ success: false, message: "Erreur serveur" });
+  }
+};
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -198,7 +218,9 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id.toString(), email: user.email,
+    role: user.role // <-- IMPORTANT à inclure !
+     }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     res.cookie("token", token, {
@@ -448,9 +470,10 @@ export const isAuthenticated = async (req, res) => {
     return res.status(200).json({ 
       success: true, 
       user: {
-        id: user._id,
+       _id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role 
       }
     });
   } catch (error) {

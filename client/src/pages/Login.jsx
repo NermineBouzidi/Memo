@@ -128,6 +128,11 @@ const Login = () => {
       });
     } finally {
       setGoogleLoading(false);
+      
+      // Redirection après un court délai
+      setTimeout(() => {
+        navigate(location.state?.from || "/home/dashboard");
+      }, 500);
     }
   };
   const handleGoogleLoginError = () => {

@@ -13,6 +13,7 @@ const AdminLayout = () => {
       <main className="flex-1 h-full overflow-y-auto p-6">
         <Outlet />
       </main>
+
     </div>
   );
 };

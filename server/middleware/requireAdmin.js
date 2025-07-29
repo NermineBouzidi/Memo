@@ -1,19 +1,9 @@
-import userModel from "../models/userModel.js";
-
-const requireAdmin = async (req, res, next) => {
-  try {
-    const user = await userModel.findById(req.userId);
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Admins only.",
-      });
-    }
-    next();
-  } catch (err) {
-    console.error("Admin check error:", err.message);
-    res.status(500).json({ success: false, message: "Internal server error" });
+const requireAdmin = (req, res, next) => {
+  console.log("User role:", req.user?.role); // <--- log du role
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Admin access required. Please log in with an admin account." });
   }
+  next();
 };
 
 export default requireAdmin;

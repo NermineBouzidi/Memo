@@ -26,7 +26,9 @@ const UserLayout = () => {
     <div className="min-h-screen font-sans bg-white relative overflow-hidden text-gray-900 antialiased">
       {/* ➕ Ajoutez la Navbar ici */}
 
-      <div className="flex "> {/* Compensez la hauteur de la navbar */}
+      <Navbar /> 
+
+      <div className="flex pt-20"> {/* Compensez la hauteur de la navbar */}
         <AsideBarClient sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Zone "hover gauche" pour rétracter la sidebar */}
@@ -53,7 +55,7 @@ const UserLayout = () => {
           transition={{ delay: 0.3, duration: 0.6, type: "spring", stiffness: 130, damping: 16 }}
           className="flex-1 transition-all duration-300"
           style={{
-            marginLeft: sidebarOpen ? sidebarWidthOpen + space : sidebarWidthClosed + space,
+            marginLeft: sidebarOpen ? sidebarWidthOpen  : sidebarWidthClosed ,
            minHeight: "calc(100vh - 5rem)", // Ajustez la hauteur
           }}
         >

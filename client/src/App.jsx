@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, useLocation,Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -29,17 +35,20 @@ import VoirPanier from "./pages/VoirPanier";
 import Faq from "./pages/Faq";
 import AvisClients from "./pages/AvisClients";
 import GuideUtilisation from "./pages/GuideUtilisation";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
-// Pages Utilisateur
+import Support from "./pages/support";
 import UserHome from "./pages/user/UserHome";
-import ClientDashboard from "./pages/user/DashboardClient";
-import Paiements from "./pages/user/Paiements";
-import MesDocuments from "./pages/user/MesDocuments";
-import MesCommandes from "./pages/user/MesCommandes";
 import Users from "./pages/admin/Users";
 import Products from "./pages/admin/Products";
+import SupportTickets from "./pages/admin/SupportTickets";
 import SupportInbox from "./pages/admin/SupportInbox";
+
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+
+import ClientDashboard from "./pages/user/DashboardClient";
+import MesCommandes from "./pages/user/MesCommandes";
+import Paiements from "./pages/user/Paiements";
+import MesDocuments from "./pages/user/MesDocuments";
 
 function AppContent() {
   const location = useLocation();
@@ -55,86 +64,82 @@ function AppContent() {
     "/emailstep",
     "/otpstep",
     "/nouveaupass",
-    "/home/dashboard",
-    "/admin/"
- 
-    
+    "/home", // ⬅️ Ajout de cette ligne
   ];
 
   const hideNavFooter = noNavFooterPaths.includes(location.pathname);
 
   return (
     <>
-     
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/savoir-plus" element={<SavoirPlus />} />
-           <Route path="/faq" element={<Faq/>} />
-              <Route path="/avis-clients" element={<AvisClients/>} />
-              <Route path="/guide-utilisation" element={<GuideUtilisation/>} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/savoir-plus" element={<SavoirPlus />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/avis-clients" element={<AvisClients />} />
+        <Route path="/guide-utilisation" element={<GuideUtilisation />} />
+        <Route path="/support" element={<Support />} />
 
+        <Route
+          path="/signup"
+          element={
+            <ProtectedRoute requireAuth={false}>
+              <Signup />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute requireAuth={false}>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/signup"
-            element={
-              <ProtectedRoute requireAuth={false}>
-                <Signup />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <ProtectedRoute requireAuth={false}>
-                <Login />
-              </ProtectedRoute>
-            }
-          />
+        <Route path="/verify-account" element={<VerifyAccount />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
+        <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
+        <Route path="/emailstep" element={<EmailStep />} />
+        <Route path="/otpstep" element={<OtpStep />} />
+        <Route path="/nouveaupass" element={<NewPasswordStep />} />
+        <Route path="/voir-panier" element={<VoirPanier />} />
+        <Route path="*" element={<NotFound />} />
 
-          <Route path="/verify-account" element={<VerifyAccount />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-reset-otp" element={<VerifyResetOtp />} />
-          <Route path="/reset-pass-flow" element={<ResetPasswordFlow />} />
-          <Route path="/emailstep" element={<EmailStep />} />
-          <Route path="/otpstep" element={<OtpStep />} />
-          <Route path="/nouveaupass" element={<NewPasswordStep />} />
-          <Route path="/voir-panier" element={<VoirPanier />} />
-          <Route path="*" element={<NotFound />} />
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requireAuth={true} allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="messages" element={<SupportInbox />} />
+          <Route path="products" element={<Products />} />
+          <Route path="support" element={<SupportTickets />} />
+        </Route>
 
-          {/* Admin Routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAuth={true} allowedRoles={["admin"]}>
-                <AdminLayout />
-        
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<Users/>} />
-            <Route path="products" element={<Products />} />  
-                        <Route path="contacts" element={<SupportInbox />} />  
-
-          </Route>
-
-          
-<Route 
-  path="/home" 
-  element={
-      <UserLayout />
-  }
->
-  <Route path="dashboard" element={<ClientDashboard />} />
+        {/* User Routes */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute requireAuth={true} allowedRoles={["user"]}>
+              <UserLayout />
+            </ProtectedRoute>
+          }
+        >
+ <Route path="dashboard" element={<ClientDashboard />} />
   <Route path="commandes" element={<MesCommandes />} />
   <Route path="paiements" element={<Paiements />} />
   <Route path="documents" element={<MesDocuments />} />
-</Route>
-        </Routes>
-     
+          </Route>
+      </Routes>
     </>
   );
 }
@@ -142,10 +147,10 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

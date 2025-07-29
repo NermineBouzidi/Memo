@@ -9,6 +9,21 @@ import { useNavigate } from "react-router-dom";
 export default function VoirPanier() {
   const { cartItems, addToCart, removeFromCart, clearCart, handleRemove } = useCart();
   const { theme } = useTheme();
+
+  const getThemeColors = () => ({
+  background: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100',
+  cardBg: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
+  text: theme === 'dark' ? 'text-white' : 'text-gray-900',
+  secondaryText: theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
+  accent: 'text-[#ff1a1a]',
+  accentHover: 'hover:text-red-400',
+  buttonBg: theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200',
+  buttonHover: theme === 'dark' ? 'hover:bg-gray-600' : 'hover:bg-gray-300',
+  border: theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+});
+
+const colors = getThemeColors(); // ← à ajouter
+
   const navigate = useNavigate();
 
   const TND_TO_EUR = 0.3;
@@ -67,60 +82,79 @@ export default function VoirPanier() {
               Les articles seront réservés pendant 60 minutes
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {cartItems.map((item) => (
+
+             
+            <AnimatePresence>
+              {cartItems.map((item, index) => {
+                const produit = item.produit || item; // ← Gère connecté / invité
+                if (!produit || !produit.name) return null;
+
+                return (
                   <motion.div
-                    key={item.produit._id}
+                    key={produit._id || index}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3 }}
-                    className="rounded-xl shadow-lg p-5 flex flex-col justify-between hover:shadow-xl transition-all duration-200 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700"
+
+                    className={`${colors.cardBg} rounded-xl shadow-lg p-4 flex flex-col justify-between hover:shadow-xl transition-all duration-200 border ${colors.border}`}
                   >
                     <div className="flex justify-between items-start">
-                      <h2 className="text-xl font-semibold text-red-500">
-                        {item.produit.name}
+                      <h2 className={`text-xl font-semibold ${colors.accent}`}>
+                        {produit.name}
                       </h2>
                       <button
-                        onClick={() => handleRemove(item.produit._id)}
-                        className="text-red-500 hover:text-red-400 transition"
-                        title="Supprimer"
+                        onClick={() => handleRemove(produit._id)}
+                        className={`${colors.accent} ${colors.accentHover} transition`}
+                        title="Supprimer le produit"
                       >
                         <Trash2 />
                       </button>
                     </div>
 
-                    <div className="mt-4 flex items-center gap-2">
+
+                    <div className="mt-3 flex items-center gap-2">
                       <button
-                        onClick={() => removeFromCart(item.produit._id)}
-                        className="p-2 bg-gray-700/50 text-white rounded hover:bg-red-500/20 transition"
+                        onClick={() => removeFromCart(produit._id)}
+                        className={`p-1 ${colors.buttonBg} ${colors.text} rounded ${colors.accentHover} transition`}
                         aria-label="Diminuer quantité"
                       >
                         <Minus size={16} />
                       </button>
-                      <span className="text-md font-semibold">{item.quantite}</span>
+
+                      <span className="font-medium text-md">{item.quantite}</span>
                       <button
-                        onClick={() => addToCart(item.produit)}
-                        className="p-2 bg-gray-700/50 text-white rounded hover:bg-red-500/20 transition"
+                        onClick={() => addToCart(produit)}
+                        className={`p-1 ${colors.buttonBg} ${colors.text} rounded ${colors.accentHover} transition`}
                         aria-label="Augmenter quantité"
                       >
                         <Plus size={16} />
                       </button>
                     </div>
 
-                    <p className="mt-3 text-sm text-gray-500 dark:text-gray-300">
+
+                    <p className={`mt-3 text-sm ${colors.secondaryText}`}>
                       Prix unitaire :{" "}
-                      <span className="text-red-500 font-bold">
-                        {(item.produit.price * TND_TO_EUR).toFixed(2)} €
+                      <span className={`${colors.accent} font-bold`}>
+                        {produit.price} TND
                       </span>
                     </p>
 
-                    <p className="mt-1 text-sm font-semibold text-red-500 drop-shadow-[0_0_5px_rgba(255,26,26,0.3)]">
-                      Total : {(item.produit.price * item.quantite * TND_TO_EUR).toFixed(2)} €
-                    </p>
+                    <motion.p
+                      animate={{ color: theme === 'dark' ? ["#fff", "#ff1a1a", "#fff"] : ["#000", "#ff1a1a", "#000"] }}
+                      transition={{ duration: 0.8 }}
+                      className="mt-1 text-sm font-semibold"
+                    >
+                      Total :{" "}
+                      <span className={`${colors.accent} drop-shadow-[0_0_5px_#ff1a1a]`}>
+                        {(produit.price * item.quantite).toFixed(2)} TND
+                      </span>
+                    </motion.p>
                   </motion.div>
-                ))}
-              </AnimatePresence>
+                );
+              })}
+            </AnimatePresence>
+
             </div>
           </div>
 

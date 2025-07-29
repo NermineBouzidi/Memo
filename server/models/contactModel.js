@@ -15,6 +15,7 @@ const contactSchema = new mongoose.Schema({
   repliedAt : {   type: Date, }, // Timestamp when the admin replied
   reply: { type: String, default: null }, // Admin's reply message
 
+
 });
 
 const contactModel = mongoose.models.contact || mongoose.model("contact", contactSchema);

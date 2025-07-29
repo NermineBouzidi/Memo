@@ -1,153 +1,196 @@
 import { useState } from 'react';
 import {
   User, LayoutDashboard, LogOut, Menu,
-  Package, MessageCircle, ShoppingBag, X
+  Package, MessageCircle, ShoppingBag, X,Mail
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import LogOutConfirmationModal from './LogOutConfirmationModal';
+import { motion } from 'framer-motion';
+import logo from '../assets/logo.png'; // Import du logo
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen, setMobileOpen }) => {
   const { logout, currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isOpen, setIsOpen] = useState(true); // Desktop sidebar expand/collapse
-  const [mobileOpen, setMobileOpen] = useState(false); // Mobile drawer toggle
+  const [isOpen, setIsOpen] = useState(true);
+  const [hoverRight, setHoverRight] = useState(false);
+  const effectiveOpen = isOpen || hoverRight;
+
+  const navItems = [
+    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
+    { label: 'Users', icon: User, path: '/admin/users' },
+    { label: 'Products', icon: Package, path: '/admin/products' },
+    { label: 'Orders', icon: ShoppingBag, path: '/admin/orders' },
+    { label: 'Support', icon: MessageCircle, path: '/admin/support' },
+    { label: 'Messages', icon: Mail, path: '/admin/messages' },
+  ];
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
-  const navItems = [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/' },
-    { label: 'Users', icon: User, path: '/admin/users' },
-    { label: 'Products', icon: Package, path: '/admin/products' },
-    { label: 'Orders', icon: ShoppingBag, path: '/admin/orders' },
-    { label: 'Contacts', icon: MessageCircle, path: '/admin/contacts' },
-  ];
+  const NavItem = ({ icon: IconComponent, label, path, isMobile = false }) => (
+    <NavLink to={path} onClick={() => isMobile && setMobileOpen(false)}>
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`flex items-center p-4 my-2 mx-3 rounded-xl transition-all duration-300
+          ${location.pathname === path ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg' :
+            'text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500/50 hover:to-red-600/50'}
+          hover:shadow-md`}
+      >
+        <div className="mr-3 relative"
+          style={{
+            transform: location.pathname === path ? 'scale(1.2)' : 'scale(1)',
+            transition: 'transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55)'
+          }}>
+          <IconComponent className={`${
+            location.pathname === path ? 'text-white' : 'text-gray-700'
+          } drop-shadow-md`} size={22} />
+        </div>
+        <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ease-out
+          ${effectiveOpen || isMobile ? 'w-auto opacity-100' : 'w-0 opacity-0'}`}>
+          {label}
+        </span>
+      </motion.div>
+    </NavLink>
+  );
 
   const SidebarContent = ({ isMobile = false }) => (
     <div
-      className={`bg-gradient-to-b from-gray-900 to-gray-800 text-white h-full flex flex-col shadow-2xl transition-all duration-300 ${
-        isOpen ? 'w-64' : 'w-20'
-      } ${isMobile ? 'fixed top-0 left-0 z-40 h-screen' : ''}`}
+      className={`flex flex-col h-full transition-colors duration-300 bg-gray-100 border-gray-200 ${isMobile ? 'fixed top-0 left-0 z-40 h-screen' : ''}`}
+      style={{
+        width: (effectiveOpen || isMobile) ? 280 : 90,
+        transition: 'width 0.3s ease',
+      }}
     >
       {/* Top Section */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        <div className="flex items-center gap-3">
-          <div className="bg-indigo-600 p-2 rounded-lg flex-shrink-0">
-            <LayoutDashboard className="w-6 h-6" />
-          </div>
-          {isOpen && (
+      <div className="p-5 flex items-center justify-between border-b border-gray-200">
+        <NavLink to="/admin" className="flex items-center gap-3">
+          <img
+            src={logo}
+            alt="Application Logo"
+            className="w-30 h-30 object-contain"
+          />
+          {(effectiveOpen || isMobile) && (
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-300 to-indigo-200 bg-clip-text text-transparent">
-                Admin Panel
-              </h2>
-              <p className="text-xs text-gray-400">Management System</p>
+              {/* Add application name or additional logo text here if needed */}
             </div>
           )}
-        </div>
+        </NavLink>
 
         {/* Mobile close button */}
         {isMobile && (
-          <button onClick={() => setMobileOpen(false)} className="text-white">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setMobileOpen(false)}
+            className="text-gray-700 hover:text-gray-900"
+          >
             <X className="w-5 h-5" />
-          </button>
+          </motion.button>
         )}
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 space-y-1 px-2 pt-4">
-        {navItems.map(({ label, icon: Icon, path }) => (
-          <Link
+      <nav className="mt-8 flex-1 overflow-y-auto px-2 pb-4">
+        {navItems.map(({ label, icon, path }) => (
+          <NavItem
             key={path}
-            to={path}
-            onClick={() => isMobile && setMobileOpen(false)}
-            className={`flex items-center gap-4 p-3 rounded-lg hover:bg-indigo-900/50 group transition-all ${
-              location.pathname === path ? 'bg-indigo-900' : ''
-            }`}
-          >
-            <div className={`p-2 rounded-lg ${
-              location.pathname === path
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-700 text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white'
-            }`}>
-              <Icon className="w-5 h-5" />
-            </div>
-            {isOpen && (
-              <span className="font-medium text-gray-200 group-hover:text-white">
-                {label}
-              </span>
-            )}
-          </Link>
+            icon={icon}
+            label={label}
+            path={path}
+            isMobile={isMobile}
+          />
         ))}
       </nav>
 
       {/* User Info & Logout */}
-      <div className="mt-auto border-t border-gray-700 p-4">
-        {isOpen && currentUser && (
+      <div className="mt-auto border-t p-4 border-gray-200">
+        {(effectiveOpen || isMobile) && currentUser && (
           <div className="flex items-center gap-3 mb-4">
-            <div className="bg-indigo-600 rounded-full p-2">
-              <User className="w-5 h-5 text-white" />
+            <div className="bg-indigo-100 rounded-full p-2">
+              <User className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-200">{currentUser.name}</p>
-              <p className="text-xs text-gray-400 truncate max-w-[160px]">
+              <p className="font-medium text-gray-800">
+                {currentUser.name}
+              </p>
+              <p className="text-xs truncate max-w-[160px] text-gray-600">
                 {currentUser.email}
               </p>
             </div>
           </div>
         )}
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setShowLogoutModal(true)}
-          className="flex items-center gap-4 p-3 rounded-lg w-full hover:bg-red-900/50 transition-all group"
+          className="flex items-center p-4 my-2 mx-3 rounded-xl transition-all duration-300 text-gray-700 hover:text-white hover:bg-gradient-to-r hover:from-red-500/50 hover:to-red-600/50 hover:shadow-md"
         >
-          <div className="p-2 rounded-lg bg-gray-700 text-red-400 group-hover:bg-red-600 group-hover:text-white">
-            <LogOut className="w-5 h-5" />
+          <div className="mr-3 relative">
+            <LogOut className="drop-shadow-md text-red-600" size={22} />
           </div>
-          {isOpen && (
-            <span className="font-medium text-gray-200 group-hover:text-white">
+          {(effectiveOpen || isMobile) && (
+            <span className="font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ease-out">
               Logout
             </span>
           )}
-        </button>
+        </motion.button>
       </div>
     </div>
   );
 
   return (
     <>
-      {/* Desktop sidebar (medium screens and up) */}
+      {/* Desktop sidebar */}
       <div className="hidden md:block">
         <div className="relative h-screen">
-          {/* Collapse button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="absolute top-5 -right-3 bg-indigo-600 hover:bg-indigo-700 rounded-full p-1 z-10 shadow-lg transition-all"
+            className="absolute top-5 -right-3 rounded-full p-1 z-10 shadow-lg transition-all bg-indigo-600 hover:bg-indigo-700"
           >
             <Menu
               className={`w-5 h-5 text-white transition-transform ${
                 isOpen ? 'rotate-90' : ''
               }`}
             />
-          </button>
+          </motion.button>
           <SidebarContent />
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: 5,
+              height: '100%',
+              cursor: 'ew-resize',
+              zIndex: 100,
+            }}
+            onMouseEnter={() => setHoverRight(true)}
+            onMouseLeave={() => setHoverRight(false)}
+          />
         </div>
       </div>
 
       {/* Mobile hamburger */}
       <div className="md:hidden fixed top-4 left-4 z-50">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setMobileOpen(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg shadow-lg"
+          className="p-2 rounded-lg shadow-lg bg-indigo-600 hover:bg-indigo-700 text-white"
         >
           <Menu className="w-6 h-6" />
-        </button>
+        </motion.button>
       </div>
 
       {/* Mobile sidebar */}

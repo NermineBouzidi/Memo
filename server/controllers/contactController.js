@@ -135,6 +135,7 @@ export const getContactById = async (req, res) => {
       message: "Failed to retrieve message" 
     });
   }
+<<<<<<< HEAD
 }
 
 //reply
@@ -189,3 +190,6 @@ export const replyToContact = async (req, res) => {
     });
   }
 };
+=======
+}
+>>>>>>> origin/Bilel

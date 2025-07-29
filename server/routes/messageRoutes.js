@@ -1,5 +1,5 @@
 import express from 'express';
-import { Message } from '../models/Message.js'; // Import modifié
+import  Message  from '../models/Message.js'; // Import modifié
 import { getAIResponse } from '../controllers/aiControlller.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';

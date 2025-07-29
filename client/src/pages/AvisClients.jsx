@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Star, User, MessageCircle, Send } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const reviews = [
   {
@@ -180,7 +179,7 @@ export default function AvisClients() {
           </div>
         </section>
       </main>
-      <Footer />
+ 
     </>
   );
 } 

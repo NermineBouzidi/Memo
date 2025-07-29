@@ -14,7 +14,6 @@ import {
   Play,
 } from "lucide-react"
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const steps = [
   {
@@ -340,7 +339,6 @@ export default function GuideUtilisation() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   )
 }
