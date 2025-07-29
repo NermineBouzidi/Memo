@@ -13,7 +13,6 @@ import Contact from '../components/sections/Contact';
 import VideoDemo from '../components/sections/VideoDemo';
 import Chatbot from '../components/sections/Chatbot';
 import React, { useState } from 'react';
-import Support from './Support';
 import Footer from '../components/Footer';
 export default function Home() {
   const location = useLocation();
@@ -44,7 +43,6 @@ export default function Home() {
       <VideoDemo/>
       <Etapes/>
       <Tarifs/>
-      <Support/>
       <Footer/>
               <Chatbot isChatOpen={isChatOpen} toggleChat={toggleChat} />
 
