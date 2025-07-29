@@ -35,6 +35,7 @@ import VoirPanier from "./pages/VoirPanier";
 import Faq from "./pages/Faq";
 import AvisClients from "./pages/AvisClients";
 import GuideUtilisation from "./pages/GuideUtilisation";
+import Support from './pages/Support';
 import UserHome from "./pages/user/UserHome";
 import Users from "./pages/admin/Users";
 import Products from "./pages/admin/Products";
@@ -78,6 +79,7 @@ function AppContent() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/avis-clients" element={<AvisClients />} />
         <Route path="/guide-utilisation" element={<GuideUtilisation />} />
+        <Route path="/support" element={<Support />} />
 
         <Route
           path="/signup"

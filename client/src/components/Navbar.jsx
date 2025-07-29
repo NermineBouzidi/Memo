@@ -21,17 +21,7 @@ const navItems = [
   { id: "demo", label: "Démo" },
   { id: "etapes", label: "Étapes" },
   { id: "couts", label: "Coûts" },
-  {
-    id: "ressources",
-    label: "Ressources",
-    submenu: [
-      { id: "blogs", label: "Blogs", path: "/blog" },
-      { id: "avis-client", label: "Avis Client", path: "/avis-clients" },
-      { id: "guide-utilisation", label: "Guide d'utilisation", path: "/guide-utilisation" },
-      { id: "faq", label: "FAQ", path: "/faq" },
-      { id: "en-savoir-plus", label: "En savoir plus", path: "/savoir-plus" },
-    ],
-  },
+ 
 ];
 
 
