@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import AdminLayout from "./layouts/AdminLayout";
 import UserLayout from "./layouts/UserLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
+import Support from './pages/Support';
 import ProtectedRoute from "./components/ProtectedRoute";
 import VerifyResetOtp from "./pages/VerifyResetOtp";
 import ResetPasswordFlow from "./pages/ResetPasswordFlow";
@@ -78,6 +79,8 @@ function AppContent() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/avis-clients" element={<AvisClients />} />
         <Route path="/guide-utilisation" element={<GuideUtilisation />} />
+        <Route path="/support" element={<Support />} />
+
 
         <Route
           path="/signup"
