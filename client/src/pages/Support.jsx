@@ -6,6 +6,7 @@ import LiveChatFab from '../components/LiveChatFab';
 import image360f from '../assets/360f.png';
 import wsm from '../assets/wsm.png';
 import axios from 'axios';
+import Navbar from '../components/Navbar';
 
 export default function Support() {
   const { user } = useAuth();
@@ -195,6 +196,9 @@ export default function Support() {
   };
 
   return (
+    <>
+    <Navbar/>
+    
     <div
       className={`min-h-screen flex flex-col py-10 px-4 md:px-20 transition duration-300 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden`}
     >
@@ -569,5 +573,6 @@ export default function Support() {
       `}</style>
        <LiveChatFab />
     </div>
+        </>
   );
 }
