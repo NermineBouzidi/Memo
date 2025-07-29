@@ -36,6 +36,16 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  'https://memo-z241.vercel.app', // Your frontend
+  'http://localhost:5173' // Keep localhost for development
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true // If using cookies/auth headers
+}));
+
 // Configuration CORS
 app.use((req, res, next) => {
   const origin = process.env.CLIENT_URL || 'https://memo-z241.vercel.app';
