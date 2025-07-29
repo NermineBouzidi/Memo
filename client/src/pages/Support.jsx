@@ -200,7 +200,7 @@ export default function Support() {
     <Navbar/>
     
     <div
-      className={`min-h-screen flex flex-col py-10 px-4 md:px-20 transition duration-300 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden pt-20`}
+      className={`min-h-screen flex flex-col py-10 px-4 md:px-20 transition duration-300 bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden pt-24`}
     >
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-[800px] h-[800px] bg-gradient-to-br from-red-500/10 to-pink-600/10 rounded-full blur-3xl animate-float-slow top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 z-0" />
