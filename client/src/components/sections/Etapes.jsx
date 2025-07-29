@@ -48,7 +48,7 @@ const Etapes = () => {
   ];
 
   return (
-    <section className="bg-[#fefefe] text-gray-900 px-4 py-20 md:py-28 font-outfit">
+    <section className="bg-[#fefefe] text-gray-900 px-4 py-20 md:py-28 font-outfit" id="etapes" >
      
          <div className="max-w-5xl mx-auto text-center mb-20">
         <motion.h2

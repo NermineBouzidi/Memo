@@ -33,7 +33,7 @@ const highlights = [
 
 export default function ProductDefinition() {
   return (
-    <section className="py-20 bg-[#f9fafb]">
+    <section className="py-20 bg-[#f9fafb]" id="produit">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>

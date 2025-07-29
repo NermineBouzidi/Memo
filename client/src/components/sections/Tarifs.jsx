@@ -48,7 +48,7 @@ const tarifs = [
 
 export default function Tarifs() {
   return (
-    <section className="py-28 px-6 md:px-12 bg-white text-gray-800 font-outfit">
+    <section className="py-28 px-6 md:px-12 bg-white text-gray-800 font-outfit" id="couts" >
       {/* Updated title section with matching animation */}
       <div className="max-w-5xl mx-auto text-center mb-16">
         <motion.h2

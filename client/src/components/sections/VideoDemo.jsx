@@ -15,7 +15,7 @@ export default function VideoDemo() {
   const [showVideo, setShowVideo] = useState(false);
 
   return (
-    <section className="py-28 px-6 md:px-20 bg-white relative overflow-hidden border-t border-gray-200">
+    <section className="py-28 px-6 md:px-20 bg-white relative overflow-hidden border-t border-gray-200" id="demo">
       <div className="max-w-5xl mx-auto text-center mb-20">
         <motion.h2
           className="text-5xl md:text-6xl font-bold mb-6"
