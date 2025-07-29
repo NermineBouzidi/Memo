@@ -72,7 +72,7 @@ app.use('/api/stripe', stripeRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/chat", chatRoutes);
 // 👉 ROUTE OLLAMA POUR TON CHATBOT
-app.post('/api/chat', async (req, res) => {
+/*app.post('/api/chat', async (req, res) => {
   const { message } = req.body;
   console.log('📝 Message reçu du frontend :', message);
 
@@ -102,7 +102,7 @@ app.post('/api/chat', async (req, res) => {
     console.error('❌ Erreur Ollama :', err);
     res.status(500).json({ error: 'Erreur avec le modèle local' });
   }
-});
+});*/
 
 app.use(cors());
 
