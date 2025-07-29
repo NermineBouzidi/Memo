@@ -16,13 +16,11 @@ import { useCart } from "../contexts/cartContext";
 import { useAuth } from "../contexts/AuthContext";
 
 const navItems = [
-  { id: "accueil", label: "Accueil" },
-  {
-    id: "produits",
-    label: "Produits",
-    submenu: [{ id: "categories", label: "Catégories" }],
-  },
-  { id: "tarifs", label: "Tarifs" },
+  { id: "crp", label: "Qu'est-ce qu'un CRP ?" },
+  { id: "produit", label: "Produit" },
+  { id: "demo", label: "Démo" },
+  { id: "etapes", label: "Étapes" },
+  { id: "couts", label: "Coûts" },
   {
     id: "ressources",
     label: "Ressources",
@@ -35,6 +33,7 @@ const navItems = [
     ],
   },
 ];
+
 
 export default function Navbar() {
   const [active, setActive] = useState("accueil");
