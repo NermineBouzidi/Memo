@@ -38,7 +38,7 @@ app.use(cookieParser());
 
 // Configuration CORS
 app.use((req, res, next) => {
-  const origin = process.env.CLIENT_URL || 'http://localhost:5173';
+  const origin = process.env.CLIENT_URL || 'https://memo-z241.vercel.app';
 
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
