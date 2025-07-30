@@ -118,26 +118,8 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
-  const handleRemoveWithAnimation = (produitId) => {
-    setRemovingItems((prev) => [...prev, produitId]);
-    const btn = document.getElementById(`remove-btn-${produitId}`);
-    if (btn) {
-      btn.classList.add("shake");
-      setTimeout(() => btn.classList.remove("shake"), 400);
-    }
-    setTimeout(() => {
-      removeFromCart(produitId);
-      setRemovingItems((prev) => prev.filter((id) => id !== produitId));
-    }, 600);
-  };
 
-  const handleClearCartWithAnimation = () => {
-    setIsClearing(true);
-    setTimeout(() => {
-      clearCart();
-      setIsClearing(false);
-    }, 700);
-  };
+
 
   return (
     <>
@@ -205,8 +187,16 @@ export default function Navbar() {
             : "bg-white shadow-inner"
         }`}
       >
-        <Link to="/" className="flex items-center space-x-2">
-          <img
+<Link
+  to="/"
+  className="flex items-center space-x-2"
+  onClick={(e) => {
+    if (location.pathname === "/") {
+      e.preventDefault();
+      document.getElementById("hero")?.scrollIntoView({ behavior: "smooth" });
+    }
+  }}
+>          <img
             src={image}
             alt="Logo"
             className="h-12 w-auto md:h-12 drop-shadow-lg transition-all duration-300"
