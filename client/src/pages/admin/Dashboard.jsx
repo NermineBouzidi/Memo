@@ -12,7 +12,7 @@ const Dashboard = () => {
         >
           <h1 className="text-3xl font-bold mb-4">
             <span className="text-gray-800">Admin </span>
-            <span className="text-[#ff1a1a] drop-shadow-[0_0_10px_#ff1a1a]">Dashboard</span>
+            <span className="text-[#ff1a1a] drop-shadow-[0_0_0px_#ff1a1a]">Dashboard</span>
           </h1>
           <p className="text-lg text-gray-600">
             Welcome to the admin panel. Use the sidebar to manage content.
