@@ -6,7 +6,7 @@ import backgroundImage from "../../assets/logo.png";
 
 export default function HeroCRPMemo() {
   return (
-    <section className="relative min-h-screen flex items-center justify-start overflow-hidden font-outfit bg-gradient-to-b from-pink-50 to-white">
+    <section className="relative min-h-screen flex items-center justify-start overflow-hidden font-outfit bg-gradient-to-b from-pink-50 to-white" id="hero">
       {/* Light Background with Subtle Texture */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0">
@@ -43,24 +43,25 @@ export default function HeroCRPMemo() {
           </motion.p>
 
            <motion.div
-            className="flex flex-col sm:flex-row gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            <a
-              href="#"
-              className="px-6 py-3 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow-md text-lg font-semibold hover:opacity-90 transition duration-300"
-            >
-              Découvrir MEMO
-            </a>
-            <a
-              href="#"
-              className="px-6 py-3 bg-white text-gray-800 rounded-lg border border-gray-300 text-lg font-semibold hover:bg-gray-100 transition duration-300"
-            >
-              Demander une démo
-            </a>
-          </motion.div>
+  className="flex flex-col sm:flex-row gap-4"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.4, duration: 0.8 }}
+>
+  <a
+    href="#produit"
+    className="px-6 py-3 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-lg shadow-md text-lg font-semibold hover:opacity-90 transition duration-300"
+  >
+    Explorer MEMO
+  </a>
+  <a
+    href="#demo"
+    className="px-6 py-3 bg-white text-gray-800 rounded-lg border border-gray-300 text-lg font-semibold hover:bg-gray-100 transition duration-300"
+  >
+    Voir la démo
+  </a>
+</motion.div>
+
         </div>
       </div>
 
