@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api/users', // ✅ Change if your backend runs on a different port or subdomain
+  baseURL: 'https://memo-s8cg.onrender.com/api/users', // ✅ Change if your backend runs on a different port or subdomain
   withCredentials: true, // 🧠 Sends/receives cookies like preAuthToken and token
 });
 

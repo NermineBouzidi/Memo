@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/devis';
+const API_URL = 'https://memo-s8cg.onrender.com/api/devis';
 
 export const getAllDevis = async () => {
   try {
