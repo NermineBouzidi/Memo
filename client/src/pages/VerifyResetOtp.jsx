@@ -1,0 +1,124 @@
+import React, { useState, useRef } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+const VerifyResetOtp = () => {
+  const navigate = useNavigate();
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [error, setError] = useState("");
+  const location = useLocation();
+
+
+  const inputRefs = useRef([]);
+
+  const handleChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return; // Only digits allowed
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Move to next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+  const handlePaste = (e) => {
+  e.preventDefault();
+  const pasteData = e.clipboardData.getData("text").trim();
+  if (!/^\d*$/.test(pasteData)) return; // Only digits allowed
+
+  const pasteArray = pasteData.split("").slice(0, 6);
+  const newOtp = [...otp];
+
+  pasteArray.forEach((char, i) => {
+    newOtp[i] = char;
+  });
+
+  setOtp(newOtp);
+
+  // Focus the last filled input
+  const lastIndex = pasteArray.length - 1;
+  if (inputRefs.current[lastIndex]) {
+    inputRefs.current[lastIndex].focus();
+  }
+};
+
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const code = otp.join("");
+
+  try {
+    navigate('/reset-password', 
+      { state: { email: location.state.email, otp: code } });
+  } catch (err) {
+    setError("Code invalide ou expiré.");
+  }
+};
+
+
+  return (
+    <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-gray-100 relative overflow-hidden px-4">
+      {/* 🔴 Background pulse */}
+      <div className="absolute w-[500px] h-[500px] bg-gradient-to-br from-red-500 to-pink-700 opacity-30 dark:opacity-20 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0" />
+       <Link to="/" className="absolute top-6 left-6 z-50 group" aria-label="Accueil">
+        <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:bg-white cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-700 group-hover:text-red-500 transition-colors" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" clipRule="evenodd" />
+          </svg>
+          <span className="text-gray-700 group-hover:text-red-500 font-medium transition-colors">Accueil</span>
+        </div>
+      </Link>
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 bg-white/70 dark:bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 sm:p-10 w-full max-w-md space-y-6"
+      >
+        <h2 className="text-center text-xl font-semibold text-gray-800 dark:text-white">
+          Vérification du compte
+        </h2>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+          Entrez le code à 6 chiffres envoyé à votre adresse e-mail
+        </p>
+
+        {/* 🔢 OTP Boxes */}
+        <div className="flex justify-center gap-3">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              type="text"
+              inputMode="numeric"
+              maxLength="1"
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={handlePaste} // 🔹 Add this
+              className="w-12 h-12 text-center text-xl font-semibold rounded-lg bg-white dark:bg-white/10 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          ))}
+        </div>
+
+        {/* ⚠️ Error */}
+        {error && (
+          <p className="text-red-500 text-sm text-center">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          Vérifier
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default VerifyResetOtp;
