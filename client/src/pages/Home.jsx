@@ -65,7 +65,6 @@ export default function Home() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ 
               opacity: 1, 
-              y: 0,
               y: [0, -8, 0],
             }}
             transition={{ 
